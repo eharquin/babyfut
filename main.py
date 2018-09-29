@@ -21,7 +21,7 @@ class MainWin(QtWidgets.QMainWindow):
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
 		
-		self.modules = [MenuModule, GameModule, OptionsModule]
+		self.modules = [MenuModule, GameModule, OptionsModule, AuthModule, LeaderboardModule]
 		
 		for mod in self.modules:
 			self.ui.panels.addWidget(mod(self))

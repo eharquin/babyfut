@@ -41,9 +41,9 @@ class OptionsModule(Module):
 
 	def ui_handleClick_btnSave(self):
 		if self.ui.options.cellWidget(0, 1).currentText().lower() == 'true':
-			self.parentWin.showFullScreen()
+			self.parent_win.showFullScreen()
 		else:
-			self.parentWin.showNormal()
+			self.parent_win.showNormal()
 
 		self.switchModule(modules.MenuModule)
 
