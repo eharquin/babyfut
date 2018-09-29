@@ -12,20 +12,21 @@ import logging
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTime
 
-from main_ui import Ui_MainWindow
-from panels import MenuPanel, GamePanel, OptionsPanel
+from ui.main_ui import Ui_MainWindow
+from modules import *
 
 class MainWin(QtWidgets.QMainWindow):
 	def __init__(self, parent=None):
 		QtWidgets.QWidget.__init__(self, parent)
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
-
-		self.ui.panels.addWidget(MenuPanel(self))
-		self.ui.panels.addWidget(GamePanel(self))
-		self.ui.panels.addWidget(OptionsPanel(self))
+		
+		self.modules = [MenuModule, GameModule, OptionsModule]
+		
+		for mod in self.modules:
+			self.ui.panels.addWidget(mod(self))
+			
 		self.ui.panels.setCurrentIndex(0)
-
 		self.displaySystemTime()
 		self.startTimer(1000)
 

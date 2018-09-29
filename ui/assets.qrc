@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="ui">
+    <file>img/bg/bg0.jpg</file>
+    <file>img/placeholder_head.jpg</file>
+  </qresource>
+</RCC>
