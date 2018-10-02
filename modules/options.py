@@ -8,7 +8,8 @@ Created on Wed Apr 18 18:34:40 2018
 
 import logging
 
-from PyQt5.QtWidgets import QTableWidgetItem, QComboBox
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QTableWidgetItem, QComboBox, QApplication
 
 from module import Module
 import modules
@@ -39,11 +40,20 @@ class OptionsModule(Module):
 	def other(self, **kwargs):
 		logging.debug('Other OptionsModule')
 
+	def keyPressEvent(self, e):
+		if e.key() == Qt.Key_Escape:
+			self.ui_handleClick_btnBack()
+		elif e.key() == Qt.Key_Return:
+			self.ui_handleClick_btnSave()
+
 	def ui_handleClick_btnSave(self):
 		if self.ui.options.cellWidget(0, 1).currentText().lower() == 'true':
 			self.parent_win.showFullScreen()
+			#QWSServer::setCursorVisible(False);
+			QApplication.setOverrideCursor(Qt.BlankCursor);
 		else:
 			self.parent_win.showNormal()
+			#QWSServer.setCursorVisible(True);
 
 		self.switchModule(modules.MenuModule)
 

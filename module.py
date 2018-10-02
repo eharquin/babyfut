@@ -9,9 +9,8 @@ Created on Wed Apr 18 18:34:40 2018
 import logging
 
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QRegion
-from PyQt5.QtCore import QTime, QTimer
-from PyQt5.QtWidgets import QTableWidgetItem, QComboBox
+from PyQt5.QtCore import QTime, QTimer, Qt
+from PyQt5.QtWidgets import QTableWidgetItem, QComboBox, QApplication
 
 from modules import *
 
@@ -29,9 +28,18 @@ class Module(QtWidgets.QWidget):
 		if panel_idx<0:
 			logging.error('Error: unknown panel {}'.format(new_type))
 		else:
+			self.parent_win.ui.panels.currentWidget().releaseKeyboard()
+			if QApplication.focusWidget() != None:
+				QApplication.focusWidget().clearFocus()
 			self.parent_win.ui.panels.currentWidget().unload()
+			
 			self.parent_win.ui.panels.setCurrentIndex(panel_idx)
+			
 			self.parent_win.ui.panels.currentWidget().load()
+			# Select first element of the Module
+			self.parent_win.ui.panels.currentWidget().focusNextChild()
+			self.parent_win.ui.panels.currentWidget().focusPreviousChild()
+			self.parent_win.ui.panels.currentWidget().grabKeyboard()
 
 	def load(self):
 		logging.warning('Unimplemented method "load" for {}'.format(self.__class__))

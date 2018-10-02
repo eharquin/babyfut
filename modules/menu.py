@@ -8,6 +8,10 @@ Created on Wed Apr 18 18:34:40 2018
 
 import logging
 
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+
 from module import Module
 import modules
 from ui.menu_ui import Ui_Form as MenuWidget
@@ -22,16 +26,26 @@ class MenuModule(Module):
 		self.ui.btnStartLeague.clicked.connect(lambda: self.switchModule(modules.GameModule))
 		self.ui.btnLeaderboard.clicked.connect(lambda: self.switchModule(modules.LeaderboardModule))
 		self.ui.btnOptions.clicked.connect    (lambda: self.switchModule(modules.OptionsModule))
-		self.ui.btnExit.clicked.connect       (self.ui_handleClick_btnExit)
 
 	def load(self):
 		logging.debug('Loading MenuModule')
+		self.ui.btnStart2p.setFocus()
 
 	def unload(self):
 		logging.debug('Unloading MenuModule')
 	
 	def other(self, **kwargs):
 		logging.debug('Other MenuModule')
+
+	def keyPressEvent(self, e):
+		if e.key() == Qt.Key_Escape:
+			self.ui_handleClick_btnExit()
+		elif e.key() == Qt.Key_Up:
+			self.parent().focusPreviousChild()
+		elif e.key() == Qt.Key_Down:
+			self.parent().focusNextChild()
+		elif e.key() == Qt.Key_Return:
+			QApplication.focusWidget().animateClick()
 
 	def ui_handleClick_btnExit(self):
 		logging.info('Closing..')

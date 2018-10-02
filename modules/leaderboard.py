@@ -8,7 +8,7 @@ Created on Wed Apr 18 18:34:40 2018
 
 import logging
 
-from PyQt5.QtCore import QTime
+from PyQt5.QtCore import QTime, Qt
 
 from module import Module
 import modules
@@ -17,8 +17,6 @@ from ui.leaderboard_ui import Ui_Form as LeaderboardWidget
 class LeaderboardModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, LeaderboardWidget())
-		
-		self.ui.btnExit.clicked.connect(self.ui_handleClick_btnExit)
 
 	def load(self):
 		logging.debug('Loading LeaderboardModule')
@@ -28,6 +26,10 @@ class LeaderboardModule(Module):
 
 	def other(self, **kwargs):
 		logging.debug('Other LeaderboardModule')
+
+	def keyPressEvent(self, e):
+		if e.key() == Qt.Key_Escape:
+			self.ui_handleClick_btnExit()
 
 	def ui_handleClick_btnExit(self):
 		self.switchModule(modules.MenuModule)
