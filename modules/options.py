@@ -48,12 +48,11 @@ class OptionsModule(Module):
 
 	def ui_handleClick_btnSave(self):
 		if self.ui.options.cellWidget(0, 1).currentText().lower() == 'true':
-			self.parent_win.showFullScreen()
-			#QWSServer::setCursorVisible(False);
+			self.mainwin.showFullScreen()
 			QApplication.setOverrideCursor(Qt.BlankCursor);
 		else:
-			self.parent_win.showNormal()
-			#QWSServer.setCursorVisible(True);
+			self.mainwin.showNormal()
+			QApplication.setOverrideCursor(Qt.ArrowCursor);
 
 		self.switchModule(modules.MenuModule)
 

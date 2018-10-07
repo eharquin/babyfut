@@ -8,6 +8,7 @@ Created on Wed Apr 18 18:34:40 2018
 
 import sys
 import logging
+from os.path import dirname, abspath, join
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QGraphicsBlurEffect
@@ -15,8 +16,6 @@ from PyQt5.QtCore import QTime, Qt
 
 from ui.main_ui import Ui_MainWindow
 from modules import *
-
-#acceptedKeys = [Qt.Key_Escape, Qt.Key_Enter, Qt.Key_Return, Qt.UpArrow, Qt.DownArrow, Qt.LeftArrow, Qt.RightArrow]
 
 class MainWin(QtWidgets.QMainWindow):
 	def __init__(self, parent=None):
@@ -30,11 +29,22 @@ class MainWin(QtWidgets.QMainWindow):
 		#bgBlur.setBlurRadius(5)
 		#self.ui.panels.setGraphicsEffect(bgBlur)
 		
+		# Set the content folder's path
+		self._contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
+		print(self._contentFolder)
+		
 		# Module loading
-		self.modules = [MenuModule, GameModule, OptionsModule, AuthModule, LeaderboardModule]
+		self.modules = [
+			MenuModule(self),
+			AuthModule(self),
+			GameModule(self),
+			EndGameModule(self),
+			LeaderboardModule(self),
+			OptionsModule(self)
+		]
 		
 		for mod in self.modules:
-			self.ui.panels.addWidget(mod(self))
+			self.ui.panels.addWidget(mod)
 		
 		self.ui.panels.setCurrentIndex(0)
 		self.ui.panels.currentWidget().setFocus()
@@ -51,6 +61,9 @@ class MainWin(QtWidgets.QMainWindow):
 
 	def displaySystemTime(self):
 		self.ui.lcdTime.display(QTime.currentTime().toString("hh:mm:ss"))
+		
+	def getContent(self, path):
+		return join(self._contentFolder, path)
 
 if __name__=='__main__':
 	app = QtWidgets.QApplication(sys.argv)

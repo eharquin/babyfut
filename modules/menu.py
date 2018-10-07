@@ -45,8 +45,11 @@ class MenuModule(Module):
 		elif e.key() == Qt.Key_Down:
 			self.parent().focusNextChild()
 		elif e.key() == Qt.Key_Return:
-			QApplication.focusWidget().animateClick()
+			if QApplication.focusWidget()==None:
+				logging.error('No focused widget to activate')
+			else:
+				QApplication.focusWidget().animateClick()
 
 	def ui_handleClick_btnExit(self):
 		logging.info('Closing..')
-		self.parent_win.close()
+		self.mainwin.close()

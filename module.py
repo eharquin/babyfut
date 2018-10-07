@@ -18,29 +18,46 @@ class Module(QtWidgets.QWidget):
 	def __init__(self, parent=None, widget=None):
 		# UI Setup
 		QtWidgets.QWidget.__init__(self, parent)
-		self.parent_win = parent
+		self.mainwin = parent
 		self.ui = widget
 		self.ui.setupUi(self)
 
+	def find(self, type):
+		mod_idx = [i for i, x in enumerate(self.mainwin.modules) if isinstance(x, type)]
+		return -1 if len(mod_idx)==0 else mod_idx[0]
+	
 	def switchModule(self, new_type):
-		panel_idx = self.parent_win.modules.index(new_type)
+		curmod_idx = self.find(type(self))
+		newmod_idx = self.find(new_type)
 		
-		if panel_idx<0:
-			logging.error('Error: unknown panel {}'.format(new_type))
+		if curmod_idx<0:
+			logging.error('Unknown panel {}'.format(type(self)))
+		elif newmod_idx<0:
+			logging.error('Unknown panel {}'.format(new_type))
 		else:
-			self.parent_win.ui.panels.currentWidget().releaseKeyboard()
+			# Unfocus the current module
+			self.mainwin.ui.panels.currentWidget().releaseKeyboard()
 			if QApplication.focusWidget() != None:
 				QApplication.focusWidget().clearFocus()
-			self.parent_win.ui.panels.currentWidget().unload()
 			
-			self.parent_win.ui.panels.setCurrentIndex(panel_idx)
+			# Swap modules by unloading, changing the ui then loading
+			self.mainwin.modules[curmod_idx].unload()
+			self.mainwin.ui.panels.setCurrentIndex(newmod_idx)
+			self.mainwin.modules[newmod_idx].load()
 			
-			self.parent_win.ui.panels.currentWidget().load()
 			# Select first element of the Module
-			self.parent_win.ui.panels.currentWidget().focusNextChild()
-			self.parent_win.ui.panels.currentWidget().focusPreviousChild()
-			self.parent_win.ui.panels.currentWidget().grabKeyboard()
+			self.mainwin.modules[newmod_idx].focusNextChild()
+			self.mainwin.modules[newmod_idx].focusPreviousChild()
+			self.mainwin.modules[newmod_idx].grabKeyboard()
 
+	def send(self, to, **kwargs):
+		mod_idx = self.find(to)
+		
+		if mod_idx<0:
+			logging.error('Unknown panel {}'.format(to))
+		else:
+			self.mainwin.modules[mod_idx].other(**kwargs)
+	
 	def load(self):
 		logging.warning('Unimplemented method "load" for {}'.format(self.__class__))
 
