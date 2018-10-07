@@ -6,6 +6,7 @@ Created on Wed Apr 18 18:34:40 2018
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
+import os
 import logging
 
 from PyQt5 import QtWidgets
@@ -14,6 +15,7 @@ from PyQt5.QtCore import QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
+from replay import Replay
 from module import Module
 import modules
 from ui.game_ui import Ui_Form as GameWidget
@@ -52,6 +54,8 @@ class GameModule(Module):
 		# Button connections
 		self.ui.btnScore1.clicked.connect(lambda: self.goal(0))
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(1))
+		
+		self.replayer = Replay()
 	
 	def load(self):
 		logging.debug('Loading GameModule')
@@ -116,16 +120,18 @@ class GameModule(Module):
 			
 			# Show replay
 			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
-			self.showingReplay = True
 			replayFile = self.mainwin.getContent("replay{}.mp4".format(side))
 			
-			self.player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-			self.player.stateChanged.connect(self.endOfReplay)
-			self.player.setMuted(True)
-			self.player.setVideoOutput(self.ui.videoWidget)
-			self.player.setMedia(QMediaContent(QUrl.fromLocalFile(replayFile)))
-			self.player.play()
-			self.ui.videoWidget.setFullScreen(True)
+			if os.path.exists(replayFile):
+				self.showingReplay = True
+				
+				self.player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+				self.player.stateChanged.connect(self.endOfReplay)
+				self.player.setMuted(True)
+				self.player.setVideoOutput(self.ui.videoWidget)
+				self.player.setMedia(QMediaContent(QUrl.fromLocalFile(replayFile)))
+				self.player.play()
+				self.ui.videoWidget.setFullScreen(True)
 	
 	def endOfReplay(self, status):
 		if status!=QMediaPlayer.PlayingState:

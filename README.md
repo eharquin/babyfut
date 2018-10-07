@@ -38,6 +38,61 @@ The widget contained by each module are stacked in a QStackedWidget and only one
 To get from one to the other, the current module is unloaded current, then the new one is shown and loaded.
 Each module can overload the load/unload/other method in order to have a specific behavior.
 
+### Settings
+Settings are stored in a JSON file located in the parent's `content` directory, that looks like:
+```
+{
+    "app": {
+		"loglevel": {
+			"type": "combo",
+			"value": "debug",
+			"values": [
+				"debug",
+				"info",
+				"warning",
+				"error",
+				"critical"
+			]
+		}
+	},
+    "ui": {
+        "fullscreen": {
+            "type": "boolean",
+            "value": false
+        }
+    },
+    "picam": {
+        "resolution": {
+            "type": "combo",
+            "value": [640, 480],
+            "values": [
+                [1920, 1080],
+                [1280, 720],
+                [640, 480]
+            ]
+        }
+    },
+    "replay": {
+        "duration": {
+            "type": "range",
+            "value": 5,
+            "range": [1, 10]
+        }
+    }
+}
+```
+
+That JSON file is parsed and can be accessed by doing:
+```
+from settings Import Settings
+Settings['ui.fullscreen'] = False
+duration = Settings['replay.duration']
+```
+
+### Replays
+Replays are 5-10 seconds clips played when a goal is scored. Those are stored in the parent's `content` directory under the name `replay0.mp4` and `replay1.mp4`.
+For the time being, those are provided by the PI camera module.
+
 ### DB
 
 

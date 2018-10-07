@@ -11,7 +11,7 @@ import logging
 from os.path import dirname, abspath, join
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QGraphicsBlurEffect
+from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
 from PyQt5.QtCore import QTime, Qt
 
 from ui.main_ui import Ui_MainWindow
@@ -28,10 +28,6 @@ class MainWin(QtWidgets.QMainWindow):
 		bgBlur.setBlurHints(QGraphicsBlurEffect.QualityHint)
 		#bgBlur.setBlurRadius(5)
 		#self.ui.panels.setGraphicsEffect(bgBlur)
-		
-		# Set the content folder's path
-		self._contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
-		print(self._contentFolder)
 		
 		# Module loading
 		self.modules = [
@@ -61,10 +57,22 @@ class MainWin(QtWidgets.QMainWindow):
 
 	def displaySystemTime(self):
 		self.ui.lcdTime.display(QTime.currentTime().toString("hh:mm:ss"))
-		
-	def getContent(self, path):
-		return join(self._contentFolder, path)
+	
+	@staticmethod
+	def getContent(path):
+		contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
+		return join(contentFolder, path)
 
+	def _refreshAfterSettings(self):
+		from settings import Settings
+		
+		if Settings.ui['fullscreen']:
+			self.showFullScreen()
+			QApplication.setOverrideCursor(Qt.BlankCursor);
+		else:
+			self.showNormal()
+			QApplication.setOverrideCursor(Qt.ArrowCursor);
+	
 if __name__=='__main__':
 	app = QtWidgets.QApplication(sys.argv)
 	#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)

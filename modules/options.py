@@ -11,6 +11,7 @@ import logging
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidgetItem, QComboBox, QApplication
 
+from settings import Settings
 from module import Module
 import modules
 from ui.options_ui import Ui_Form as OptionsWidget
@@ -47,13 +48,8 @@ class OptionsModule(Module):
 			self.ui_handleClick_btnSave()
 
 	def ui_handleClick_btnSave(self):
-		if self.ui.options.cellWidget(0, 1).currentText().lower() == 'true':
-			self.mainwin.showFullScreen()
-			QApplication.setOverrideCursor(Qt.BlankCursor);
-		else:
-			self.mainwin.showNormal()
-			QApplication.setOverrideCursor(Qt.ArrowCursor);
-
+		Settings['ui.fullscreen'] = self.ui.options.cellWidget(0, 1).currentText().lower() == 'true'
+		self.mainwin._refreshAfterSettings()
 		self.switchModule(modules.MenuModule)
 
 	def ui_handleClick_btnBack(self):
