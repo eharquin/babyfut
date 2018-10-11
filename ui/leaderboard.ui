@@ -108,7 +108,53 @@
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_3">
+      <widget class="QRadioButton" name="rbName">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rbVictories">
+       <property name="text">
+        <string>Victories</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_10">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rbScore">
        <property name="text">
         <string>Score</string>
        </property>
@@ -131,9 +177,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
+      <widget class="QRadioButton" name="rbGamesPlayed">
        <property name="text">
-        <string>Time Played</string>
+        <string>Games Played</string>
        </property>
       </widget>
      </item>
@@ -154,11 +200,24 @@
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton">
+      <widget class="QRadioButton" name="rbTimePlayed">
        <property name="text">
-        <string>Games Played</string>
+        <string>Time Played</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_9">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <spacer name="horizontalSpacer_8">
@@ -220,7 +279,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTableWidget" name="tableWidget"/>
+        <widget class="QListWidget" name="listWidget"/>
        </item>
       </layout>
      </widget>
@@ -228,6 +287,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>rbName</tabstop>
+  <tabstop>rbVictories</tabstop>
+  <tabstop>rbScore</tabstop>
+  <tabstop>rbGamesPlayed</tabstop>
+  <tabstop>rbTimePlayed</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>listWidget</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

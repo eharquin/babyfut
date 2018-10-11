@@ -11,6 +11,7 @@ import logging
 from PyQt5.QtCore import QTime, Qt
 
 from module import Module
+from player import Side
 import modules
 from ui.auth2p_ui import Ui_Form as Auth2pWidget
 
@@ -20,21 +21,29 @@ class AuthModule(Module):
 
 	def load(self):
 		logging.debug('Loading AuthModule')
+		self.players = {Side.Left: list(), Side.Right: list()}
 
 	def unload(self):
 		logging.debug('Unloading AuthModule')
+		del self.players
 
 	def other(self, **kwargs):
 		logging.debug('Other AuthModule')
+		
+		for key, val in kwargs.items():
+			if key=='ardl_rfid' or key=='ardr_rfid':
+				side = Side.Left if key.startswith('ardl') else Side.Right
+				self.players.append(Player(val))
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
-			self.ui_handleClick_btnCancel()
-		elif e.key() == Qt.Key_Enter or e.key() == Qt.Key_Return:
-			self.ui_handleClick_btnDone()
+			self.handleCancel()
+		elif e.key() == Qt.Key_Return:
+			self.handleDone()
 
-	def ui_handleClick_btnCancel(self):
+	def handleCancel(self):
 		self.switchModule(modules.MenuModule)
 
-	def ui_handleClick_btnDone(self):
+	def handleDone(self):
+		self.send(modules.GameModule, players=self.players)
 		self.switchModule(modules.GameModule)

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="ui">
+    <file>img/icons/red-cross.png</file>
     <file>img/bg/bg1.jpg</file>
     <file>img/bg/bg2.png</file>
     <file>img/bg/bg3.jpg</file>

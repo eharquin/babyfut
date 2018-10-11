@@ -21,8 +21,8 @@ class OptionsModule(Module):
 		super().__init__(parent, OptionsWidget())
 
 		# Button connections
-		self.ui.btnSave.clicked.connect(self.ui_handleClick_btnSave)
-		self.ui.btnBack.clicked.connect(self.ui_handleClick_btnBack)
+		self.ui.btnSave.clicked.connect(self.handleSave)
+		self.ui.btnBack.clicked.connect(self.handleBack)
 
 	def load(self):
 		logging.debug('Loading OptionsModule')
@@ -43,15 +43,15 @@ class OptionsModule(Module):
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
-			self.ui_handleClick_btnBack()
+			self.handleBack()
 		elif e.key() == Qt.Key_Return:
-			self.ui_handleClick_btnSave()
+			self.handleSave()
 
-	def ui_handleClick_btnSave(self):
+	def handleSave(self):
 		Settings['ui.fullscreen'] = self.ui.options.cellWidget(0, 1).currentText().lower() == 'true'
 		self.mainwin._refreshAfterSettings()
 		self.switchModule(modules.MenuModule)
 
-	def ui_handleClick_btnBack(self):
+	def handleBack(self):
 		# ToDo: Maybe add a warning
 		self.switchModule(modules.MenuModule)

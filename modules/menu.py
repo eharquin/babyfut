@@ -39,7 +39,7 @@ class MenuModule(Module):
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
-			self.ui_handleClick_btnExit()
+			self.handleExit()
 		elif e.key() == Qt.Key_Up:
 			self.parent().focusPreviousChild()
 		elif e.key() == Qt.Key_Down:
@@ -50,6 +50,6 @@ class MenuModule(Module):
 			else:
 				QApplication.focusWidget().animateClick()
 
-	def ui_handleClick_btnExit(self):
+	def handleExit(self):
 		logging.info('Closing..')
 		self.mainwin.close()

@@ -15,6 +15,7 @@ from PyQt5.QtCore import QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
+from player import Side
 from replay import Replay
 from module import Module
 import modules
@@ -28,20 +29,20 @@ class GameOverChecker():
 	def check(self, time, scores):
 		'''
 		Checks if a game is over and return the winner if that's the case
-		Either returns -1 if the game is not finished or the highest score's index (0 or 1)
+		Returns the winning side or Side.Undef otherwise
 		
 		Takes the game time is seconds and a list containing the two scores
 		'''
 		
-		# Gets the index of the highest scoring player (either 0 or 1)
-		bestPlayer = scores.index(max(scores))
+		# Gets the index of the highest scoring player
+		bestPlayer = max(scores, key=scores.get)
 		
 		if self.conditionType=='score' and scores[bestPlayer]>=self.limit:
 			return bestPlayer
 		elif self.conditionType=='time' and time>self.limit:
 			return bestPlayer
 		else:
-			return -1
+			return Side.Undef
 		
 class GameModule(Module):
 	def __init__(self, parent=None):
@@ -52,8 +53,8 @@ class GameModule(Module):
 		self.timerUpdateChrono.timeout.connect(self.updateChrono)
 
 		# Button connections
-		self.ui.btnScore1.clicked.connect(lambda: self.goal(0))
-		self.ui.btnScore2.clicked.connect(lambda: self.goal(1))
+		self.ui.btnScore1.clicked.connect(lambda: self.goal(Side.Left))
+		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
 		
 		self.replayer = Replay()
 	
@@ -64,9 +65,10 @@ class GameModule(Module):
 		self.timerUpdateChrono.start(1000)
 		self.ui.lcdChrono.display(QTime(0,0).toString("hh:mm:ss"))
 		
+		self.showingReplay = False
 		self.gameoverChecker = GameOverChecker('score', 10)
 
-		self.scores = [0, 0]
+		self.scores = {Side.Left: 0, Side.Right: 0}
 		self.updateScores()
 
 	def unload(self):
@@ -76,6 +78,9 @@ class GameModule(Module):
 	
 	def other(self, **kwargs):
 		logging.debug('Other GameModule')
+		
+		if 'players' in kwargs:
+			self.players = kwargs['players']
 	
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
@@ -90,11 +95,11 @@ class GameModule(Module):
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
-			self.ui_handleClick_btnCancel()
+			self.handleCancel()
 		elif e.key() == Qt.Key_Left:
-			self.goal(0)
+			self.goal(Side.Left)
 		elif e.key() == Qt.Key_Right:
-			self.goal(1)
+			self.goal(Side.Right)
 
 	def updateChrono(self):
 		# Updated each second
@@ -108,30 +113,32 @@ class GameModule(Module):
 		return self.gameStartTime.secsTo(QTime.currentTime())
 	
 	def updateScores(self):
-		self.ui.btnScore1.setText(str(self.scores[0]))
-		self.ui.btnScore2.setText(str(self.scores[1]))
+		self.ui.btnScore1.setText(str(self.scores[Side.Left]))
+		self.ui.btnScore2.setText(str(self.scores[Side.Right]))
 		self.checkEndGame()
 		
 	def goal(self, side):
-		if side!=0 and side!=1:
+		if side not in Side:
 			logging.error('Wrong goal side: {}'.format(side))
 		else:
 			self.scores[side] += 1
 			
 			# Show replay
 			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
-			replayFile = self.mainwin.getContent("replay{}.mp4".format(side))
+			replayFile = self.mainwin.getContent('Replay {}.mp4'.format(side.name))
 			
 			if os.path.exists(replayFile):
-				self.showingReplay = True
-				
-				self.player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-				self.player.stateChanged.connect(self.endOfReplay)
-				self.player.setMuted(True)
-				self.player.setVideoOutput(self.ui.videoWidget)
-				self.player.setMedia(QMediaContent(QUrl.fromLocalFile(replayFile)))
-				self.player.play()
-				self.ui.videoWidget.setFullScreen(True)
+				if True: # Debug Mode
+					self.updateScores()
+				else:
+					self.showingReplay = True
+					self.player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+					self.player.stateChanged.connect(self.endOfReplay)
+					self.player.setMuted(True)
+					self.player.setVideoOutput(self.ui.videoWidget)
+					self.player.setMedia(QMediaContent(QUrl.fromLocalFile(replayFile)))
+					self.player.play()
+					self.ui.videoWidget.setFullScreen(True)
 	
 	def endOfReplay(self, status):
 		if status!=QMediaPlayer.PlayingState:
@@ -140,12 +147,12 @@ class GameModule(Module):
 			self.updateScores()
 			
 
-	def ui_handleClick_btnCancel(self):
+	def handleCancel(self):
 		self.switchModule(modules.MenuModule)
 		
 	def checkEndGame(self):
-		win = self.gameoverChecker.check(self.getGameTime(), self.scores)
+		winSide = self.gameoverChecker.check(self.getGameTime(), self.scores)
 		
-		if win>=0:
-			self.send(modules.EndGameModule, winner=win)
+		if winSide!=Side.Undef:
+			self.send(modules.EndGameModule, players=self.players, winSide=winSide, scores=self.scores, time=self.getGameTime())
 			self.switchModule(modules.EndGameModule)
