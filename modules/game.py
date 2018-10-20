@@ -15,7 +15,7 @@ from PyQt5.QtCore import QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
-from player import Side
+from player import Side, PlayerGuest
 from replay import Replay
 from module import Module
 import modules
@@ -67,6 +67,10 @@ class GameModule(Module):
 		
 		self.showingReplay = False
 		self.gameoverChecker = GameOverChecker('score', 10)
+		
+		if all([len(val)==0 for val in self.players.values()]):
+			self.players[Side.Left ].append(PlayerGuest)
+			self.players[Side.Right].append(PlayerGuest)
 
 		self.scores = {Side.Left: 0, Side.Right: 0}
 		self.updateScores()
@@ -79,8 +83,12 @@ class GameModule(Module):
 	def other(self, **kwargs):
 		logging.debug('Other GameModule')
 		
-		if 'players' in kwargs:
-			self.players = kwargs['players']
+		for key, val in kwargs.items():
+			if key=='goal' and 'source' in kwargs:
+				self.goal(kwargs['source'])
+		
+			elif key=='players':
+				self.players = val
 	
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
@@ -146,7 +154,6 @@ class GameModule(Module):
 			self.showingReplay = False
 			self.updateScores()
 			
-
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)
 		

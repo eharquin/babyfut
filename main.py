@@ -32,7 +32,8 @@ class MainWin(QtWidgets.QMainWindow):
 		# Module loading
 		self.modules = [
 			MenuModule(self),
-			AuthModule(self),
+			AuthQuickModule(self),
+			AuthLeagueModule(self),
 			GameModule(self),
 			EndGameModule(self),
 			LeaderboardModule(self),

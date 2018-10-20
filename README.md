@@ -3,6 +3,12 @@
 Source code for the foosball embedded Raspberry PI. It runs the UI and manages games.
 The UI is done with PyQt5.
 
+## Dependencies
+* PyQt5
+* pyserial
+* autopy
+* qtmultimedia5-examples
+
 ## Launch
 * Make sure to have Python>3.5 installed (`sudo apt-get install python3` otherwise)
 * Make sure to have PyQt5 installed (`sudo pip install pyqt5` otherwise)
@@ -97,4 +103,4 @@ For the time being, those are provided by the PI camera module.
 
 
 ## Todo
-* [ ] ...
+* [ ] Filter serial ports to get arduinos or specific serial id

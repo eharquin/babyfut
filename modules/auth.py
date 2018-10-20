@@ -8,39 +8,44 @@ Created on Wed Apr 18 18:34:40 2018
 
 import logging
 
-from PyQt5.QtCore import QTime, Qt
+from PyQt5.QtCore import Qt
 
-from module import Module
-from player import Side
 import modules
-from ui.auth2p_ui import Ui_Form as Auth2pWidget
+from module import Module
+from player import Side, Player, PlayerGuest
 
-class AuthModule(Module):
-	def __init__(self, parent):
-		super().__init__(parent, Auth2pWidget())
-
-	def load(self):
-		logging.debug('Loading AuthModule')
+class AuthModuleBase(Module):
+	def __init__(self, parent, widget):
+		super().__init__(parent, widget)
 		self.players = {Side.Left: list(), Side.Right: list()}
 
-	def unload(self):
-		logging.debug('Unloading AuthModule')
-		del self.players
-
-	def other(self, **kwargs):
-		logging.debug('Other AuthModule')
+	def load(self):
+		pass
 		
+	def unload(self):
+		self.players = {Side.Left: list(), Side.Right: list()}
+
+	def other(self, **kwargs):		
 		for key, val in kwargs.items():
-			if key=='ardl_rfid' or key=='ardr_rfid':
-				side = Side.Left if key.startswith('ardl') else Side.Right
-				self.players.append(Player(val))
+			if key=='rfid' and 'source' in kwargs:
+				side = kwargs['source']
+				self.addPlayer(side, Player.fromRFID(val))
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
 			self.handleCancel()
+			
 		elif e.key() == Qt.Key_Return:
 			self.handleDone()
+			
+		elif e.key() == Qt.Key_Left or e.key() == Qt.Key_Right:
+			side = Side.Left if e.key() == Qt.Key_Left else Side.Right
+			rfid = -2*(side.value+1) - (self.players[side][0]!=PlayerGuest)
+			self.send(type(self), rfid=rfid, source=side)
 
+	def addPlayer(self, side, player):
+		logging.warning('Base function meant to be reimplemented')
+	
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)
 

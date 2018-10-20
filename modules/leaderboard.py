@@ -24,7 +24,7 @@ class LeaderboardItemWidget(QtWidgets.QWidget):
 		self.ui = PlayerListWidget()
 		self.ui.setupUi(self)
 		
-		self.ui.picHolder.setStyleSheet('border-image: url({});'.format(player.pic_path))
+		player.displayImg(self.ui.picHolder)
 		self.ui.lblFName.setText(player.fname)
 		self.ui.lblLName.setText(player.lname)
 		
@@ -71,19 +71,7 @@ class LeaderboardModule(Module):
 		if self.players:
 			self.ui.listWidget.clear()
 		else:
-			# Load from DB
-			dummy1 = Player(0, 'A', 'E', ':ui/img/placeholder_head.jpg')
-			dummy2 = Player(1, 'B', 'D', ':ui/img/placeholder_head.jpg')
-			dummy3 = Player(2, 'C', 'C', ':ui/img/placeholder_head.jpg')
-			dummy4 = Player(3, 'D', 'B', ':ui/img/placeholder_head.jpg')
-			dummy5 = Player(4, 'E', 'A', ':ui/img/placeholder_head.jpg')
-			
-			dummy2.stats.victories    = 1
-			dummy3.stats.time_played  = 1
-			dummy4.stats.games_played = 1
-			dummy5.stats.goals_scored = 1
-			
-			self.players = [PlayerGuest, dummy1, dummy2, dummy3, dummy4, dummy5]
+			self.players = [Player.fromRFID(id) for id in range(-2 , -7, -1)]
 		
 		self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort]), reverse=True)
 		
