@@ -8,6 +8,7 @@ Created on Wed Apr 18 18:34:40 2018
 
 import sys
 import logging
+import threading
 from os.path import dirname, abspath, join
 
 from PyQt5 import QtWidgets
@@ -16,6 +17,8 @@ from PyQt5.QtCore import QTime, Qt
 
 from ui.main_ui import Ui_MainWindow
 from modules import *
+from player import Side
+from com import InputThread
 
 class MainWin(QtWidgets.QMainWindow):
 	def __init__(self, parent=None):
@@ -58,6 +61,15 @@ class MainWin(QtWidgets.QMainWindow):
 
 	def displaySystemTime(self):
 		self.ui.lcdTime.display(QTime.currentTime().toString("hh:mm:ss"))
+
+	def findMod(self, type):
+		mod_idx = [i for i, x in enumerate(self.modules) if isinstance(x, type)]
+		return -1 if len(mod_idx)==0 else mod_idx[0]
+	
+	def dispatchMessage(self, msg, toAll=False):
+		modulesIdx = self.modules if toAll else [self.findMod(type(self.ui.panels.currentWidget()))]			
+		for modIdx in modulesIdx:
+			self.modules[modIdx].other(**msg)
 	
 	@staticmethod
 	def getContent(path):
@@ -73,11 +85,27 @@ class MainWin(QtWidgets.QMainWindow):
 		else:
 			self.showNormal()
 			QApplication.setOverrideCursor(Qt.ArrowCursor);
-	
+
 if __name__=='__main__':
-	app = QtWidgets.QApplication(sys.argv)
+	from settings import Settings
+	
 	#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
 	logging.basicConfig(level=logging.DEBUG)
+	
+	app = QtWidgets.QApplication(sys.argv)
 	myapp = MainWin()
+	
+	if Settings['app.mode']!='dev':
+		threadArduinoLeft  = InputThread(myapp, Side.Left)
+		#threadArduinoRight = InputThread(myapp, Side.Right)
+		threadArduinoLeft.start()
+		#threadArduinoRight.start()
+	
 	myapp.show()
 	app.exec_()
+	
+	if Settings['app.mode']!='dev':
+		threadArduinoLeft.stop()
+		#threadArduinoRight.stop()
+		threadArduinoLeft.join()
+		#threadArduinoRight.join()

@@ -15,20 +15,16 @@ from PyQt5.QtWidgets import QTableWidgetItem, QComboBox, QApplication
 from modules import *
 
 class Module(QtWidgets.QWidget):
-	def __init__(self, parent=None, widget=None):
+	def __init__(self, parent, widget):
 		# UI Setup
 		QtWidgets.QWidget.__init__(self, parent)
 		self.mainwin = parent
 		self.ui = widget
 		self.ui.setupUi(self)
-
-	def find(self, type):
-		mod_idx = [i for i, x in enumerate(self.mainwin.modules) if isinstance(x, type)]
-		return -1 if len(mod_idx)==0 else mod_idx[0]
 	
 	def switchModule(self, new_type):
-		curmod_idx = self.find(type(self))
-		newmod_idx = self.find(new_type)
+		curmod_idx = self.mainwin.findMod(type(self))
+		newmod_idx = self.mainwin.findMod(new_type)
 		
 		if curmod_idx<0:
 			logging.error('Unknown panel {}'.format(type(self)))
@@ -51,7 +47,7 @@ class Module(QtWidgets.QWidget):
 			self.mainwin.modules[newmod_idx].grabKeyboard()
 
 	def send(self, to, **kwargs):
-		mod_idx = self.find(to)
+		mod_idx = self.mainwin.findMod(to)
 		
 		if mod_idx<0:
 			logging.error('Unknown panel {}'.format(to))

@@ -7,7 +7,7 @@ Created on Wed Apr 18 18:34:40 2018
 """
 
 import json
-from main import MainWin
+import main
 
 class Setting(object):
 	TypeName = ''
@@ -106,4 +106,4 @@ class SettingsHolder(object):
 
 					getattr(self, cat)[name] = setting
 
-Settings = SettingsHolder(MainWin.getContent('settings.json'))
+Settings = SettingsHolder(main.MainWin.getContent('settings.json'))
