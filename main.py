@@ -18,7 +18,7 @@ from PyQt5.QtCore import QTime, Qt
 from ui.main_ui import Ui_MainWindow
 from modules import *
 from player import Side
-from com import InputThread
+from input import GPIOThread
 
 class MainWin(QtWidgets.QMainWindow):
 	def __init__(self, parent=None):
@@ -94,37 +94,31 @@ if __name__=='__main__':
 	from settings import Settings
 	from replay import Replay as ReplayThread
 	
-	#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
-	logging.basicConfig(level=logging.DEBUG)
-	
-	app = QtWidgets.QApplication(sys.argv)
-	myapp = MainWin()
-	
-	threadReplay = ReplayThread(Side.Left)
-	threadReplay.start()
-	myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
-        
-	if Settings['app.mode']!='dev':
-		threadArduinoLeft  = InputThread(myapp, Side.Left)
-		#threadArduinoRight = InputThread(myapp, Side.Right)
-		threadArduinoLeft.start()
-		#threadArduinoRight.start()
-	
-	myapp.show()
-	app.exec_()
-	
-	threadReplay.stop()
-	threadReplay.join()
-        
-	if Settings['app.mode']!='dev':
-		threadArduinoLeft.stop()
-		#threadArduinoRight.stop()
-		threadArduinoLeft.join()
-		#threadArduinoRight.join()
+	try:
+		#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
+		logging.basicConfig(level=logging.DEBUG)
+		
+		app = QtWidgets.QApplication(sys.argv)
+		myapp = MainWin()
+		
 		if ReplayThread.isCamAvailable():
 			threadReplay = ReplayThread(Side.Left)
 			threadReplay.start()
 			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
+		
+		threadGPIO = GPIOThread(myapp)
+		threadGPIO.start()
+		
+		myapp.show()
+		app.exec_()
+		
+		threadGPIO.stop()
+		
 		if ReplayThread.isCamAvailable():
 			threadReplay.stop()
 			threadReplay.join()
+		
+		threadGPIO.join()
+		
+	finally:
+		GPIOThread.clean()

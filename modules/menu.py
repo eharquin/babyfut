@@ -12,8 +12,9 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
-from module import Module
 import modules
+from module import Module
+from settings import Settings
 from ui.menu_ui import Ui_Form as MenuWidget
 from player import Side
 
@@ -42,7 +43,7 @@ class MenuModule(Module):
 			self.ui.btnStartQuick.animateClick()
 
 	def keyPressEvent(self, e):
-		if e.key() == Qt.Key_Escape:
+		if e.key() == Qt.Key_Escape and Settings['app.mode']=='dev':
 			self.handleExit()
 			
 		elif e.key() == Qt.Key_Up:
