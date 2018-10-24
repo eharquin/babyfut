@@ -56,6 +56,8 @@ class GameModule(Module):
 		# Button connections
 		self.ui.btnScore1.clicked.connect(lambda: self.goal(Side.Left))
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
+		
+		self.replayer = None
 
 	def load(self):
 		logging.debug('Loading GameModule')
@@ -65,7 +67,8 @@ class GameModule(Module):
 		self.ui.lcdChrono.display(QTime(0,0).toString("hh:mm:ss"))
 
 		self.showingReplay = False
-		self.replayer.start_recording()
+		if self.replayer:
+			self.replayer.start_recording()
 		self.gameoverChecker = GameOverChecker('score', 10)
 
 		if all([len(val)==0 for val in self.players.values()]):
@@ -79,7 +82,8 @@ class GameModule(Module):
 		logging.debug('Unloading GameModule')
 		del self.gameStartTime
 		self.timerUpdateChrono.stop()
-		self.replayer.stop_recording()
+		if self.replayer:
+			self.replayer.stop_recording()
 
 	def other(self, **kwargs):
 		logging.debug('Other GameModule')
@@ -139,9 +143,11 @@ class GameModule(Module):
 			# Show replay
 			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
 
-			replayFile = self.replayer.stop_recording()
+			
+			if self.replayer:
+				replayFile = self.replayer.stop_recording()
 
-			if not (Settings['replay.show'] and os.path.exists(replayFile)):
+			if not (self.replayer and Settings['replay.show'] and os.path.exists(replayFile)):
 				self.updateScores()
 			else:
 				self.showingReplay = True
@@ -158,7 +164,8 @@ class GameModule(Module):
 			self.ui.videoWidget.setFullScreen(False);
 			self.showingReplay = False
 			self.updateScores()
-			self.replayer.start_recording()
+			if self.replayer:
+				self.replayer.start_recording()
 
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)

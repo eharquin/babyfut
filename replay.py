@@ -23,15 +23,17 @@ class Replay(Thread):
 		self.replayPath = MainWin.getContent('Replay {}.mp4'.format(side.name))
 		self.shutdown = False
 		
-		self.cam = picamera.PiCamera()
-		self.cam.resolution = Settings['picam.resolution']
-		self.cam.framerate = Settings['picam.fps']
-		self.cam.hflip = Settings['picam.hflip']
-		self.cam.vflip = Settings['picam.vflip']
-		self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
 		self.start_flag = Event()
 		self.stop_flag = Event()
 		self.stopped_flag = Event()
+
+		if onRasp:
+			self.cam = picamera.PiCamera()
+			self.cam.resolution = Settings['picam.resolution']
+			self.cam.framerate = Settings['picam.fps']
+			self.cam.hflip = Settings['picam.hflip']
+			self.cam.vflip = Settings['picam.vflip']
+			self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
 
 	def start_recording(self):
 		if onRasp:
@@ -54,17 +56,13 @@ class Replay(Thread):
 	
 	def run(self):
 		while not self.shutdown:
-			print('1')
 			self.start_flag.wait()
 		
-			print('2')
 			if not self.shutdown:
-				print('3')
 				self.cam.start_recording(self.stream, Settings['picam.format'])
 				try:
 					while not self.stop_flag.is_set():
 						self.cam.wait_recording(1)
-						print('4')
 				
 				finally	:
 					self.cam.stop_recording()
@@ -72,8 +70,10 @@ class Replay(Thread):
 				self.stream.copy_to(self.replayPath)
 				self.stream.clear()
 				self.stopped_flag.set()
-				print('5')
 
 		self.cam.close()
 		self.stream.close()
-		print('6')
+	
+	@staticmethod
+	def isCamAvailable():
+		return onRasp # and other checks (ToDo)

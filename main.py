@@ -121,3 +121,10 @@ if __name__=='__main__':
 		#threadArduinoRight.stop()
 		threadArduinoLeft.join()
 		#threadArduinoRight.join()
+		if ReplayThread.isCamAvailable():
+			threadReplay = ReplayThread(Side.Left)
+			threadReplay.start()
+			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
+		if ReplayThread.isCamAvailable():
+			threadReplay.stop()
+			threadReplay.join()
