@@ -57,8 +57,6 @@ class GameModule(Module):
 		self.ui.btnScore1.clicked.connect(lambda: self.goal(Side.Left))
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
 
-		self.replayer = Replay(Side.Left)
-
 	def load(self):
 		logging.debug('Loading GameModule')
 
@@ -92,6 +90,10 @@ class GameModule(Module):
 
 			elif key=='players':
 				self.players = val
+
+			elif key=='replayThread':
+				self.replayer = val
+                            
 
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
@@ -156,6 +158,7 @@ class GameModule(Module):
 			self.ui.videoWidget.setFullScreen(False);
 			self.showingReplay = False
 			self.updateScores()
+			self.replayer.start_recording()
 
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)

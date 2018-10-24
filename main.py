@@ -66,8 +66,12 @@ class MainWin(QtWidgets.QMainWindow):
 		mod_idx = [i for i, x in enumerate(self.modules) if isinstance(x, type)]
 		return -1 if len(mod_idx)==0 else mod_idx[0]
 	
-	def dispatchMessage(self, msg, toAll=False):
-		modulesIdx = self.modules if toAll else [self.findMod(type(self.ui.panels.currentWidget()))]			
+	def dispatchMessage(self, msg, toType=None, toAll=False):
+		if toType!=None:
+                    modulesIdx = [self.findMod(toType)]
+		else:
+                    modulesIdx = self.modules if toAll else [self.findMod(type(self.ui.panels.currentWidget()))]			
+		
 		for modIdx in modulesIdx:
 			self.modules[modIdx].other(**msg)
 	
@@ -88,6 +92,7 @@ class MainWin(QtWidgets.QMainWindow):
 
 if __name__=='__main__':
 	from settings import Settings
+	from replay import Replay as ReplayThread
 	
 	#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
 	logging.basicConfig(level=logging.DEBUG)
@@ -95,6 +100,10 @@ if __name__=='__main__':
 	app = QtWidgets.QApplication(sys.argv)
 	myapp = MainWin()
 	
+	threadReplay = ReplayThread(Side.Left)
+	threadReplay.start()
+	myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
+        
 	if Settings['app.mode']!='dev':
 		threadArduinoLeft  = InputThread(myapp, Side.Left)
 		#threadArduinoRight = InputThread(myapp, Side.Right)
@@ -104,6 +113,9 @@ if __name__=='__main__':
 	myapp.show()
 	app.exec_()
 	
+	threadReplay.stop()
+	threadReplay.join()
+        
 	if Settings['app.mode']!='dev':
 		threadArduinoLeft.stop()
 		#threadArduinoRight.stop()

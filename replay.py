@@ -7,8 +7,7 @@ Created on Wed Apr 18 18:34:40 2018
 """
 
 import os
-from threading import Event
-from multiprocessing import Process, Lock
+from threading import Thread, Event
 
 from main import MainWin
 from settings import Settings
@@ -18,55 +17,63 @@ onRasp = os.uname()[1] == 'raspberrypi'
 if onRasp:
 	import picamera
 
-
-class LockableValue():
-	def __init__(self, value):
-		self.value = value
-		self.mutex = Lock()
-
-class Replay():
+class Replay(Thread):
 	def __init__(self, side):
-		self.recording = LockableValue(False)
+		Thread.__init__(self)
 		self.replayPath = MainWin.getContent('Replay {}.mp4'.format(side.name))
-		self.stopped = Event()
-
-		if onRasp:
-			self.cam = picamera.PiCamera()
-			self.cam.resolution = Settings['picam.resolution']
-			self.cam.framerate = Settings['picam.fps']
-			self.cam.hflip = Settings['picam.hflip']
-			self.cam.vflip = Settings['picam.vflip']
-			self.format = Settings['picam.format']
-			self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
+		self.shutdown = False
+		
+		self.cam = picamera.PiCamera()
+		self.cam.resolution = Settings['picam.resolution']
+		self.cam.framerate = Settings['picam.fps']
+		self.cam.hflip = Settings['picam.hflip']
+		self.cam.vflip = Settings['picam.vflip']
+		self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
+		self.start_flag = Event()
+		self.stop_flag = Event()
+		self.stopped_flag = Event()
 
 	def start_recording(self):
-		if not onRasp:
-			self.stopped.set()
-		else:
-			self.recording.value = True
-			self.stopped.clear()
-			self.capture_process = Process(target=self.__capture)
-			self.capture_process.start()
-
+		if onRasp:
+			self.start_flag.set()
+			
 	def stop_recording(self):
-		self.recording.val = True
-		self.stopped.wait(timeout=2.0)
+		if onRasp:
+			self.stop_flag.set()
+			self.stopped_flag.wait()
+			
+			self.stop_flag.clear()
+			self.start_flag.clear()
+			self.stopped_flag.clear()
+
 		return self.replayPath
 
-	def capture(self, fileToSave):
-		if onRasp:
-			self.cam.start_recording(self.stream, self.format)
+	def stop(self):
+		self.start_flag.set()
+		self.shutdown = True
+	
+	def run(self):
+		while not self.shutdown:
+			print('1')
+			self.start_flag.wait()
+		
+			print('2')
+			if not self.shutdown:
+				print('3')
+				self.cam.start_recording(self.stream, Settings['picam.format'])
+				try:
+					while not self.stop_flag.is_set():
+						self.cam.wait_recording(1)
+						print('4')
+				
+				finally	:
+					self.cam.stop_recording()
+    
+				self.stream.copy_to(self.replayPath)
+				self.stream.clear()
+				self.stopped_flag.set()
+				print('5')
 
-			try:
-				recording = self.recording.val
-
-				while recording:
-					self.cam.wait_recording(1)
-					recording = self.recording.val
-			finally:
-				self.cam.stop_recording()
-
-			self.stopped.set()
-			self.stream.copy_to(self.replayPath)
-			self.cam.close()
-			self.stream.close()
+		self.cam.close()
+		self.stream.close()
+		print('6')
