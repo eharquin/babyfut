@@ -32,19 +32,20 @@ class Module(QtWidgets.QWidget):
 			logging.error('Unknown panel {}'.format(new_type))
 		else:
 			# Unfocus the current module
-			self.mainwin.ui.panels.currentWidget().releaseKeyboard()
 			if QApplication.focusWidget() != None:
 				QApplication.focusWidget().clearFocus()
 			
 			# Swap modules by unloading, changing the ui then loading
 			self.mainwin.modules[curmod_idx].unload()
 			self.mainwin.ui.panels.setCurrentIndex(newmod_idx)
+			self.mainwin.ui.panels.setFocusProxy(self.mainwin.modules[newmod_idx])
+			self.mainwin.modules[newmod_idx].setFocus()
 			self.mainwin.modules[newmod_idx].load()
 			
 			# Select first element of the Module
 			self.mainwin.modules[newmod_idx].focusNextChild()
 			self.mainwin.modules[newmod_idx].focusPreviousChild()
-			self.mainwin.modules[newmod_idx].grabKeyboard()
+			self.mainwin.modules[newmod_idx].focusPreviousChild()
 
 	def send(self, to, **kwargs):
 		mod_idx = self.mainwin.findMod(to)

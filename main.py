@@ -48,7 +48,7 @@ class MainWin(QtWidgets.QMainWindow):
 		
 		self.ui.panels.setCurrentIndex(0)
 		self.ui.panels.currentWidget().setFocus()
-		self.ui.panels.currentWidget().grabKeyboard()
+		self.ui.panels.setFocusProxy(self.ui.panels.currentWidget())
 		self.ui.panels.currentWidget().load()
 		self.displaySystemTime()
 		self.startTimer(1000)
