@@ -17,18 +17,21 @@ from player import Side, Player, PlayerGuest
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):
 		super().__init__(parent, widget)
-		self.players = {Side.Left: list(), Side.Right: list()}
+		self.createPlayerList()
+		self.numPlayers = 0
 
 	def load(self):
 		pass
 		
 	def unload(self):
-		self.players = {Side.Left: list(), Side.Right: list()}
+		self.createPlayerList()
+		self.numPlayers = 0
 
 	def other(self, **kwargs):		
 		for key, val in kwargs.items():
 			if key=='rfid' and 'source' in kwargs:
 				side = kwargs['source']
+				self.numPlayers += 1
 				self.addPlayer(side, Player.fromRFID(val))
 
 	def keyPressEvent(self, e):
@@ -40,10 +43,10 @@ class AuthModuleBase(Module):
 			
 		elif e.key() == Qt.Key_Left or e.key() == Qt.Key_Right:
 			side = Side.Left if e.key() == Qt.Key_Left else Side.Right
-			rfid = -2*(side.value+1) - (self.players[side][0]!=PlayerGuest)
+			rfid = -(2 + self.numPlayers%5)
 			self.send(type(self), rfid=rfid, source=side)
 
-	def addPlayer(self, side, player):
+	def createPlayerList(self):
 		logging.warning('Base function meant to be reimplemented')
 	
 	def handleCancel(self):

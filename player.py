@@ -51,6 +51,13 @@ class Player():
 			player = Player(id, 'Enzo', 'Arobaz')
 			player.stats.goals_scored = 1
 			
+		elif id==-10:
+			player = Player(id, 'Name', '')
+			player.stats.victories    = ''
+			player.stats.time_played  = ''
+			player.stats.games_played = ''
+			player.stats.goals_scored = ''
+			
 		else:
 			player = Player(id, fname, lname, pic_url)
 		
@@ -88,3 +95,4 @@ class Stat():
 			self.goals_scored = 0
 
 PlayerGuest = Player.fromRFID(-1)
+PlayerEmpty = Player.fromRFID(-10)

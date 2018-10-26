@@ -40,7 +40,11 @@ class AuthQuickModule(AuthModuleBase):
 		super().unload()
 		#self.updateSides()
 
+	def createPlayerList(self):
+		self.players = {Side.Left: list(), Side.Right: list()}
+	
 	def addPlayer(self, side, player):
+		# If there is a placeholder Guest, clear it from the list, we don't need it anymore
 		if len(self.players[side])>0 and self.players[side][0]==PlayerGuest:
 			self.players[side].clear()
 		
