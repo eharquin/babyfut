@@ -56,6 +56,8 @@ class MainWin(QtWidgets.QMainWindow):
 		self.ui.panels.currentWidget().load()
 		self.displaySystemTime()
 		self.startTimer(1000)
+		
+		self._loadSettings()
 	
 	#def eventFilter(target, event):
 	#	return event.type()==QEvent.KeyPress and event.key() not in acceptedKeys
@@ -84,10 +86,10 @@ class MainWin(QtWidgets.QMainWindow):
 		contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
 		return join(contentFolder, path)
 
-	def _refreshAfterSettings(self):
+	def _loadSettings(self):
 		from settings import Settings
 		
-		if Settings.ui['fullscreen']:
+		if Settings['ui.fullscreen']:
 			self.showFullScreen()
 			QApplication.setOverrideCursor(Qt.BlankCursor);
 		else:

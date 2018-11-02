@@ -141,7 +141,7 @@
 	color: rgb(229, 229, 229);
 }
 
-QPushButton {
+QPushButton, QGroupBox {
 	background-color: rgba(44, 44, 63, 150);
 	border: 1px;
 	border-radius: 10px;

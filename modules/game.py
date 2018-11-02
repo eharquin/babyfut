@@ -69,7 +69,14 @@ class GameModule(Module):
 		self.showingReplay = False
 		if self.replayer:
 			self.replayer.start_recording()
-		self.gameoverChecker = GameOverChecker('score', 10)
+
+		gameover_type = Settings['gameover.type']
+		gameover_value = Settings['gameover.value']
+
+		if gameover_type=='time':
+			gameover_value *= 60
+
+		self.gameoverChecker = GameOverChecker(gameover_type, gameover_value)
 
 		if all([len(val)==0 for val in self.players.values()]):
 			self.players[Side.Left ].append(PlayerGuest)

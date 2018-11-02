@@ -9,10 +9,20 @@ Created on Wed Apr 18 18:34:40 2018
 import json
 import main
 
+class MyEncoder(json.JSONEncoder):
+	def default(self, obj):
+		if isinstance(obj, Setting): 
+			return obj.__dict__
+		elif isinstance(obj, String) and obj=='settingsPath':
+			return None
+		else:
+			return json.JSONEncoder.default(self, obj)
+
 class Setting(object):
 	TypeName = ''
 	
 	def __init__(self, value):
+		self.type = type(self).TypeName
 		self.value = value
 
 class SettingBoolean(Setting):
@@ -36,10 +46,9 @@ class SettingRange(Setting):
 	
 	def __init__(self, value, limits):
 		Setting.__init__(self, value)
-		self.lower_limit = min(limits)
-		self.upper_limit = max(limits)
+		self.range = [min(limits), max(limits)]
 		
-		if self.value<self.lower_limit or self.value>self.upper_limit:
+		if self.value<self.range[0] or self.value>self.range[1]:
 			raise ValueError('Setting value {} not in range {}'.format(self.value, (self.lower_limit, self.upper_limit)))
 		
 class SettingsHolder(object):
@@ -73,13 +82,8 @@ class SettingsHolder(object):
 	@staticmethod
 	def _parseKey(key):
 		return [k for k in key.split('.') if k]
-		
-	def _init_ui(self):
-		self.ui.append(Setting())
 
 	def loadSettingsFromJSON(self):
-		settings = list()
-		
 		with open(self.settingsPath, 'r') as f:
 			content = json.load(f)
 			
@@ -105,5 +109,15 @@ class SettingsHolder(object):
 						raise ValueError('Unknown setting type {}'.format(typeName))
 
 					getattr(self, cat)[name] = setting
+
+	def saveSettingsToJSON(self):
+		# Deletes the settings path member to prevent it from being saved in the JSON 
+		settingsPath = self.settingsPath
+		del self.settingsPath
+		
+		with open(settingsPath, 'w') as f:
+			content = json.dump(self.__dict__, f, cls=MyEncoder, indent=4)
+		
+		self.settingsPath = settingsPath
 
 Settings = SettingsHolder(main.MainWin.getContent('settings.json'))

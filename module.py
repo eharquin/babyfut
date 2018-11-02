@@ -40,12 +40,11 @@ class Module(QtWidgets.QWidget):
 			self.mainwin.ui.panels.setCurrentIndex(newmod_idx)
 			self.mainwin.ui.panels.setFocusProxy(self.mainwin.modules[newmod_idx])
 			self.mainwin.modules[newmod_idx].setFocus()
-			self.mainwin.modules[newmod_idx].load()
 			
 			# Select first element of the Module
 			self.mainwin.modules[newmod_idx].focusNextChild()
 			self.mainwin.modules[newmod_idx].focusPreviousChild()
-			self.mainwin.modules[newmod_idx].focusPreviousChild()
+			self.mainwin.modules[newmod_idx].load()
 
 	def send(self, to, **kwargs):
 		mod_idx = self.mainwin.findMod(to)
