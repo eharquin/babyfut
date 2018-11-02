@@ -6,15 +6,12 @@ Created on Wed Apr 18 18:34:40 2018
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
-import os
 from threading import Thread, Event
 
-from main import MainWin
+from main import MainWin, OnRasp
 from settings import Settings
 
-onRasp = os.uname()[1] == 'raspberrypi'
-
-if onRasp:
+if OnRasp:
 	import picamera
 
 class Replay(Thread):
@@ -27,7 +24,7 @@ class Replay(Thread):
 		self.stop_flag = Event()
 		self.stopped_flag = Event()
 
-		if onRasp:
+		if OnRasp:
 			self.cam = picamera.PiCamera()
 			self.cam.resolution = Settings['picam.resolution']
 			self.cam.framerate = Settings['picam.fps']
@@ -36,14 +33,15 @@ class Replay(Thread):
 			self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
 
 	def start_recording(self):
-		if onRasp:
+		if OnRasp:
 			self.start_flag.set()
 			
 	def stop_recording(self):
-		if onRasp:
+		if OnRasp:
 			self.stop_flag.set()
 			self.stopped_flag.wait()
 			
+            # Clear all control flags
 			self.stop_flag.clear()
 			self.start_flag.clear()
 			self.stopped_flag.clear()
@@ -69,6 +67,8 @@ class Replay(Thread):
     
 				self.stream.copy_to(self.replayPath)
 				self.stream.clear()
+
+                # Set this flag to tell the calling thread that replay is saved
 				self.stopped_flag.set()
 
 		self.cam.close()
@@ -76,4 +76,4 @@ class Replay(Thread):
 	
 	@staticmethod
 	def isCamAvailable():
-		return onRasp # and other checks (ToDo)
+		return OnRasp # and other checks (ToDo)

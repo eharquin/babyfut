@@ -9,7 +9,11 @@ Created on Wed Apr 18 18:34:40 2018
 import logging
 import pyautogui # PyPi library
 from threading import Thread
-import RPi.GPIO as GPIO
+
+from main import OnRasp
+
+if OnRasp:
+	import RPi.GPIO as GPIO
 
 from player import Side
 
@@ -27,21 +31,23 @@ class GPIOThread(Thread):
 		Thread.__init__(self)
 		self.dispatcher = dispatcher
 		self.continueRunning = True
+		
+		if OnRasp:
+			GPIO.setwarnings(False)
+			GPIO.setmode(GPIO.BCM)
 
-		GPIO.setwarnings(False)
-		GPIO.setmode(GPIO.BCM)
-
-		for pin in GPIOThread._keyButtonBindings.keys():
-			print(pin)
-			GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-			GPIO.add_event_detect(pin, GPIO.RISING, callback=self.handleButtonPress)
+			for pin in GPIOThread._keyButtonBindings.keys():
+				print(pin)
+				GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+				GPIO.add_event_detect(pin, GPIO.RISING, callback=self.handleButtonPress)
 
 	def run(self):
-		try:
-			while self.continueRunning:
-				pass
-		finally:
-			GPIOThread.clean()
+		if OnRasp:
+			try:
+				while self.continueRunning:
+					pass
+			finally:
+				GPIOThread.clean()
 
 	def handleButtonPress(self, button_pin):
 		if button_pin not in GPIOThread._keyButtonBindings.keys():
@@ -56,4 +62,5 @@ class GPIOThread(Thread):
 	
 	@staticmethod
 	def clean():
-		GPIO.cleanup()
+		if OnRasp:
+			GPIO.cleanup()

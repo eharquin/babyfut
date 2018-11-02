@@ -103,4 +103,4 @@ For the time being, those are provided by the PI camera module.
 
 
 ## Todo
-* [ ] Filter serial ports to get arduinos or specific serial id
+* [ ] Add the possibility to stop the replay mid-video by pushing any button

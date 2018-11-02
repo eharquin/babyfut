@@ -6,6 +6,9 @@ Created on Wed Apr 18 18:34:40 2018
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
+import os
+OnRasp = os.uname()[1] == 'raspberrypi'
+
 import sys
 import logging
 import threading
