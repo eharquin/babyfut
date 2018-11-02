@@ -48,9 +48,9 @@ class AuthLeagueModule(AuthModuleBase):
 			# Update the left side description
 			player.displayImg(self.ui.img)
 			self.ui.lblName.setText(player.name)
-			self.ui.lblStat1.setText('{} Victories'.format(player.stats.victories))
-			self.ui.lblStat2.setText('{} Games Played'.format(player.stats.games_played))
-			self.ui.lblStat3.setText('{} Goals Scored'.format(player.stats.goals_scored))
+			self.ui.lblStat1.setText('{} Victories'.format(player.stats['victories']))
+			self.ui.lblStat2.setText('{} Games Played'.format(player.stats['games_played']))
+			self.ui.lblStat3.setText('{} Goals Scored'.format(player.stats['goals_scored']))
 			
 			if player!=PlayerEmpty:
 				# Update the right side list, making sure that the added player is showed

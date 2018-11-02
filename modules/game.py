@@ -11,7 +11,7 @@ import logging
 
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QRegion
-from PyQt5.QtCore import QTime, QTimer, QRect, Qt, QUrl
+from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -40,7 +40,7 @@ class GameOverChecker():
 
 		if self.conditionType=='score' and scores[bestPlayer]>=self.limit:
 			return bestPlayer
-		elif self.conditionType=='time' and time>self.limit:
+		elif self.conditionType=='time' and time>=self.limit:
 			return bestPlayer
 		else:
 			return Side.Undef
@@ -174,5 +174,8 @@ class GameModule(Module):
 		winSide = self.gameoverChecker.check(self.getGameTime(), self.scores)
 
 		if winSide!=Side.Undef:
-			self.send(modules.EndGameModule, players=self.players, winSide=winSide, scores=self.scores, time=self.getGameTime())
+			start_timestamp = int(QDateTime(QDate.currentDate(), self.gameStartTime).toMSecsSinceEpoch()/1000)
+			
+			self.send(modules.EndGameModule, players=self.players, winSide=winSide, scores=self.scores)
+			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime())
 			self.switchModule(modules.EndGameModule)

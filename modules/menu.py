@@ -56,7 +56,7 @@ class MenuModule(Module):
 			self.send(modules.MenuModule, rfid=-2, source=Side.Left)
 				
 		elif e.key() == Qt.Key_Right:
-			self.send(modules.MenuModule, rfid=-4, source=Side.Right)
+			self.send(modules.MenuModule, rfid=-3, source=Side.Right)
 			
 		elif e.key() == Qt.Key_Return:
 			if QApplication.focusWidget()==None:

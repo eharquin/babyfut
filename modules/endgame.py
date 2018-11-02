@@ -12,7 +12,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QRegion
 from PyQt5.QtCore import QTime, QTimer, QRect, Qt
 
-from player import Side
+from database import Database, DatabaseError
+from player import Side, PlayerGuest
 from module import Module
 import modules
 from ui.endgame_ui import Ui_Form as EndGameWidget
@@ -31,13 +32,16 @@ class EndGameModule(Module):
 		self.setActiveP2(len(self.players[self.winSide])>1)
 		self.displayPlayers()
 		
+		db = Database.instance()
+		idTeams = {}
+		
 		for side in [Side.Left, Side.Right]:
-			for player in self.players[side]:
-				player.stats.victories    += 1 if side==self.winSide else 0
-				player.stats.goals_scored += self.scores[side]
-				player.stats.time_played  += self.time
-				player.stats.games_played += 1
-				player.save()
+			if PlayerGuest in self.players[side]:
+				idTeams[side] = db.select_guest_team()
+			else:
+				idTeams[side] = db.insert_team([player.id for player in self.players[side]], self.scores[side])
+		
+		db.insert_match(int(self.start_time), int(self.duration), idTeams[self.winSide], idTeams[self.winSide.opposite]) 
 		
 		# Quit the screen after 5 seconds if the user doesn't do it before
 		#self.screenTimeout.start(5000)
@@ -58,8 +62,12 @@ class EndGameModule(Module):
 				self.winSide = val
 			elif key=='scores':
 				self.scores = val
-			elif key=='time':
-				self.time = val
+			elif key=='start_time':
+				self.start_time = val
+				print('start_time {}'.format(val))
+			elif key=='duration':
+				self.duration = val
+				print('duration {}'.format(val))
 		#else:
 		#	raise ValueError('Unknown message identifier {}'.format(kwargs)
 	

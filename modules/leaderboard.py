@@ -28,10 +28,10 @@ class LeaderboardItemWidget(QtWidgets.QWidget):
 		self.ui.lblFName.setText(player.fname)
 		self.ui.lblLName.setText(player.lname)
 		
-		self.ui.lblVictories.setText    (self.ui.lblVictories.text().replace('####',     str(player.stats.victories)))
-		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().replace('####',   str(player.stats.games_played)))
-		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().replace('####',   str(player.stats.goals_scored)))
-		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('####', str(player.stats.time_played)))
+		self.ui.lblVictories.setText    (self.ui.lblVictories.text().replace('####',     str(player.stats['victories'])))
+		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().replace('####',   str(player.stats['games_played'])))
+		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().replace('####',   str(player.stats['goals_scored'])))
+		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('####', str(player.stats['time_played'])))
 		
 		self.ui.pushButton.clicked.connect(lambda: logging.debug('clicked'))
 
@@ -48,13 +48,14 @@ class LeaderboardModule(Module):
 		
 		self.selectedSort = 0
 		self.sortMethodRB = [self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
-		self.sortMethodAttr = ['lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
+		self.sortMethodAttr = ['lname', 'stats_property.victories', 'stats_property.goals_scored', 'stats_property.games_played', 'stats_property.time_played']
 		
 		self.sortMethodRB[self.selectedSort].setChecked(True)
 
 	def load(self):
 		logging.debug('Loading LeaderboardModule')
 		self.loadList()
+		self.setFocus()
 
 	def unload(self):
 		logging.debug('Unloading LeaderboardModule')

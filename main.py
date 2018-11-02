@@ -19,6 +19,7 @@ from ui.main_ui import Ui_MainWindow
 from modules import *
 from player import Side
 from input import GPIOThread
+from database import Database
 
 class MainWin(QtWidgets.QMainWindow):
 	def __init__(self, parent=None):
@@ -122,3 +123,4 @@ if __name__=='__main__':
 		
 	finally:
 		GPIOThread.clean()
+		Database.instance().close()
