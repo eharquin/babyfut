@@ -9,18 +9,21 @@ Created on Wed Apr 18 18:34:40 2018
 import logging
 from operator import attrgetter
 
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QWidget, QDialog, QListWidgetItem
 from PyQt5.QtCore import QTime, Qt, QSize, QItemSelectionModel
 
-from module import Module
 import modules
-from player import PlayerGuest, Player
-from ui.leaderboard_ui import Ui_Form as LeaderboardWidget
-from ui.playerlist_ui import Ui_Form as PlayerListWidget
+from module import Module
+from player import Player, Side
+from database import Database
 
-class LeaderboardItemWidget(QtWidgets.QWidget):
+from ui.leaderboard_ui   import Ui_Form as LeaderboardWidget
+from ui.playerlist_ui    import Ui_Form as PlayerListWidget
+from ui.delete_dialog_ui import Ui_Dialog as PlayerDeleteDialog
+
+class LeaderboardItemWidget(QWidget):
 	def __init__(self, parent, player):
-		QtWidgets.QWidget.__init__(self, parent)
+		QWidget.__init__(self, parent)
 		self.ui = PlayerListWidget()
 		self.ui.setupUi(self)
 		
@@ -35,6 +38,23 @@ class LeaderboardItemWidget(QtWidgets.QWidget):
 		
 		self.ui.pushButton.clicked.connect(lambda: logging.debug('clicked'))
 
+class DeleteDialog(QDialog):
+	def __init__(self, parent, player):
+		print('DeleteDialog {}'.format(player.name))
+		QDialog.__init__(self, parent)
+		self.ui = PlayerDeleteDialog()
+		self.ui.setupUi(self)
+		self.player = player
+		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(player.name))
+	
+	def check(self, rfid):
+		return rfid == -self.player.id
+	
+	# Debug
+	def keyPressEvent(self, e):
+		if e.key() == Qt.Key_Return:
+			self.parent().send(modules.LeaderboardModule, rfid=self.player.rfid, source=Side.Right)
+	
 class LeaderboardModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, LeaderboardWidget())
@@ -51,6 +71,7 @@ class LeaderboardModule(Module):
 		self.sortMethodAttr = ['lname', 'stats_property.victories', 'stats_property.goals_scored', 'stats_property.games_played', 'stats_property.time_played']
 		
 		self.sortMethodRB[self.selectedSort].setChecked(True)
+		self.deleteDialog = None
 
 	def load(self):
 		logging.debug('Loading LeaderboardModule')
@@ -63,6 +84,18 @@ class LeaderboardModule(Module):
 
 	def other(self, **kwargs):
 		logging.debug('Other LeaderboardModule')
+		
+		for key, val in kwargs.items():
+			if key=='rfid' and self.deleteDialog and self.deleteDialog.check(val):
+				Database.instance().delete_player(self.deleteDialog.player.id)
+				
+				# Reset the dialog and the player list
+				self.deleteDialog.close()
+				del self.deleteDialog
+				self.deleteDialog = None
+				self.players = []
+				self.ui.listWidget.clear()
+				self.loadList()
 	
 	def changeSort(self, rbSort):
 		self.selectedSort = self.sortMethodRB.index(rbSort)
@@ -72,12 +105,12 @@ class LeaderboardModule(Module):
 		if self.players:
 			self.ui.listWidget.clear()
 		else:
-			self.players = [Player.fromRFID(id) for id in range(-2 , -7, -1)]
+			self.players = Player.allPlayers()
 		
 		self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort]), reverse=True)
 		
 		for player in self.players:
-			item = QtWidgets.QListWidgetItem()
+			item = QListWidgetItem()
 			playerWidget = LeaderboardItemWidget(self.ui.listWidget, player)
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)
@@ -107,6 +140,10 @@ class LeaderboardModule(Module):
 		elif e.key() == Qt.Key_Right:
 			newSort = curSort+1 if curSort!=len(self.sortMethodRB)-1 else 0
 			self.sortMethodRB[newSort].animateClick()
+			
+		elif e.key() == Qt.Key_Delete:
+			self.deleteDialog = DeleteDialog(self, self.players[curRow])
+			self.deleteDialog.open()
 
 	def handleExit(self):
 		self.switchModule(modules.MenuModule)

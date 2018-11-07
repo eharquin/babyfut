@@ -68,7 +68,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="lblFName">
+      <widget class="QLabel" name="lblLName">
        <property name="minimumSize">
         <size>
          <width>200</width>
@@ -94,7 +94,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="lblLName">
+      <widget class="QLabel" name="lblFName">
        <property name="maximumSize">
         <size>
          <width>200</width>

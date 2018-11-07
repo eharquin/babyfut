@@ -11,6 +11,7 @@ pyuic5 --import-from=ui ui/authleague.ui  -o ui/authleague_ui.py
 pyuic5 --import-from=ui ui/leaderboard.ui -o ui/leaderboard_ui.py
 
 # Custom widgets
-pyuic5 --import-from=ui ui/playerlist.ui -o ui/playerlist_ui.py
+pyuic5 --import-from=ui ui/playerlist.ui    -o ui/playerlist_ui.py
+pyuic5 --import-from=ui ui/delete_dialog.ui -o ui/delete_dialog_ui.py
 
 pyrcc5 -root /ui        ui/assets.qrc     -o ui/assets_rc.py

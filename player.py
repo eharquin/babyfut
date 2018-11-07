@@ -10,7 +10,6 @@ import logging
 import sqlite3
 
 from enum import Enum
-from database import Database, DatabaseError
 
 class Side(Enum):
 	'''
@@ -24,6 +23,8 @@ class Side(Enum):
 	def opposite(self):
 		return Side.Right if self==Side.Left else Side.Left 
 
+from database import Database, DatabaseError
+
 class Player():
 	__query_infos = 'SELECT id, fname, lname, pic FROM Players WHERE rfid==?'
 	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
@@ -31,8 +32,9 @@ class Player():
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 	
-	def __init__(self, id, fname, lname, pic_path, stats):
+	def __init__(self, id, rfid, fname, lname, pic_path, stats):
 		self.id = id
+		self.rfid = rfid
 		self.fname = fname
 		self.lname = lname
 		self.pic_path = pic_path if pic_path else Player._placeholder_pic_path # Default pic if None
@@ -51,7 +53,11 @@ class Player():
 			stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
 			stats['victories'], = db.select_one(Player.__query_victories, id)
 			
-			return Player(id, fname, lname, pic, stats)
+			for key, val in stats.items():
+				if val==None:
+					stats[key] = 0
+			
+			return Player(id, rfid, fname, lname, pic, stats)
 		
 		except DatabaseError as e:
 			logging.warn('DB Error: {}'.format(e))
@@ -71,6 +77,11 @@ class Player():
 		
 	@property
 	def stats_property(self):
+		'''
+		Compatibility property allowing to access stats as a object member and not dict
+		ex: player.stats['victories'] can be accessed with player.stats_property.victories'
+		This is mostly used for sorting players in leaderboard.py
+		'''
 		class Stat:
 			def __init__(self, stats):
 				self.victories = stats['victories']
@@ -79,6 +90,10 @@ class Player():
 				self.games_played = stats['games_played']
 		
 		return Stat(self.stats)
+	
+	@staticmethod
+	def allPlayers():
+		return [Player.fromRFID(rfid) for rfid, in Database.instance().select_all_rfid()]
 
 PlayerGuest = Player.fromRFID(-1)
-PlayerEmpty = Player(-1, '', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''})
+PlayerEmpty = Player(-1, -42, '', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''})

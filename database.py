@@ -9,6 +9,8 @@ Created on Wed Apr 18 18:34:40 2018
 import logging
 import sqlite3
 
+from settings import Settings
+
 class DatabaseError(Exception):
 	pass
 
@@ -50,15 +52,23 @@ class Database():
 		if len(players)<2:
 			players.append(None)
 		
-		logging.debug('DB Inserting {} to table Teams'.format((goals, players[0], players[1],)))
 		self._cursor.execute('INSERT INTO Teams (nGoals, player1, player2) VALUES (?, ?, ?)', (goals, players[0], players[1],))
 		self._connection.commit()
 		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
 	def insert_match(self, start_time, duration, team1, team2):
-		logging.debug('DB Inserting {} to table Matchs'.format((start_time, duration, team1, team2,)))
 		self._cursor.execute('INSERT INTO Matchs (timestamp, duration, winningTeam, losingTeam) VALUES (?, ?, ?, ?)', (start_time, duration, team1, team2,))
 		self._connection.commit()
 
+	def select_all_rfid(self, debug=False):
+		if Settings['app.mode']=='prod':
+			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid>0').fetchall()
+		else:
+			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid<-1').fetchall()
+
+	def delete_player(self, playerID):
+		self._cursor.execute('DELETE FROM Players WHERE id==?', (playerID,))
+		self._connection.commit()
+	
 	def close(self):
 		self._connection.close()

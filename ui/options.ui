@@ -299,7 +299,7 @@ QRadioButton::indicator {
       <bool>true</bool>
      </property>
      <property name="title">
-      <string>Number of players per side</string>
+      <string>League - Number of players per side</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

@@ -12,8 +12,6 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTime, QTimer, Qt
 from PyQt5.QtWidgets import QTableWidgetItem, QComboBox, QApplication
 
-from modules import *
-
 class Module(QtWidgets.QWidget):
 	def __init__(self, parent, widget):
 		# UI Setup

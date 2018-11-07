@@ -7,7 +7,6 @@ Created on Wed Apr 18 18:34:40 2018
 """
 
 import json
-import main
 
 class MyEncoder(json.JSONEncoder):
 	def default(self, obj):
@@ -120,4 +119,5 @@ class SettingsHolder(object):
 		
 		self.settingsPath = settingsPath
 
+import main
 Settings = SettingsHolder(main.MainWin.getContent('settings.json'))

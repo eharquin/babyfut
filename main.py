@@ -21,8 +21,6 @@ from PyQt5.QtCore import QTime, Qt
 from ui.main_ui import Ui_MainWindow
 from modules import *
 from player import Side
-from input import GPIOThread
-from database import Database
 
 class MainWin(QtWidgets.QMainWindow):
 	def __init__(self, parent=None):
@@ -98,6 +96,8 @@ class MainWin(QtWidgets.QMainWindow):
 
 if __name__=='__main__':
 	from settings import Settings
+	from input import GPIOThread
+	from database import Database
 	from replay import Replay as ReplayThread
 	
 	try:
