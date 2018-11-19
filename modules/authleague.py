@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
 import logging
 
 from PyQt5.QtWidgets import QAbstractItemView
-from module import Module
 from modules.auth import AuthModuleBase
 from ui.authleague_ui import Ui_Form as AuthLeagueWidget
 
@@ -53,7 +50,7 @@ class AuthLeagueModule(AuthModuleBase):
 			self.ui.lblStat3.setText('{} Goals Scored'.format(player.stats['goals_scored']))
 			
 			if player!=PlayerEmpty:
-				# Update the right side list, making sure that the added player is showed
+				# Update the right side list, making sure that the added player is showed
 				self.ui.playersList.addItem('{}. {}'.format(len(self.players[side]), player.name))
 				widgetItem = self.ui.playersList.item(self.ui.playersList.count()-1)
 				self.ui.playersList.scrollToItem(widgetItem, QAbstractItemView.PositionAtBottom)

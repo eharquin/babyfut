@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
 import logging
 
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QRegion
-from PyQt5.QtCore import QTime, QTimer, QRect, Qt
+from PyQt5.QtCore import QTimer, Qt
 
-from database import Database, DatabaseError
+from database import Database
 from player import Side, PlayerGuest
 from module import Module
 import modules
@@ -51,7 +48,7 @@ class EndGameModule(Module):
 		self.screenTimeout.stop()
 		
 		del self.players
-		del self.gameType 
+		del self.gameType
 		del self.winSide
 		del self.scores
 		del self.start_time

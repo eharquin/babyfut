@@ -7,7 +7,6 @@ Created on Wed Apr 18 18:34:40 2018
 """
 
 import logging
-import sqlite3
 
 from enum import Enum
 
@@ -48,7 +47,7 @@ class Player():
 			# Retrieve generic informations
 			id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
 			
-			# Retrieve stats
+			# Retrieve stats
 			stats = {}
 			stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
 			stats['victories'], = db.select_one(Player.__query_victories, id)

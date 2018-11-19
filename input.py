@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 

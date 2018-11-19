@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
@@ -10,10 +8,8 @@ import logging
 
 from PyQt5.QtWidgets import QSizePolicy
 
-import modules
-from module import Module
 from modules.auth import AuthModuleBase
-from player import Side, Player, PlayerGuest
+from player import Side, PlayerGuest
 from ui.authquick_ui import Ui_Form as AuthQuickWidget
 
 class AuthQuickModule(AuthModuleBase):
@@ -44,7 +40,7 @@ class AuthQuickModule(AuthModuleBase):
 		self.players = {Side.Left: list(), Side.Right: list()}
 	
 	def addPlayer(self, side, player):
-		# If there is a placeholder Guest, clear it from the list, we don't need it anymore
+		# If there is a placeholder Guest, clear it from the list, we don't need it anymore
 		if len(self.players[side])>0 and self.players[side][0]==PlayerGuest:
 			self.players[side].clear()
 		

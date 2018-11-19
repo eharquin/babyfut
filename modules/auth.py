@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
@@ -12,7 +10,7 @@ from PyQt5.QtCore import Qt
 
 import modules
 from module import Module
-from player import Side, Player, PlayerGuest
+from player import Side, Player
 
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):

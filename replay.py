@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
 from threading import Thread, Event
 
-from main import MainWin, OnRasp
+from main import getContent, OnRasp
 from settings import Settings
 
 if OnRasp:
@@ -17,7 +15,7 @@ if OnRasp:
 class Replay(Thread):
 	def __init__(self, side):
 		Thread.__init__(self)
-		self.replayPath = MainWin.getContent('Replay {}.mp4'.format(side.name))
+		self.replayPath = getContent('Replay {}.mp4'.format(side.name))
 		self.shutdown = False
 		
 		self.start_flag = Event()
@@ -68,7 +66,7 @@ class Replay(Thread):
 				self.stream.copy_to(self.replayPath)
 				self.stream.clear()
 
-                # Set this flag to tell the calling thread that replay is saved
+                # Set this flag to tell the calling thread that replay is saved
 				self.stopped_flag.set()
 
 		self.cam.close()
@@ -76,7 +74,7 @@ class Replay(Thread):
 	
 	@classmethod
 	def Dummy(cls):
-		return MainWin.getContent('Replay Left.mp4')
+		return getContent('Replay Left.mp4')
 	
 	@staticmethod
 	def isCamAvailable():

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
@@ -115,9 +113,9 @@ class SettingsHolder(object):
 		del self.settingsPath
 		
 		with open(settingsPath, 'w') as f:
-			content = json.dump(self.__dict__, f, cls=MyEncoder, indent=4)
+			json.dump(self.__dict__, f, cls=MyEncoder, indent=4)
 		
 		self.settingsPath = settingsPath
 
-import main
-Settings = SettingsHolder(main.MainWin.getContent('settings.json'))
+from main import getContent
+Settings = SettingsHolder(getContent('settings.json'))

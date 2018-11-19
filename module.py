@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
 import logging
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QTime, QTimer, Qt
-from PyQt5.QtWidgets import QTableWidgetItem, QComboBox, QApplication
+from PyQt5.QtWidgets import QApplication, QWidget
 
-class Module(QtWidgets.QWidget):
+class Module(QWidget):
 	def __init__(self, parent, widget):
 		# UI Setup
-		QtWidgets.QWidget.__init__(self, parent)
+		QWidget.__init__(self, parent)
 		self.mainwin = parent
 		self.ui = widget
 		self.ui.setupUi(self)
@@ -29,11 +25,11 @@ class Module(QtWidgets.QWidget):
 		elif newmod_idx<0:
 			logging.error('Unknown panel {}'.format(new_type))
 		else:
-			# Unfocus the current module
+			# Unfocus the current module
 			if QApplication.focusWidget() != None:
 				QApplication.focusWidget().clearFocus()
 			
-			# Swap modules by unloading, changing the ui then loading
+			# Swap modules by unloading, changing the ui then loading
 			self.mainwin.modules[curmod_idx].unload()
 			self.mainwin.ui.panels.setCurrentIndex(newmod_idx)
 			self.mainwin.ui.panels.setFocusProxy(self.mainwin.modules[newmod_idx])

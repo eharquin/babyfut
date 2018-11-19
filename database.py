@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
-import logging
 import sqlite3
-
-from settings import Settings
 
 class DatabaseError(Exception):
 	pass
@@ -19,8 +14,8 @@ class Database():
 	
 	def __init__(self):
 		if not Database.__db:
-			from main import MainWin
-			db_path = MainWin.getContent('babyfut.sqlite')
+			from main import getContent
+			db_path = getContent('babyfut.sqlite')
 			self._connection = sqlite3.connect(db_path)
 	
 	@staticmethod
@@ -61,6 +56,7 @@ class Database():
 		self._connection.commit()
 
 	def select_all_rfid(self, debug=False):
+		from settings import Settings
 		if Settings['app.mode']=='prod':
 			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid>0').fetchall()
 		else:

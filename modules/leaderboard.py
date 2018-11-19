@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
@@ -10,7 +8,7 @@ import logging
 from operator import attrgetter
 
 from PyQt5.QtWidgets import QWidget, QDialog, QListWidgetItem
-from PyQt5.QtCore import QTime, Qt, QSize, QItemSelectionModel
+from PyQt5.QtCore import Qt, QItemSelectionModel
 
 import modules
 from module import Module
@@ -89,7 +87,7 @@ class LeaderboardModule(Module):
 			if key=='rfid' and self.deleteDialog and self.deleteDialog.check(val):
 				Database.instance().delete_player(self.deleteDialog.player.id)
 				
-				# Reset the dialog and the player list
+				# Reset the dialog and the player list
 				self.deleteDialog.close()
 				del self.deleteDialog
 				self.deleteDialog = None

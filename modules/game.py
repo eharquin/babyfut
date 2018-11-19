@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
@@ -12,7 +10,7 @@ import logging
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QRegion
-from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl, QEvent
+from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -87,7 +85,7 @@ class GameModule(Module):
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
 		
 		self.camera = None
-		self.player = None
+		self.video_player = None
 
 	def load(self):
 		logging.debug('Loading GameModule')
@@ -96,7 +94,7 @@ class GameModule(Module):
 		self.timerUpdateChrono.start(1000)
 		self.ui.lcdChrono.display(QTime(0,0).toString("hh:mm:ss"))
 
-		self.player = None
+		self.video_player = None
 		if self.camera:
 			self.camera.start_recording()
 
@@ -118,8 +116,8 @@ class GameModule(Module):
 	def unload(self):
 		logging.debug('Unloading GameModule')
 		
-		del self.gameStartTime
 		self.timerUpdateChrono.stop()
+		self.gameStartTime = None
 		
 		if self.camera:
 			self.camera.stop_recording()
@@ -165,7 +163,7 @@ class GameModule(Module):
 		self.ui.lcdChrono.display(QTime(0,0).addSecs(self.getGameTime()).toString("hh:mm:ss"))
 
 		# Don't check scores while showing a replay to avoid closing the engame screen too soon
-		if not self.player:
+		if not self.video_player:
 			self.checkEndGame()
 
 	def getGameTime(self):
@@ -192,14 +190,16 @@ class GameModule(Module):
 				replayFile = ''
 
 			if replayFile and os.path.exists(replayFile):
-				self.player = ReplayPlayer(self)
-				self.player.start_replay(replayFile)
+				self.video_player = ReplayPlayer(self)
+				self.video_player.start_replay(replayFile)
 			else:
 				self.updateScores()
 
 	def endOfReplay(self):
-		self.player = None
-		self.updateScores()
+		self.video_player = None
+		
+		if self.gameStartTime:
+			self.updateScores()
 		
 		if self.camera:
 			self.camera.start_recording()
@@ -214,5 +214,5 @@ class GameModule(Module):
 			start_timestamp = int(QDateTime(QDate.currentDate(), self.gameStartTime).toMSecsSinceEpoch()/1000)
 			
 			self.send(modules.EndGameModule, players=self.players, winSide=winSide, scores=self.scores)
-			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime())
+			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self)
 			self.switchModule(modules.EndGameModule)
