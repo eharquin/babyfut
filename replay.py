@@ -74,6 +74,10 @@ class Replay(Thread):
 		self.cam.close()
 		self.stream.close()
 	
+	@classmethod
+	def Dummy(cls):
+		return MainWin.getContent('Replay Left.mp4')
+	
 	@staticmethod
 	def isCamAvailable():
 		return OnRasp # and other checks (ToDo)

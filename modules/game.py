@@ -10,8 +10,9 @@ import os
 import logging
 
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QRegion
-from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl
+from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl, QEvent
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -45,6 +46,34 @@ class GameOverChecker():
 		else:
 			return Side.Undef
 
+class ReplayHolder(QVideoWidget):
+	def __init__(self, mediaPlayer, parent):
+		super().__init__(parent)
+		self.mediaPlayer = mediaPlayer
+       
+	def keyPressEvent(self, e):
+		self.mediaPlayer.stop_replay(QMediaPlayer.StoppedState)
+                
+class ReplayPlayer(QMediaPlayer):
+	def __init__(self, parent):
+		super().__init__(parent, QMediaPlayer.VideoSurface)
+		self.stateChanged.connect(self.stop_replay)
+		self.setMuted(True)
+	
+	def start_replay(self, video_file):
+		self.setMedia(QMediaContent(QUrl.fromLocalFile(video_file)))
+		self._playerWidget = ReplayHolder(self, self.parent())
+		self.setVideoOutput(self._playerWidget)
+		
+		self.play()
+		self._playerWidget.setFullScreen(True)
+	
+	def stop_replay(self, status):
+		if status==QMediaPlayer.StoppedState:
+			self._playerWidget.setFullScreen(False);
+			self._playerWidget.setVisible(False);
+			self.parent().endOfReplay()
+			
 class GameModule(Module):
 	def __init__(self, parent=None):
 		super().__init__(parent, GameWidget())
@@ -57,7 +86,8 @@ class GameModule(Module):
 		self.ui.btnScore1.clicked.connect(lambda: self.goal(Side.Left))
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
 		
-		self.replayer = None
+		self.camera = None
+		self.player = None
 
 	def load(self):
 		logging.debug('Loading GameModule')
@@ -66,9 +96,9 @@ class GameModule(Module):
 		self.timerUpdateChrono.start(1000)
 		self.ui.lcdChrono.display(QTime(0,0).toString("hh:mm:ss"))
 
-		self.showingReplay = False
-		if self.replayer:
-			self.replayer.start_recording()
+		self.player = None
+		if self.camera:
+			self.camera.start_recording()
 
 		gameover_type = Settings['gameover.type']
 		gameover_value = Settings['gameover.value']
@@ -87,10 +117,12 @@ class GameModule(Module):
 
 	def unload(self):
 		logging.debug('Unloading GameModule')
+		
 		del self.gameStartTime
 		self.timerUpdateChrono.stop()
-		if self.replayer:
-			self.replayer.stop_recording()
+		
+		if self.camera:
+			self.camera.stop_recording()
 
 	def other(self, **kwargs):
 		logging.debug('Other GameModule')
@@ -104,8 +136,7 @@ class GameModule(Module):
 
 			elif key=='replayThread':
 				self.replayer = val
-                            
-
+	
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
 		btnDiameter = self.mainwin.width()*0.4
@@ -119,9 +150,13 @@ class GameModule(Module):
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
-			self.handleCancel()
+			ret = QMessageBox.question(self, 'Stop the match?', 'Do you really want to stop this match? It wont be saved.')
+			if ret == QMessageBox.Yes:
+				self.handleCancel()
+				
 		elif e.key() == Qt.Key_Left:
 			self.goal(Side.Left)
+			
 		elif e.key() == Qt.Key_Right:
 			self.goal(Side.Right)
 
@@ -130,7 +165,7 @@ class GameModule(Module):
 		self.ui.lcdChrono.display(QTime(0,0).addSecs(self.getGameTime()).toString("hh:mm:ss"))
 
 		# Don't check scores while showing a replay to avoid closing the engame screen too soon
-		if not self.showingReplay:
+		if not self.player:
 			self.checkEndGame()
 
 	def getGameTime(self):
@@ -149,30 +184,25 @@ class GameModule(Module):
 
 			# Show replay
 			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
-
-			
-			if self.replayer:
-				replayFile = self.replayer.stop_recording()
-
-			if not (self.replayer and Settings['replay.show'] and os.path.exists(replayFile)):
-				self.updateScores()
+			if self.camera:
+				replayFile = self.camera.stop_recording()
+			elif Settings['replay.debug']:
+				replayFile = Replay.Dummy()
 			else:
-				self.showingReplay = True
-				self.player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-				self.player.stateChanged.connect(self.endOfReplay)
-				self.player.setMuted(True)
-				self.player.setVideoOutput(self.ui.videoWidget)
-				self.player.setMedia(QMediaContent(QUrl.fromLocalFile(replayFile)))
-				self.player.play()
-				self.ui.videoWidget.setFullScreen(True)
+				replayFile = ''
 
-	def endOfReplay(self, status):
-		if status!=QMediaPlayer.PlayingState:
-			self.ui.videoWidget.setFullScreen(False);
-			self.showingReplay = False
-			self.updateScores()
-			if self.replayer:
-				self.replayer.start_recording()
+			if replayFile and os.path.exists(replayFile):
+				self.player = ReplayPlayer(self)
+				self.player.start_replay(replayFile)
+			else:
+				self.updateScores()
+
+	def endOfReplay(self):
+		self.player = None
+		self.updateScores()
+		
+		if self.camera:
+			self.camera.start_recording()
 
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)

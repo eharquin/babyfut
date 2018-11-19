@@ -49,8 +49,13 @@ class EndGameModule(Module):
 	def unload(self):
 		logging.debug('Unloading EndGameModule')
 		self.screenTimeout.stop()
+		
 		del self.players
+		del self.gameType 
 		del self.winSide
+		del self.scores
+		del self.start_time
+		del self.duration
 	
 	def other(self, **kwargs):
 		logging.debug('Other EndGameModule')
@@ -58,18 +63,16 @@ class EndGameModule(Module):
 		for key, val in kwargs.items():
 			if key=='players':
 				self.players = val
+			elif key=='gameType':
+				self.gameType = val
 			elif key=='winSide':
 				self.winSide = val
 			elif key=='scores':
 				self.scores = val
 			elif key=='start_time':
 				self.start_time = val
-				print('start_time {}'.format(val))
 			elif key=='duration':
 				self.duration = val
-				print('duration {}'.format(val))
-		#else:
-		#	raise ValueError('Unknown message identifier {}'.format(kwargs)
 	
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape or e.key() == Qt.Key_Return:
