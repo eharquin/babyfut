@@ -38,7 +38,6 @@ class LeaderboardItemWidget(QWidget):
 
 class DeleteDialog(QDialog):
 	def __init__(self, parent, player):
-		print('DeleteDialog {}'.format(player.name))
 		QDialog.__init__(self, parent)
 		self.ui = PlayerDeleteDialog()
 		self.ui.setupUi(self)
@@ -105,7 +104,7 @@ class LeaderboardModule(Module):
 		else:
 			self.players = Player.allPlayers()
 		
-		self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort]), reverse=True)
+		self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort]), reverse=(self.sortMethodAttr[self.selectedSort]!='lname'))
 		
 		for player in self.players:
 			item = QListWidgetItem()

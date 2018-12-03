@@ -8,7 +8,7 @@ import logging
 import pyautogui # PyPi library
 from threading import Thread
 
-from main import OnRasp
+from babyfut import OnRasp
 
 if OnRasp:
 	import RPi.GPIO as GPIO

@@ -117,5 +117,5 @@ class SettingsHolder(object):
 		
 		self.settingsPath = settingsPath
 
-from main import getContent
+from babyfut import getContent
 Settings = SettingsHolder(getContent('settings.json'))

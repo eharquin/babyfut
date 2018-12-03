@@ -14,7 +14,7 @@ class Database():
 	
 	def __init__(self):
 		if not Database.__db:
-			from main import getContent
+			from babyfut import getContent
 			db_path = getContent('babyfut.sqlite')
 			self._connection = sqlite3.connect(db_path)
 	

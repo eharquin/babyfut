@@ -6,7 +6,7 @@
 
 from threading import Thread, Event
 
-from main import getContent, OnRasp
+from babyfut import getContent, OnRasp
 from settings import Settings
 
 if OnRasp:

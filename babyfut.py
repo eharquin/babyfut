@@ -11,7 +11,7 @@ import sys
 import logging
 from os.path import dirname, abspath, join
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 def getContent(path):
 	contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
@@ -21,6 +21,7 @@ if __name__=='__main__':
 	from ui.mainwin import MainWin
 	from modules import GameModule
 	from player import Side
+	from settings import Settings
 	
 	from input import GPIOThread
 	from database import Database
@@ -31,6 +32,11 @@ if __name__=='__main__':
 		logging.basicConfig(level=logging.DEBUG)
 		
 		app = QtWidgets.QApplication(sys.argv)
+		lang = Settings['ui.language']
+		qtTranslator = QtCore.QTranslator()
+		if lang!='en' and qtTranslator.load("translations/babyfut_{}.qm".format(lang)):
+			app.installTranslator(qtTranslator)
+    
 		myapp = MainWin()
 		
 		if ReplayThread.isCamAvailable():

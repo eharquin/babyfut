@@ -4,3 +4,4 @@
 */*.log
 */*_ui.py
 */*_rc.py
+translations/*.qm
