@@ -12,11 +12,21 @@ import logging
 from os.path import dirname, abspath, join
 
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 def getContent(path):
 	contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
 	return join(contentFolder, path)
 	
+def getMainWin():
+	from ui.mainwin import MainWin
+	
+	# Global function to find the (open) QMainWindow in application
+	for widget in QApplication.instance().topLevelWidgets():
+		if isinstance(widget, QMainWindow):
+			return widget
+	return None
+
 if __name__=='__main__':
 	from ui.mainwin import MainWin
 	from modules import GameModule

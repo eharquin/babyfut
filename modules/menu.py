@@ -24,6 +24,7 @@ class MenuModule(Module):
 		self.ui.btnStartLeague.clicked.connect(lambda: self.switchModule(modules.AuthLeagueModule))
 		self.ui.btnLeaderboard.clicked.connect(lambda: self.switchModule(modules.LeaderboardModule))
 		self.ui.btnOptions.clicked.connect    (lambda: self.switchModule(modules.OptionsModule))
+		self.ui.btnPrivacy.clicked.connect    (lambda: self.switchModule(modules.PrivacyModule))
 
 	def load(self):
 		logging.debug('Loading MenuModule')

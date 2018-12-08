@@ -6,6 +6,8 @@
 
 import logging
 
+from PyQt5.QtCore import QCoreApplication
+
 from PyQt5.QtWidgets import QAbstractItemView
 from modules.auth import AuthModuleBase
 from ui.authleague_ui import Ui_Form as AuthLeagueWidget
@@ -37,7 +39,7 @@ class AuthLeagueModule(AuthModuleBase):
 		self.players = {Side.Left: l, Side.Right: l}
 	
 	def addPlayer(self, side, player):
-		_translate = QtCore.QCoreApplication.translate
+		_translate = QCoreApplication.translate
         
 		# Add the player if not already in the list
 		if all([p.id!=player.id for p in self.players[side]]):

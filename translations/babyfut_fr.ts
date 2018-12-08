@@ -3,25 +3,55 @@
 <context>
     <name>Dialog</name>
     <message>
-        <location filename="../ui/delete_dialog_ui.py" line="47"/>
+        <location filename="../ui/delete_dialog_ui.py" line="70"/>
         <source>Dialog</source>
         <translation>Supression</translation>
     </message>
     <message>
         <location filename="../ui/delete_dialog_ui.py" line="48"/>
         <source>Deleting {}&apos;s profile</source>
-        <translation>Supression du profil de {}</translation>
+        <translation type="obsolete">Supression du profil de {}</translation>
     </message>
     <message>
         <location filename="../ui/delete_dialog_ui.py" line="49"/>
         <source>Pass your badge to validate this...</source>
-        <translation>Passez votre badge pour valider la supression...</translation>
+        <translation type="obsolete">Passez votre badge pour valider la supression...</translation>
+    </message>
+    <message>
+        <location filename="../ui/consent_dialog_ui.py" line="39"/>
+        <source>Consent Approval Needed</source>
+        <translation>Validation de Consentement</translation>
+    </message>
+    <message>
+        <location filename="../ui/delete_dialog_ui.py" line="71"/>
+        <source>Changing {}&apos;s profile</source>
+        <translation>Modification du profile de {}</translation>
+    </message>
+    <message>
+        <location filename="../ui/delete_dialog_ui.py" line="72"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Select an option&lt;br/&gt;then validate by passing your badge on the table&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Choisissez une option&lt;br/&gt;et validez en passant votre carte sur la table&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../ui/delete_dialog_ui.py" line="73"/>
+        <source>Delete all records</source>
+        <translation>Supprimer toutes les données</translation>
+    </message>
+    <message>
+        <location filename="../ui/delete_dialog_ui.py" line="74"/>
+        <source>Remove the Picture</source>
+        <translation>Suprrimer la photo</translation>
+    </message>
+    <message>
+        <location filename="../ui/delete_dialog_ui.py" line="75"/>
+        <source>Make the accout private</source>
+        <translation>Rendre privé</translation>
     </message>
 </context>
 <context>
     <name>Form</name>
     <message>
-        <location filename="../ui/playerlist_ui.py" line="94"/>
+        <location filename="../ui/privacy_ui.py" line="52"/>
         <source>Form</source>
         <translation>Form</translation>
     </message>
@@ -81,7 +111,7 @@
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../ui/menu_ui.py" line="122"/>
+        <location filename="../ui/menu_ui.py" line="137"/>
         <source>Leaderboard</source>
         <translation>Classements</translation>
     </message>
@@ -116,17 +146,17 @@
         <translation>Sauter à</translation>
     </message>
     <message>
-        <location filename="../ui/menu_ui.py" line="119"/>
+        <location filename="../ui/menu_ui.py" line="134"/>
         <source>Babyf&apos; UT</source>
         <translation>Babyf&apos;UT</translation>
     </message>
     <message>
-        <location filename="../ui/menu_ui.py" line="120"/>
+        <location filename="../ui/menu_ui.py" line="135"/>
         <source>Start Quick Game</source>
         <translation>Partie Rapide</translation>
     </message>
     <message>
-        <location filename="../ui/menu_ui.py" line="121"/>
+        <location filename="../ui/menu_ui.py" line="136"/>
         <source>Start League Mode</source>
         <translation>Championnat</translation>
     </message>
@@ -210,6 +240,11 @@
         <source>#### Minutes Played</source>
         <translation>#### Minutes Jouées</translation>
     </message>
+    <message>
+        <location filename="../ui/privacy_ui.py" line="53"/>
+        <source>Privacy</source>
+        <translation>Vie Privée</translation>
+    </message>
     <message encoding="UTF-8">
         <location filename="../ui/options_ui.py" line="229"/>
         <source>Français</source>
@@ -237,6 +272,45 @@
         <location filename="../ui/main_ui.py" line="83"/>
         <source>Babyfoot</source>
         <translation>Babyf&apos;UT</translation>
+    </message>
+</context>
+<context>
+    <name>consent</name>
+    <message>
+        <location filename="../player.py" line="36"/>
+        <source>&lt;p&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>You are about to connect yourself for the first time. We will need to access:
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;ul&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Name and Surname&lt;/li&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Picture (if public)&lt;/li&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;...&lt;/li&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;/ul&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;/p&gt; 
+
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>It is possible to play withtout connecting yourslef, but this will allow you to keep track of your score and to provide a better experience for you and the ones you play with!
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;br/&gt;&lt;br/&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>Do you agree with this?
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../modules/privacy.py" line="18"/>
+        <source>&lt;p&gt;
+<byte value="x9"/><byte value="x9"/>This software uses personnal information in accordance to GDPR, such as:
+<byte value="x9"/><byte value="x9"/>&lt;ul&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Name and Surname&lt;/li&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Picture (if public)&lt;/li&gt;
+<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;...&lt;/li&gt;
+<byte value="x9"/><byte value="x9"/>&lt;/ul&gt;
+<byte value="x9"/><byte value="x9"/>&lt;/p&gt; 
+
+<byte value="x9"/><byte value="x9"/>&lt;p&gt;
+<byte value="x9"/><byte value="x9"/>That way players can keep track of their score and compare it with others.
+<byte value="x9"/><byte value="x9"/>&lt;br/&gt;
+<byte value="x9"/><byte value="x9"/>yada yada
+<byte value="x9"/><byte value="x9"/>&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -34,7 +34,8 @@ class MainWin(QtWidgets.QMainWindow):
 			modules.GameModule(self),
 			modules.EndGameModule(self),
 			modules.LeaderboardModule(self),
-			modules.OptionsModule(self)
+			modules.OptionsModule(self),
+			modules.PrivacyModule(self)
 		]
 		
 		for mod in self.modules:

@@ -7,8 +7,13 @@ Created on Wed Apr 18 18:34:40 2018
 """
 
 import logging
-
 from enum import Enum
+from database import Database, DatabaseError
+
+from PyQt5.QtCore import Qt, QCoreApplication
+from PyQt5.QtWidgets import QDialog
+
+from ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
 class Side(Enum):
 	'''
@@ -22,14 +27,41 @@ class Side(Enum):
 	def opposite(self):
 		return Side.Right if self==Side.Left else Side.Left 
 
-from database import Database, DatabaseError
+class ConsentDialog(QDialog):
+	def __init__(self, parent):
+		QDialog.__init__(self, parent)
+		self.ui = ConsentDialogUI()
+		self.ui.setupUi(self)
+		
+		self.ui.txtConsent.setHtml(QCoreApplication.translate('consent', '''<p>
+			You are about to connect yourself for the first time. We will need to access:
+			<ul>
+				<li>Your Name and Surname</li>
+				<li>Your Picture (if public)</li>
+				<li>...</li>
+			</ul>
+			</p> 
 
+			<p>
+			It is possible to play withtout connecting yourslef, but this will allow you to keep track of your score and to provide a better experience for you and the ones you play with!
+			<br/><br/>
+			Do you agree with this?
+			</p>'''))
+		
+	def keyPressEvent(self, e):
+		if e.key()==Qt.Key_Return:
+			self.accept()
+		else:
+			self.reject()
+		
 class Player():
 	__query_infos = 'SELECT id, fname, lname, pic FROM Players WHERE rfid==?'
 	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
+	
+	_first_time = True # Debug
 	
 	def __init__(self, id, rfid, fname, lname, pic_path, stats):
 		self.id = id
@@ -46,6 +78,16 @@ class Player():
 		try:
 			# Retrieve generic informations
 			id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
+			
+			# Ask for consent
+			if rfid==-2 and Player._first_time:
+				import babyfut
+				consentDialog = ConsentDialog(babyfut.getMainWin())
+				consentDialog.exec()
+				
+				if not consentDialog.result()==QDialog.Accepted:
+					Player._first_time = False
+					return PlayerGuest
 			
 			# Retrieve stats
 			stats = {}
@@ -91,7 +133,7 @@ class Player():
 		return Stat(self.stats)
 	
 	@staticmethod
-	def allPlayers():
+	def allStoredPlayers():
 		return [Player.fromRFID(rfid) for rfid, in Database.instance().select_all_rfid()]
 
 PlayerGuest = Player.fromRFID(-1)

@@ -17,10 +17,12 @@ case "$1" in
 		pyuic5 --import-from=ui ui/authquick.ui   -o ui/authquick_ui.py
 		pyuic5 --import-from=ui ui/authleague.ui  -o ui/authleague_ui.py
 		pyuic5 --import-from=ui ui/leaderboard.ui -o ui/leaderboard_ui.py
+		pyuic5 --import-from=ui ui/privacy.ui     -o ui/privacy_ui.py
 
 		echo "	Custom Widgets"
-		pyuic5 --import-from=ui ui/playerlist.ui    -o ui/playerlist_ui.py
-		pyuic5 --import-from=ui ui/delete_dialog.ui -o ui/delete_dialog_ui.py
+		pyuic5 --import-from=ui ui/playerlist.ui     -o ui/playerlist_ui.py
+		pyuic5 --import-from=ui ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
+		pyuic5 --import-from=ui ui/consent_dialog.ui -o ui/consent_dialog_ui.py
 		
 		echo "	Resources"
 		pyrcc5 -root /ui        ui/assets.qrc     -o ui/assets_rc.py

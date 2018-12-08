@@ -5,6 +5,7 @@
 """
 
 import logging
+from enum import Enum
 from operator import attrgetter
 
 from PyQt5.QtWidgets import QWidget, QDialog, QListWidgetItem
@@ -37,6 +38,11 @@ class LeaderboardItemWidget(QWidget):
 		self.ui.pushButton.clicked.connect(lambda: logging.debug('clicked'))
 
 class DeleteDialog(QDialog):
+	class Actions(Enum):
+		DeleteAll     = 0
+		DeletePicture = 1
+		HideAccount   = 2
+	
 	def __init__(self, parent, player):
 		QDialog.__init__(self, parent)
 		self.ui = PlayerDeleteDialog()
@@ -47,11 +53,25 @@ class DeleteDialog(QDialog):
 	def check(self, rfid):
 		return rfid == -self.player.id
 	
-	# Debug
+	def action(self):
+		dict_actions = {
+			self.ui.rbDeleteAll:     DeleteDialog.Actions.DeleteAll,
+			self.ui.rbDeletePicture: DeleteDialog.Actions.DeletePicture,
+			self.ui.rbHideAccount:   DeleteDialog.Actions.HideAccount
+		}
+		
+		for key, val in dict_actions.items():
+			if key.isChecked():
+				return val
+		return None
+	
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Return:
+			# Debug
 			self.parent().send(modules.LeaderboardModule, rfid=self.player.rfid, source=Side.Right)
-	
+		elif e.key() == Qt.Key_Escape:
+			self.reject()
+
 class LeaderboardModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, LeaderboardWidget())
@@ -84,7 +104,16 @@ class LeaderboardModule(Module):
 		
 		for key, val in kwargs.items():
 			if key=='rfid' and self.deleteDialog and self.deleteDialog.check(val):
-				Database.instance().delete_player(self.deleteDialog.player.id)
+				# Do something corresponding to the selected action
+				action = self.deleteDialog.action()
+				if action==DeleteDialog.Actions.DeleteAll:
+					Database.instance().delete_player(self.deleteDialog.player.id)
+				elif action==DeleteDialog.Actions.DeletePicture:
+					logging.error('Unimplemented action: delete picture')
+				elif action==DeleteDialog.Actions.HideAccount:
+					logging.error('Unimplemented action: Hide account')
+				else:
+					logging.error('Unknown action {}'.format(action))
 				
 				# Reset the dialog and the player list
 				self.deleteDialog.close()
@@ -102,7 +131,7 @@ class LeaderboardModule(Module):
 		if self.players:
 			self.ui.listWidget.clear()
 		else:
-			self.players = Player.allPlayers()
+			self.players = Player.allStoredPlayers()
 		
 		self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort]), reverse=(self.sortMethodAttr[self.selectedSort]!='lname'))
 		
