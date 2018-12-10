@@ -5,20 +5,28 @@
 """
 
 import os
+from os.path import join, dirname, abspath
+import logging
 OnRasp = os.uname()[1] == 'raspberrypi'
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
-from PyQt5.QtCore import QTime, Qt
+from PyQt5.QtCore import Qt, QTime, QTranslator
 
-from Babyfut.ui.main_ui import Ui_MainWindow
 from Babyfut import modules
+from Babyfut.ui.main_ui import Ui_MainWindow
+from Babyfut.core.settings import Settings
 
 class MainWin(QtWidgets.QMainWindow):
+	DEFAULT_LANG = 'en'
+	TR_PATH = join(dirname(dirname(abspath(__file__))), 'translations/')
+
 	def __init__(self, parent=None):
 		QtWidgets.QWidget.__init__(self, parent)
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
+		self.lang = MainWin.DEFAULT_LANG
+		self._retranslateUI()
 
 		#Background blur
 		bgBlur = QGraphicsBlurEffect()
@@ -73,11 +81,34 @@ class MainWin(QtWidgets.QMainWindow):
 			self.modules[modIdx].other(**msg)
 
 	def _loadSettings(self):
-		from Babyfut.core.settings import Settings
-
 		if Settings['ui.fullscreen']:
 			self.showFullScreen()
 			QApplication.setOverrideCursor(Qt.BlankCursor);
 		else:
 			self.showNormal()
 			QApplication.setOverrideCursor(Qt.ArrowCursor);
+
+		self._retranslateUI()
+
+	def _retranslateUI(self):
+		app = QApplication.instance()
+		oldlang = self.lang
+		newlang = Settings['ui.language']
+
+		if newlang==oldlang:
+			pass # Nothing to do
+
+		elif newlang!=MainWin.DEFAULT_LANG:
+			self.translator = QTranslator()
+			if self.translator.load("babyfut_{}".format(newlang), MainWin.TR_PATH):
+				logging.info('Installing \'{}\''.format(newlang))
+				app.installTranslator(self.translator)
+			else:
+				logging.warn('Could not open translation file for \'{}\' in path "{}"'.format(newlang, MainWin.TR_PATH))
+
+		elif newlang==MainWin.DEFAULT_LANG:
+			logging.info('Installing language \'{}\''.format(newlang))
+			app.removeTranslator(self.translator)
+			self.translator = None
+
+		self.lang = newlang

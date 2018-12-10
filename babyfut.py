@@ -11,7 +11,7 @@ import sys
 import logging
 from os.path import dirname, abspath, join
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 def getContent(path):
@@ -28,11 +28,10 @@ def getMainWin():
 	return None
 
 if __name__=='__main__':
-	print(__package__)
+	__package__ = 'Babyfut'
 	from Babyfut.ui.mainwin import MainWin
 	from Babyfut.modules import GameModule
 	from Babyfut.core.player import Side
-	from Babyfut.core.settings import Settings
 	from Babyfut.core.input import GPIOThread
 	from Babyfut.core.database import Database
 	from Babyfut.core.replay import Replay as ReplayThread
@@ -41,12 +40,7 @@ if __name__=='__main__':
 		#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
 		logging.basicConfig(level=logging.DEBUG)
 
-		app = QtWidgets.QApplication(sys.argv)
-		lang = Settings['ui.language']
-		qtTranslator = QtCore.QTranslator()
-		if lang!='en' and qtTranslator.load("translations/babyfut_{}.qm".format(lang)):
-			app.installTranslator(qtTranslator)
-
+		app = QApplication(sys.argv)
 		myapp = MainWin()
 
 		if ReplayThread.isCamAvailable():

@@ -245,6 +245,21 @@
         <source>Privacy</source>
         <translation>Vie Privée</translation>
     </message>
+    <message>
+        <location filename="../modules/authleague.py" line="51"/>
+        <source>{} Victories</source>
+        <translation>{} Victoires</translation>
+    </message>
+    <message>
+        <location filename="../modules/authleague.py" line="52"/>
+        <source>{} Games Played</source>
+        <translation>{} Parties Jouées</translation>
+    </message>
+    <message>
+        <location filename="../modules/authleague.py" line="53"/>
+        <source>{} Goals Scored</source>
+        <translation>{} Buts Marqués</translation>
+    </message>
     <message encoding="UTF-8">
         <location filename="../ui/options_ui.py" line="229"/>
         <source>Français</source>
@@ -285,7 +300,7 @@
 <byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Picture (if public)&lt;/li&gt;
 <byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;...&lt;/li&gt;
 <byte value="x9"/><byte value="x9"/>&lt;/ul&gt;
-<byte value="x9"/><byte value="x9"/>&lt;/p&gt; 
+<byte value="x9"/><byte value="x9"/>&lt;/p&gt;
 
 <byte value="x9"/><byte value="x9"/>&lt;p&gt;
 <byte value="x9"/><byte value="x9"/>That way players can keep track of their score and compare it with others.

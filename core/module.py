@@ -15,11 +15,11 @@ class Module(QWidget):
 		self.mainwin = parent
 		self.ui = widget
 		self.ui.setupUi(self)
-	
+
 	def switchModule(self, new_type):
 		curmod_idx = self.mainwin.findMod(type(self))
 		newmod_idx = self.mainwin.findMod(new_type)
-		
+
 		if curmod_idx<0:
 			logging.error('Unknown panel {}'.format(type(self)))
 		elif newmod_idx<0:
@@ -28,26 +28,27 @@ class Module(QWidget):
 			# Unfocus the current module
 			if QApplication.focusWidget() != None:
 				QApplication.focusWidget().clearFocus()
-			
+
 			# Swap modules by unloading, changing the ui then loading
 			self.mainwin.modules[curmod_idx].unload()
 			self.mainwin.ui.panels.setCurrentIndex(newmod_idx)
 			self.mainwin.ui.panels.setFocusProxy(self.mainwin.modules[newmod_idx])
 			self.mainwin.modules[newmod_idx].setFocus()
-			
+
 			# Select first element of the Module
 			self.mainwin.modules[newmod_idx].focusNextChild()
 			self.mainwin.modules[newmod_idx].focusPreviousChild()
+			self.mainwin.modules[newmod_idx].ui.retranslateUi(self.mainwin)
 			self.mainwin.modules[newmod_idx].load()
 
 	def send(self, to, **kwargs):
 		mod_idx = self.mainwin.findMod(to)
-		
+
 		if mod_idx<0:
 			logging.error('Unknown panel {}'.format(to))
 		else:
 			self.mainwin.modules[mod_idx].other(**kwargs)
-	
+
 	def load(self):
 		logging.warning('Unimplemented method "load" for {}'.format(self.__class__))
 
