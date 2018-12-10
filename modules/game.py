@@ -14,12 +14,12 @@ from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
-from player import Side, PlayerGuest
-from replay import Replay
-from module import Module
-from settings import Settings
-import modules
-from ui.game_ui import Ui_Form as GameWidget
+from Babyfut import modules
+from Babyfut.core.player import Side, PlayerGuest
+from Babyfut.core.replay import Replay
+from Babyfut.core.module import Module
+from Babyfut.core.settings import Settings
+from Babyfut.ui.game_ui import Ui_Form as GameWidget
 
 class GameOverChecker():
 	def __init__(self, conditionType, limit):
@@ -48,30 +48,30 @@ class ReplayHolder(QVideoWidget):
 	def __init__(self, mediaPlayer, parent):
 		super().__init__(parent)
 		self.mediaPlayer = mediaPlayer
-       
+
 	def keyPressEvent(self, e):
 		self.mediaPlayer.stop_replay(QMediaPlayer.StoppedState)
-                
+
 class ReplayPlayer(QMediaPlayer):
 	def __init__(self, parent):
 		super().__init__(parent, QMediaPlayer.VideoSurface)
 		self.stateChanged.connect(self.stop_replay)
 		self.setMuted(True)
-	
+
 	def start_replay(self, video_file):
 		self.setMedia(QMediaContent(QUrl.fromLocalFile(video_file)))
 		self._playerWidget = ReplayHolder(self, self.parent())
 		self.setVideoOutput(self._playerWidget)
-		
+
 		self.play()
 		self._playerWidget.setFullScreen(True)
-	
+
 	def stop_replay(self, status):
 		if status==QMediaPlayer.StoppedState:
 			self._playerWidget.setFullScreen(False);
 			self._playerWidget.setVisible(False);
 			self.parent().endOfReplay()
-			
+
 class GameModule(Module):
 	def __init__(self, parent=None):
 		super().__init__(parent, GameWidget())
@@ -83,7 +83,7 @@ class GameModule(Module):
 		# Button connections
 		self.ui.btnScore1.clicked.connect(lambda: self.goal(Side.Left))
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
-		
+
 		self.camera = None
 		self.video_player = None
 
@@ -115,10 +115,10 @@ class GameModule(Module):
 
 	def unload(self):
 		logging.debug('Unloading GameModule')
-		
+
 		self.timerUpdateChrono.stop()
 		self.gameStartTime = None
-		
+
 		if self.camera:
 			self.camera.stop_recording()
 
@@ -134,7 +134,7 @@ class GameModule(Module):
 
 			elif key=='replayThread':
 				self.replayer = val
-	
+
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
 		btnDiameter = self.mainwin.width()*0.4
@@ -151,10 +151,10 @@ class GameModule(Module):
 			ret = QMessageBox.question(self, 'Stop the match?', 'Do you really want to stop this match? It wont be saved.')
 			if ret == QMessageBox.Yes:
 				self.handleCancel()
-				
+
 		elif e.key() == Qt.Key_Left:
 			self.goal(Side.Left)
-			
+
 		elif e.key() == Qt.Key_Right:
 			self.goal(Side.Right)
 
@@ -197,10 +197,10 @@ class GameModule(Module):
 
 	def endOfReplay(self):
 		self.video_player = None
-		
+
 		if self.gameStartTime:
 			self.updateScores()
-		
+
 		if self.camera:
 			self.camera.start_recording()
 
@@ -212,7 +212,7 @@ class GameModule(Module):
 
 		if winSide!=Side.Undef:
 			start_timestamp = int(QDateTime(QDate.currentDate(), self.gameStartTime).toMSecsSinceEpoch()/1000)
-			
+
 			self.send(modules.EndGameModule, players=self.players, winSide=winSide, scores=self.scores)
 			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self)
 			self.switchModule(modules.EndGameModule)

@@ -8,9 +8,9 @@ import logging
 
 from PyQt5.QtCore import Qt, QCoreApplication
 
-from module import Module
-import modules
-from ui.privacy_ui import Ui_Form as PrivacyWidget
+from Babyfut import modules
+from Babyfut.core.module import Module
+from Babyfut.ui.privacy_ui import Ui_Form as PrivacyWidget
 
 class PrivacyModule(Module):
 	def __init__(self, parent):
@@ -22,7 +22,7 @@ class PrivacyModule(Module):
 			<li>Your Picture (if public)</li>
 			<li>...</li>
 		</ul>
-		</p> 
+		</p>
 
 		<p>
 		That way players can keep track of their score and compare it with others.
@@ -35,15 +35,15 @@ class PrivacyModule(Module):
 
 	def unload(self):
 		logging.debug('Unloading PrivacyModule')
-	
+
 	def other(self, **kwargs):
 		logging.debug('Other PrivacyModule')
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
 			self.handleBack()
-		
+
 		super().keyPressEvent(e)
-			
+
 	def handleBack(self):
 		self.switchModule(modules.MenuModule)

@@ -6,8 +6,8 @@
 
 from threading import Thread, Event
 
-from babyfut import getContent, OnRasp
-from settings import Settings
+from Babyfut.babyfut import getContent, OnRasp
+from Babyfut.core.settings import Settings
 
 if OnRasp:
 	import picamera
@@ -17,7 +17,7 @@ class Replay(Thread):
 		Thread.__init__(self)
 		self.replayPath = getContent('Replay {}.mp4'.format(side.name))
 		self.shutdown = False
-		
+
 		self.start_flag = Event()
 		self.stop_flag = Event()
 		self.stopped_flag = Event()
@@ -33,12 +33,12 @@ class Replay(Thread):
 	def start_recording(self):
 		if OnRasp:
 			self.start_flag.set()
-			
+
 	def stop_recording(self):
 		if OnRasp:
 			self.stop_flag.set()
 			self.stopped_flag.wait()
-			
+
             # Clear all control flags
 			self.stop_flag.clear()
 			self.start_flag.clear()
@@ -49,20 +49,20 @@ class Replay(Thread):
 	def stop(self):
 		self.start_flag.set()
 		self.shutdown = True
-	
+
 	def run(self):
 		while not self.shutdown:
 			self.start_flag.wait()
-		
+
 			if not self.shutdown:
 				self.cam.start_recording(self.stream, Settings['picam.format'])
 				try:
 					while not self.stop_flag.is_set():
 						self.cam.wait_recording(1)
-				
+
 				finally	:
 					self.cam.stop_recording()
-    
+
 				self.stream.copy_to(self.replayPath)
 				self.stream.clear()
 
@@ -71,11 +71,11 @@ class Replay(Thread):
 
 		self.cam.close()
 		self.stream.close()
-	
+
 	@classmethod
 	def Dummy(cls):
 		return getContent('Replay Left.mp4')
-	
+
 	@staticmethod
 	def isCamAvailable():
 		return OnRasp # and other checks (ToDo)

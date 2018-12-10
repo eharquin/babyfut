@@ -8,12 +8,11 @@ import logging
 import pyautogui # PyPi library
 from threading import Thread
 
-from babyfut import OnRasp
+from Babyfut.babyfut import OnRasp
+from Babyfut.core.player import Side
 
 if OnRasp:
 	import RPi.GPIO as GPIO
-
-from player import Side
 
 class GPIOThread(Thread):
 	_keyButtonBindings = {
@@ -29,7 +28,7 @@ class GPIOThread(Thread):
 		Thread.__init__(self)
 		self.dispatcher = dispatcher
 		self.continueRunning = True
-		
+
 		if OnRasp:
 			GPIO.setwarnings(False)
 			GPIO.setmode(GPIO.BCM)
@@ -54,10 +53,10 @@ class GPIOThread(Thread):
 			key = GPIOThread._keyButtonBindings[button_pin]
 			logging.debug('Sending {} as {}'.format(button_pin, key))
 			pyautogui.press(key)
-	
+
 	def stop(self):
 		self.continueRunning = False
-	
+
 	@staticmethod
 	def clean():
 		if OnRasp:

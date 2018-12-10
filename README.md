@@ -13,7 +13,7 @@ The UI is done with PyQt5.
 * Make sure to have Python>3.5 installed (`sudo apt-get install python3` otherwise)
 * Make sure to have PyQt5 installed (`sudo pip install pyqt5` otherwise)
 * Compile the .ui and .rc files: `./devtools.sh ui`
-* Execute main.py: `python3 babyfut.py`
+* Execute the software: `./devtools.sh exec`
 
 ## Edit the UI
 The UI is mostly created using Qt-Designer:

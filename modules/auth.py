@@ -8,9 +8,9 @@ import logging
 
 from PyQt5.QtCore import Qt
 
-import modules
-from module import Module
-from player import Side, Player
+from Babyfut import modules
+from Babyfut.core.module import Module
+from Babyfut.core.player import Side, Player
 
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):
@@ -20,12 +20,12 @@ class AuthModuleBase(Module):
 
 	def load(self):
 		pass
-		
+
 	def unload(self):
 		self.createPlayerList()
 		self.numPlayers = 0
 
-	def other(self, **kwargs):		
+	def other(self, **kwargs):
 		for key, val in kwargs.items():
 			if key=='rfid' and 'source' in kwargs:
 				side = kwargs['source']
@@ -35,10 +35,10 @@ class AuthModuleBase(Module):
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
 			self.handleCancel()
-			
+
 		elif e.key() == Qt.Key_Return:
 			self.handleDone()
-			
+
 		elif e.key() == Qt.Key_Left or e.key() == Qt.Key_Right:
 			side = Side.Left if e.key() == Qt.Key_Left else Side.Right
 			rfid = -(2 + self.numPlayers%5)
@@ -46,7 +46,7 @@ class AuthModuleBase(Module):
 
 	def createPlayerList(self):
 		logging.warning('Base function meant to be reimplemented')
-	
+
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)
 

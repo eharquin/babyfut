@@ -277,24 +277,6 @@
 <context>
     <name>consent</name>
     <message>
-        <location filename="../player.py" line="36"/>
-        <source>&lt;p&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>You are about to connect yourself for the first time. We will need to access:
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;ul&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Name and Surname&lt;/li&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;Your Picture (if public)&lt;/li&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;li&gt;...&lt;/li&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;/ul&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;/p&gt; 
-
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>It is possible to play withtout connecting yourslef, but this will allow you to keep track of your score and to provide a better experience for you and the ones you play with!
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;br/&gt;&lt;br/&gt;
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>Do you agree with this?
-<byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../modules/privacy.py" line="18"/>
         <source>&lt;p&gt;
 <byte value="x9"/><byte value="x9"/>This software uses personnal information in accordance to GDPR, such as:
