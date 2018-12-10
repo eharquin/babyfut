@@ -8,10 +8,10 @@ import logging
 import pyautogui # PyPi library
 from threading import Thread
 
-from Babyfut.babyfut import OnRasp
+from Babyfut.babyfut import ON_RASP
 from Babyfut.core.player import Side
 
-if OnRasp:
+if ON_RASP:
 	import RPi.GPIO as GPIO
 
 class GPIOThread(Thread):
@@ -29,7 +29,7 @@ class GPIOThread(Thread):
 		self.dispatcher = dispatcher
 		self.continueRunning = True
 
-		if OnRasp:
+		if ON_RASP:
 			GPIO.setwarnings(False)
 			GPIO.setmode(GPIO.BCM)
 
@@ -39,7 +39,7 @@ class GPIOThread(Thread):
 				GPIO.add_event_detect(pin, GPIO.RISING, callback=self.handleButtonPress)
 
 	def run(self):
-		if OnRasp:
+		if ON_RASP:
 			try:
 				while self.continueRunning:
 					pass
@@ -59,5 +59,5 @@ class GPIOThread(Thread):
 
 	@staticmethod
 	def clean():
-		if OnRasp:
+		if ON_RASP:
 			GPIO.cleanup()

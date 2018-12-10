@@ -8,16 +8,6 @@
         <translation>Supression</translation>
     </message>
     <message>
-        <location filename="../ui/delete_dialog_ui.py" line="48"/>
-        <source>Deleting {}&apos;s profile</source>
-        <translation type="obsolete">Supression du profil de {}</translation>
-    </message>
-    <message>
-        <location filename="../ui/delete_dialog_ui.py" line="49"/>
-        <source>Pass your badge to validate this...</source>
-        <translation type="obsolete">Passez votre badge pour valider la supression...</translation>
-    </message>
-    <message>
         <location filename="../ui/consent_dialog_ui.py" line="39"/>
         <source>Consent Approval Needed</source>
         <translation>Validation de Consentement</translation>
@@ -216,31 +206,6 @@
         <translation>Prénom</translation>
     </message>
     <message>
-        <location filename="../ui/options_ui.py" line="229"/>
-        <source>Fran&#xe7;ais</source>
-        <translation type="obsolete">Français</translation>
-    </message>
-    <message>
-        <location filename="../ui/playerlist_ui.py" line="97"/>
-        <source>####&#xa0;Victories</source>
-        <translation type="obsolete">#### Victoires</translation>
-    </message>
-    <message>
-        <location filename="../ui/playerlist_ui.py" line="98"/>
-        <source>####&#xa0;Goals Scored</source>
-        <translation type="obsolete">#### Buts Marqués</translation>
-    </message>
-    <message>
-        <location filename="../ui/playerlist_ui.py" line="99"/>
-        <source>####&#xa0;Games Played</source>
-        <translation type="obsolete">#### Parties Jouées</translation>
-    </message>
-    <message>
-        <location filename="../ui/playerlist_ui.py" line="100"/>
-        <source>#### Minutes Played</source>
-        <translation>#### Minutes Jouées</translation>
-    </message>
-    <message>
         <location filename="../ui/privacy_ui.py" line="53"/>
         <source>Privacy</source>
         <translation>Vie Privée</translation>
@@ -260,24 +225,38 @@
         <source>{} Goals Scored</source>
         <translation>{} Buts Marqués</translation>
     </message>
+    <message>
+        <location filename="../ui/playerlist_ui.py" line="97"/>
+        <source>{} Victories</source>
+        <comment>Form</comment>
+        <translation>{} Victoires</translation>
+    </message>
+    <message>
+        <location filename="../ui/playerlist_ui.py" line="98"/>
+        <source>{} Goals Scored</source>
+        <comment>Form</comment>
+        <translation>{} Buts Marqués</translation>
+    </message>
+    <message>
+        <location filename="../ui/playerlist_ui.py" line="99"/>
+        <source>{} Games Played</source>
+        <comment>Form</comment>
+        <translation>{} Parties Jouées</translation>
+    </message>
+    <message>
+        <location filename="../ui/playerlist_ui.py" line="100"/>
+        <source>{} Minutes Played</source>
+        <comment>Form</comment>
+        <translation>{} Minutes Jouées</translation>
+    </message>
+    <message>
+        <location filename="../ui/options_ui.py" line="229"/>
+        <source>Fran&#xe7;ais</source>
+        <translation type="obsolete">Français</translation>
+    </message>
     <message encoding="UTF-8">
         <location filename="../ui/options_ui.py" line="229"/>
         <source>Français</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="../ui/playerlist_ui.py" line="97"/>
-        <source>#### Victories</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="../ui/playerlist_ui.py" line="98"/>
-        <source>#### Goals Scored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="../ui/playerlist_ui.py" line="99"/>
-        <source>#### Games Played</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

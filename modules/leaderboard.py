@@ -29,12 +29,10 @@ class LeaderboardItemWidget(QWidget):
 		self.ui.lblFName.setText(player.fname)
 		self.ui.lblLName.setText(player.lname)
 
-		self.ui.lblVictories.setText    (self.ui.lblVictories.text().replace('####',     str(player.stats['victories'])))
-		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().replace('####',   str(player.stats['games_played'])))
-		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().replace('####',   str(player.stats['goals_scored'])))
-		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('####', str(player.stats['time_played'])))
-
-		self.ui.pushButton.clicked.connect(lambda: logging.debug('clicked'))
+		self.ui.lblVictories.setText    (self.ui.lblVictories.text().format(player.stats['victories']     ))
+		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().format(player.stats['games_played']  ))
+		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().format(player.stats['goals_scored']  ))
+		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('{}', '{0:.2f}').format(player.stats['time_played']/60))
 
 class DeleteDialog(QDialog):
 	class Actions(Enum):
@@ -50,7 +48,7 @@ class DeleteDialog(QDialog):
 		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(player.name))
 
 	def check(self, rfid):
-		return rfid == -self.player.id
+		return rfid == self.player.rfid
 
 	def action(self):
 		dict_actions = {
@@ -91,6 +89,7 @@ class LeaderboardModule(Module):
 
 	def load(self):
 		logging.debug('Loading LeaderboardModule')
+		self.selectedSort = 0
 		self.loadList()
 		self.setFocus()
 
@@ -109,9 +108,9 @@ class LeaderboardModule(Module):
 				if action==DeleteDialog.Actions.DeleteAll:
 					Database.instance().delete_player(self.deleteDialog.player.id)
 				elif action==DeleteDialog.Actions.DeletePicture:
-					logging.error('Unimplemented action: delete picture')
+					self.deleteDialog.player.forgetPicture()
 				elif action==DeleteDialog.Actions.HideAccount:
-					logging.error('Unimplemented action: Hide account')
+					self.deleteDialog.player.make_private()
 				else:
 					logging.error('Unknown action {}'.format(action))
 

@@ -6,10 +6,10 @@
 
 from threading import Thread, Event
 
-from Babyfut.babyfut import getContent, OnRasp
+from Babyfut.babyfut import getContent, ON_RASP
 from Babyfut.core.settings import Settings
 
-if OnRasp:
+if ON_RASP:
 	import picamera
 
 class Replay(Thread):
@@ -22,7 +22,7 @@ class Replay(Thread):
 		self.stop_flag = Event()
 		self.stopped_flag = Event()
 
-		if OnRasp:
+		if ON_RASP:
 			self.cam = picamera.PiCamera()
 			self.cam.resolution = Settings['picam.resolution']
 			self.cam.framerate = Settings['picam.fps']
@@ -31,11 +31,11 @@ class Replay(Thread):
 			self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
 
 	def start_recording(self):
-		if OnRasp:
+		if ON_RASP:
 			self.start_flag.set()
 
 	def stop_recording(self):
-		if OnRasp:
+		if ON_RASP:
 			self.stop_flag.set()
 			self.stopped_flag.wait()
 
@@ -78,4 +78,4 @@ class Replay(Thread):
 
 	@staticmethod
 	def isCamAvailable():
-		return OnRasp # and other checks (ToDo)
+		return ON_RASP # and other checks (ToDo)

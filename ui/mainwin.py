@@ -7,7 +7,6 @@
 import os
 from os.path import join, dirname, abspath
 import logging
-OnRasp = os.uname()[1] == 'raspberrypi'
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
@@ -27,6 +26,7 @@ class MainWin(QtWidgets.QMainWindow):
 		self.ui.setupUi(self)
 		self.lang = MainWin.DEFAULT_LANG
 		self._retranslateUI()
+		self.setWindowTitle('Babyfut')
 
 		#Background blur
 		bgBlur = QGraphicsBlurEffect()

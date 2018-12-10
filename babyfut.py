@@ -5,11 +5,10 @@
 """
 
 import os
-OnRasp = os.uname()[1] == 'raspberrypi'
-
+from os.path import dirname, abspath, join, exists
+import glob
 import sys
 import logging
-from os.path import dirname, abspath, join
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication
@@ -27,6 +26,9 @@ def getMainWin():
 			return widget
 	return None
 
+ON_RASP = os.uname()[1] == 'raspberrypi'
+IMG_PATH = getContent('img')
+
 if __name__=='__main__':
 	__package__ = 'Babyfut'
 	from Babyfut.ui.mainwin import MainWin
@@ -42,6 +44,9 @@ if __name__=='__main__':
 
 		app = QApplication(sys.argv)
 		myapp = MainWin()
+
+		if not exists(IMG_PATH):
+			 os.makedirs(IMG_PATH)
 
 		if ReplayThread.isCamAvailable():
 			threadReplay = ReplayThread(Side.Left)
@@ -65,3 +70,5 @@ if __name__=='__main__':
 	finally:
 		GPIOThread.clean()
 		Database.instance().close()
+		for f in glob.glob(join(IMG_PATH, '*')):
+			os.remove(f)

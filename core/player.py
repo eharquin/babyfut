@@ -62,8 +62,6 @@ class Player():
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 
-	_first_time = True # Debug
-
 	def __init__(self, id, rfid, fname, lname, pic_path, stats):
 		self.id = id
 		self.rfid = rfid
@@ -76,33 +74,37 @@ class Player():
 	def fromRFID(rfid):
 		db = Database.instance()
 
-		try:
-			# Retrieve generic informations
-			id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
+		if db.rfid_exists(rfid):
+			try:
+				# Retrieve generic informations
+				id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
 
+				# Retrieve stats
+				stats = {}
+				stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
+				stats['victories'], = db.select_one(Player.__query_victories, id)
+
+				for key, val in stats.items():
+					if val==None:
+						stats[key] = 0
+
+				return Player(id, rfid, fname, lname, pic, stats)
+
+			except DatabaseError as e:
+				logging.warn('DB Error: {}'.format(e))
+				return PlayerGuest
+
+		else:
+			### Retrieve player from API
 			# Ask for consent
-			if rfid==-2 and Player._first_time:
-				consentDialog = ConsentDialog(getMainWin())
-				consentDialog.exec()
+			consentDialog = ConsentDialog(getMainWin())
+			consentDialog.exec()
 
-				if not consentDialog.result()==QDialog.Accepted:
-					Player._first_time = False
-					return PlayerGuest
-
-			# Retrieve stats
-			stats = {}
-			stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
-			stats['victories'], = db.select_one(Player.__query_victories, id)
-
-			for key, val in stats.items():
-				if val==None:
-					stats[key] = 0
-
-			return Player(id, rfid, fname, lname, pic, stats)
-
-		except DatabaseError as e:
-			logging.warn('DB Error: {}'.format(e))
-			return PlayerGuest
+			if consentDialog.result()==QDialog.Accepted:
+				print('todo')
+				return PlayerGuest
+			else:
+				return PlayerGuest
 
 	def displayImg(self, container_widget):
 		self.pic_container = container_widget
@@ -110,6 +112,7 @@ class Player():
 		if self.pic_path.startswith('http'):
 			# Download from the internet
 			container_widget.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
+			# TODO DOWNLOAD
 		else:
 			# Already downloaded and stored locally
 			container_widget.setStyleSheet('border-image: url({});'.format(self.pic_path))
@@ -120,6 +123,14 @@ class Player():
 		'''
 		pass
 		# DONT SAVE PIC PATH, IT IS CHANGED FOR THE LOCAL PATH
+
+	def forgetPicture():
+		self.pic_path = Player._placeholder_pic_path
+		Database.instance().delete_playerpic(self.id)
+
+	def make_private():
+		self.private = True
+		Database.instance().make_player_private(self.id)
 
 	@property
 	def name(self):

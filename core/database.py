@@ -33,6 +33,9 @@ class Database():
 	def _cursor(self):
 		return self._connection.cursor()
 
+	def rfid_exists(self, rfid):
+		return bool(self._cursor.execute('SELECT rfid FROM Players WHERE rfid==?', (rfid,)).fetchone())
+
 	def select_one(self, query, *args):
 		res = self._cursor.execute(query, args).fetchone()
 		if not res:
@@ -58,12 +61,20 @@ class Database():
 	def select_all_rfid(self, debug=False):
 		from Babyfut.core.settings import Settings
 		if Settings['app.mode']=='prod':
-			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid>0').fetchall()
+			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid>0 AND private==0').fetchall()
 		else:
-			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid<-1').fetchall()
+			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid<-1 AND private==0').fetchall()
 
 	def delete_player(self, playerID):
 		self._cursor.execute('DELETE FROM Players WHERE id==?', (playerID,))
+		self._connection.commit()
+
+	def delete_playerpic(self, playerID):
+		self._cursor.execute('UPDATE Players SET pic=null WHERE id==?', (playerID,))
+		self._connection.commit()
+
+	def make_player_private(self, playerID):
+		self._cursor.execute('UPDATE Players SET private=1 WHERE id==?', (playerID,))
 		self._connection.commit()
 
 	def close(self):
