@@ -9,10 +9,11 @@ Created on Wed Apr 18 18:34:40 2018
 import logging
 from enum import Enum
 
-from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QDialog, QApplication
 
-from Babyfut.babyfut import getMainWin
+from Babyfut.babyfut import getMainWin, IMG_PATH
 from Babyfut.core.database import Database, DatabaseError
 from Babyfut.ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
@@ -55,7 +56,7 @@ class ConsentDialog(QDialog):
 		else:
 			self.reject()
 
-class Player():
+class Player(QObject):
 	__query_infos = 'SELECT id, fname, lname, pic FROM Players WHERE rfid==?'
 	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
@@ -111,11 +112,20 @@ class Player():
 
 		if self.pic_path.startswith('http'):
 			# Download from the internet
-			container_widget.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
-			# TODO DOWNLOAD
+			self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
+			Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
+			Downloader.instance().finished.connect(self._downloader_callback)
 		else:
 			# Already downloaded and stored locally
-			container_widget.setStyleSheet('border-image: url({});'.format(self.pic_path))
+			self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
+			self._forceWidgetUpdate()
+			QApplication.processEvents()
+
+	@pyqtSlot(str)
+	def _downloader_callback(self, path):
+		self.pic_path = path
+		Downloader.instance().finished.disconnect(self._downloader_callback)
+		self.displayImg(self.pic_container)
 
 	def save(self):
 		'''

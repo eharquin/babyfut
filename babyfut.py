@@ -35,6 +35,7 @@ if __name__=='__main__':
 	from Babyfut.modules import GameModule
 	from Babyfut.core.player import Side
 	from Babyfut.core.input import GPIOThread
+	from Babyfut.core.downloader import Downloader
 	from Babyfut.core.database import Database
 	from Babyfut.core.replay import Replay as ReplayThread
 
@@ -56,9 +57,13 @@ if __name__=='__main__':
 		threadGPIO = GPIOThread(myapp)
 		threadGPIO.start()
 
+		threadDownloader = Downloader.instance()
+		threadDownloader.start()
+
 		myapp.show()
 		app.exec_()
 
+		threadDownloader.stop()
 		threadGPIO.stop()
 
 		if ReplayThread.isCamAvailable():
@@ -66,6 +71,7 @@ if __name__=='__main__':
 			threadReplay.join()
 
 		threadGPIO.join()
+		threadDownloader.join()
 
 	finally:
 		GPIOThread.clean()

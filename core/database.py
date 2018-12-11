@@ -6,6 +6,8 @@
 
 import sqlite3
 
+from Babyfut.babyfut import getContent
+
 class DatabaseError(Exception):
 	pass
 
@@ -14,7 +16,6 @@ class Database():
 
 	def __init__(self):
 		if not Database.__db:
-			from Babyfut.babyfut import getContent
 			db_path = getContent('babyfut.sqlite')
 			self._connection = sqlite3.connect(db_path)
 
@@ -23,7 +24,6 @@ class Database():
 		'''
 		Singleton
 		'''
-
 		if not Database.__db:
 			Database.__db = Database()
 
