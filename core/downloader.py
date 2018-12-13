@@ -16,7 +16,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
 class Downloader(Thread, QObject):
 	'''
-	Helper for downloading images with the help of queues
+	Helper for downloading images using queues
 	'''
 
 	N_ATTEMPS = 5

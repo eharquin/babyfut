@@ -28,6 +28,7 @@ def getMainWin():
 
 ON_RASP = os.uname()[1] == 'raspberrypi'
 IMG_PATH = getContent('img')
+SIDE = None
 
 if __name__=='__main__':
 	__package__ = 'Babyfut'
@@ -40,6 +41,7 @@ if __name__=='__main__':
 	from Babyfut.core.replay import Replay as ReplayThread
 
 	try:
+		SIDE = Side.Left
 		#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
 		logging.basicConfig(level=logging.DEBUG)
 
@@ -54,7 +56,8 @@ if __name__=='__main__':
 			threadReplay.start()
 			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
 
-		threadGPIO = GPIOThread(myapp)
+		threadGPIO = GPIOThread()
+		threadGPIO.rfidReceived.connect(myapp.rfidHandler)
 		threadGPIO.start()
 
 		threadDownloader = Downloader.instance()

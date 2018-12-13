@@ -59,12 +59,12 @@ case "$1" in
 		bash ./devtools.sh "clean"
 		bash ./devtools.sh "all"
 		;;
-	"exec")
+	"run"|"exec")
 		cd ..
 		python -m Babyfut.babyfut
 		;;
 	*)
-		echo "Unknown command \"$1\". See content of script for available commands."
+		echo "Unknown command \"$1\". See script for available commands."
 		;;
 esac
 
