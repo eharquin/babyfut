@@ -3,7 +3,7 @@
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
-
+import subprocess
 from threading import Thread, Event
 
 from Babyfut.babyfut import getContent, ON_RASP
@@ -17,12 +17,15 @@ class Replay(Thread):
 		Thread.__init__(self)
 		self.replayPath = getContent('Replay {}.mp4'.format(side.name))
 		self.shutdown = False
+		
+		if ON_RASP:
+			self.camera_detected = Replay.detectCam()
 
 		self.start_flag = Event()
 		self.stop_flag = Event()
 		self.stopped_flag = Event()
 
-		if ON_RASP:
+		if self.isCamAvailable():
 			self.cam = picamera.PiCamera()
 			self.cam.resolution = Settings['picam.resolution']
 			self.cam.framerate = Settings['picam.fps']
@@ -31,11 +34,11 @@ class Replay(Thread):
 			self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
 
 	def start_recording(self):
-		if ON_RASP:
+		if self.isCamAvailable():
 			self.start_flag.set()
 
 	def stop_recording(self):
-		if ON_RASP:
+		if self.isCamAvailable():
 			self.stop_flag.set()
 			self.stopped_flag.wait()
 
@@ -77,5 +80,11 @@ class Replay(Thread):
 		return getContent('Replay Left.mp4')
 
 	@staticmethod
-	def isCamAvailable():
-		return ON_RASP # and other checks (ToDo)
+	def detectCam():
+		camdet = subprocess.check_output(["vcgencmd","get_camera"])
+		return int(chr(camdet[-2]))
+	
+	@staticmethod
+	def isCamAvailable(self=None):
+		detected = self.camera_detected if self!=None else Replay.detectCam()
+		return ON_RASP and detected
