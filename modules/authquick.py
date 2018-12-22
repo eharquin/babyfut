@@ -27,7 +27,7 @@ class AuthQuickModule(AuthModuleBase):
 
 		for side in [Side.Left, Side.Right]:
 			if len(self.players[side])==0:
-				self.addPlayer(side,  PlayerGuest)
+				self.addPlayer(side, PlayerGuest)
 
 		self.updateSides()
 

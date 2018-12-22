@@ -44,7 +44,12 @@ class Database():
 		return res
 
 	def select_guest_team(self):
-		return self.select_one('SELECT id FROM players WHERE fname LIKE "guest"')[0]
+		return self.select_one('SELECT id FROM Players WHERE fname LIKE "guest"')[0]
+
+	def insert_player(self, rfid, fname, lname,):
+		self._cursor.execute('INSERT INTO Players (rfid, fname, lname, category, pic, private) VALUES (?, ?, ?, ?, ?)', (rfid, fname, lname, None, 0,))
+		self._connection.commit()
+		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Players"').fetchone()[0]
 
 	def insert_team(self, players, goals):
 		if len(players)<2:

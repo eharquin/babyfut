@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 18:34:40 2018
-
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
 import logging
 from enum import Enum
+from http import HTTPStatus
 
 from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog, QApplication
 
 from Babyfut.babyfut import getMainWin, IMG_PATH
+from Babyfut.core.ginger import Ginger
 from Babyfut.core.database import Database, DatabaseError
 from Babyfut.ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
@@ -64,37 +64,22 @@ class Player(QObject):
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 
 	def __init__(self, id, rfid, fname, lname, pic_path, stats):
+	def __init__(self, id, rfid, fname, lname, pic_path, stats=None):
 		self.id = id
 		self.rfid = rfid
 		self.fname = fname
 		self.lname = lname
 		self.pic_path = pic_path if pic_path else Player._placeholder_pic_path # Default pic if None
-		self.stats = stats
+
+		if stats==None:
+			self.stats = { 'time_played': 0, 'goals_scored': 0, 'games_played': 0, 'victories': 0 }
+		else:
+			self.stats = stats
 
 	@staticmethod
 	def fromRFID(rfid):
-		db = Database.instance()
-
-		if db.rfid_exists(rfid):
-			try:
-				# Retrieve generic informations
-				id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
-
-				# Retrieve stats
-				stats = {}
-				stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
-				stats['victories'], = db.select_one(Player.__query_victories, id)
-
-				for key, val in stats.items():
-					if val==None:
-						stats[key] = 0
-
-				return Player(id, rfid, fname, lname, pic, stats)
-
-			except DatabaseError as e:
-				logging.warn('DB Error: {}'.format(e))
-				return PlayerGuest
-
+		if Database.instance().rfid_exists(rfid):
+			player = Player._loadFromDB(rfid)
 		else:
 			### Retrieve player from API
 			# Ask for consent
@@ -102,12 +87,51 @@ class Player(QObject):
 			consentDialog.exec()
 
 			if consentDialog.result()==QDialog.Accepted:
-				print('todo')
-				return PlayerGuest
+				player = Player._loadFromAPI(rfid)
 			else:
-				return PlayerGuest
+				logging.debug('Consent refused when retrieving a player, returning Guest')
+				player = PlayerGuest
+
+		return player
 
 	def displayImg(self, container_widget):
+	@staticmethod
+	def _loadFromDB(rfid):
+		db = Database.instance()
+		try:
+			# Retrieve generic informations
+			id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
+
+			# Retrieve stats
+			stats = {}
+			stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
+			stats['victories'], = db.select_one(Player.__query_victories, id)
+
+			for key, val in stats.items():
+				if val==None:
+					stats[key] = 0
+
+			return Player(id, rfid, fname, lname, pic, stats)
+
+		except DatabaseError as e:
+			logging.warn('DB Error: {}'.format(e))
+			return PlayerGuest
+
+	@staticmethod
+	def _loadFromAPI(rfid):
+		'''
+		Retrieves a player's informations from the Ginger API
+		'''
+		response = Ginger.call('badge/{}'.format(rfid))
+		if isinstance(response, HTTPStatus):
+			logging.debug('Request to Ginger failed ({}): returning Guest'.format(response.value))
+			return PlayerGuest
+		else:
+			infos = json.loads(response)
+			Database.instance().insert_player(infos['rfid'], infos['nom'], infos['prenom'])
+
+		return Player._loadFromDB(rfid)
+
 		self.pic_container = container_widget
 
 		if self.pic_path.startswith('http'):
@@ -127,18 +151,11 @@ class Player(QObject):
 		Downloader.instance().finished.disconnect(self._downloader_callback)
 		self.displayImg(self.pic_container)
 
-	def save(self):
-		'''
-		Update or create the player in database
-		'''
-		pass
-		# DONT SAVE PIC PATH, IT IS CHANGED FOR THE LOCAL PATH
-
-	def forgetPicture():
+	def forgetPicture(self):
 		self.pic_path = Player._placeholder_pic_path
 		Database.instance().delete_playerpic(self.id)
 
-	def make_private():
+	def make_private(self):
 		self.private = True
 		Database.instance().make_player_private(self.id)
 
