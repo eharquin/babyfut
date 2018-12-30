@@ -10,11 +10,12 @@ import logging
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
-from PyQt5.QtCore import Qt, QTime, QTranslator
+from PyQt5.QtCore import Qt, QTime, QTranslator, pyqtSlot
 
 from Babyfut import modules
-from Babyfut.ui.main_ui import Ui_MainWindow
+from Babyfut.core.player import Side
 from Babyfut.core.settings import Settings
+from Babyfut.ui.main_ui import Ui_MainWindow
 
 class MainWin(QtWidgets.QMainWindow):
 	DEFAULT_LANG = 'en'
@@ -80,6 +81,11 @@ class MainWin(QtWidgets.QMainWindow):
 		for modIdx in modulesIdx:
 			self.modules[modIdx].other(**msg)
 
+	@pyqtSlot(str)
+	def rfidHandler(self, rfid):
+		side = Side.Left if Settings['app.side']=='left' else Side.Right
+		self.dispatchMessage({'rfid': rfid, 'source': side})
+		
 	def _loadSettings(self):
 		if Settings['ui.fullscreen']:
 			self.showFullScreen()

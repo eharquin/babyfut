@@ -17,7 +17,7 @@ class Replay(Thread):
 		Thread.__init__(self)
 		self.replayPath = getContent('Replay {}.mp4'.format(side.name))
 		self.shutdown = False
-		
+
 		if ON_RASP:
 			self.camera_detected = Replay.detectCam()
 
@@ -81,9 +81,12 @@ class Replay(Thread):
 
 	@staticmethod
 	def detectCam():
-		camdet = subprocess.check_output(["vcgencmd","get_camera"])
-		return int(chr(camdet[-2]))
-	
+		if ON_RASP:
+			camdet = subprocess.check_output(["vcgencmd","get_camera"])
+			return int(chr(camdet[-2]))
+		else:
+			return False
+
 	@staticmethod
 	def isCamAvailable(self=None):
 		detected = self.camera_detected if self!=None else Replay.detectCam()

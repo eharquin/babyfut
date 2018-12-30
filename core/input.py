@@ -8,7 +8,6 @@ import logging
 import time
 from threading import Thread
 import pyautogui # PyPi library
-from pirc522 import RFID # PyPi library
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -17,6 +16,7 @@ from Babyfut.core.player import Side
 
 if ON_RASP:
 	import RPi.GPIO as GPIO
+	from pirc522 import RFID # PyPi library
 
 class GPIOThread(Thread, QObject):
 	_keyButtonBindings = {
@@ -27,17 +27,17 @@ class GPIOThread(Thread, QObject):
 		17: 'return',
 		18: 'escape'
 	}
-	
+
 	rfidReceived = pyqtSignal(str)
 
 	def __init__(self):
 		Thread.__init__(self)
 		QObject.__init__(self)
-		self.rf_reader = RFID(pin_rst=25, pin_ce=8, pin_irq=24, pin_mode=GPIO.BCM)
 		self.continueRunning = True
 		self.lastRFIDReception = 0
 
 		if ON_RASP:
+			self.rf_reader = RFID(pin_rst=25, pin_ce=8, pin_irq=24, pin_mode=GPIO.BCM)
 			GPIO.setwarnings(False)
 			GPIO.setmode(GPIO.BCM)
 
@@ -81,7 +81,8 @@ class GPIOThread(Thread, QObject):
 	def stop(self):
 		self.continueRunning = False
 		# Falsely trigger the rfid reader to stop it waiting
-		self.rf_reader.irq.set()
+		if ON_RASP:
+			self.rf_reader.irq.set()
 
 	def clean(self):
 		GPIOThread.clean()
