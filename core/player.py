@@ -63,8 +63,8 @@ class Player(QObject):
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 
-	def __init__(self, id, rfid, fname, lname, pic_path, stats):
 	def __init__(self, id, rfid, fname, lname, pic_path, stats=None):
+		QObject.__init__(self)
 		self.id = id
 		self.rfid = rfid
 		self.fname = fname
@@ -94,7 +94,6 @@ class Player(QObject):
 
 		return player
 
-	def displayImg(self, container_widget):
 	@staticmethod
 	def _loadFromDB(rfid):
 		db = Database.instance()
@@ -132,6 +131,7 @@ class Player(QObject):
 
 		return Player._loadFromDB(rfid)
 
+	def displayImg(self, container_widget):
 		self.pic_container = container_widget
 
 		if self.pic_path.startswith('http'):

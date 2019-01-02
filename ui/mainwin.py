@@ -80,11 +80,6 @@ class MainWin(QtWidgets.QMainWindow):
 
 		for modIdx in modulesIdx:
 			self.modules[modIdx].other(**msg)
-
-	@pyqtSlot(str)
-	def rfidHandler(self, rfid):
-		side = Side.Left if Settings['app.side']=='left' else Side.Right
-		self.dispatchMessage({'rfid': rfid, 'source': side})
 		
 	def _loadSettings(self):
 		if Settings['ui.fullscreen']:
