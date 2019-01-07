@@ -121,7 +121,7 @@ class Player(QObject):
 		'''
 		Retrieves a player's informations from the Ginger API
 		'''
-		response = Ginger.call('badge/{}'.format(rfid))
+		response = Ginger.instance.get('badge/{}'.format(rfid))
 		if isinstance(response, HTTPStatus):
 			logging.debug('Request to Ginger failed ({}): returning Guest'.format(response.value))
 			return PlayerGuest

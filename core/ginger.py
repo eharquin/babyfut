@@ -14,8 +14,8 @@ class Ginger(object):
 
 	def __init__(self):
 		if Ginger._instance!=None:
-			self.url = Settings['ginger.url']
 			self.api_key = Settings['ginger.key']
+			self.url = Ginger.URL
 
 	@property
 	@staticmethod
@@ -25,7 +25,7 @@ class Ginger(object):
 		return Ginger._instance
 
 	@staticmethod
-	def call(endpoint, params={}):
+	def get(endpoint, params={}):
 		# Add the API key to the parameter list
 		params['key'] = Ginger.instance.api_key
 
