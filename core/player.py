@@ -57,19 +57,23 @@ class ConsentDialog(QDialog):
 			self.reject()
 
 class Player(QObject):
-	__query_infos = 'SELECT id, fname, lname, pic FROM Players WHERE rfid==?'
+	__query_infos = 'SELECT id, login, fname, lname FROM Players WHERE rfid==?'
 	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 
-	def __init__(self, id, rfid, fname, lname, pic_path, stats):
-	def __init__(self, id, rfid, fname, lname, pic_path, stats=None):
+	def __init__(self, id, rfid, login, fname, lname, stats=None):
+		QObject.__init__(self)
 		self.id = id
 		self.rfid = rfid
+		self.login = login
 		self.fname = fname
 		self.lname = lname
-		self.pic_path = pic_path if pic_path else Player._placeholder_pic_path # Default pic if None
+
+		self.pic_path = Player._placeholder_pic_path
+		if self.login:
+			self.pic_path = Player._utcPictureURL.format(self.login)
 
 		if stats==None:
 			self.stats = { 'time_played': 0, 'goals_scored': 0, 'games_played': 0, 'victories': 0 }
@@ -89,7 +93,7 @@ class Player(QObject):
 			if consentDialog.result()==QDialog.Accepted:
 				player = Player._loadFromAPI(rfid)
 			else:
-				logging.debug('Consent refused when retrieving a player, returning Guest')
+				logging.info('Consent refused when retrieving a player, returning Guest')
 				player = PlayerGuest
 
 		return player
@@ -100,7 +104,7 @@ class Player(QObject):
 		db = Database.instance()
 		try:
 			# Retrieve generic informations
-			id, fname, lname, pic = db.select_one(Player.__query_infos, rfid)
+			id, login, fname, lname = db.select_one(Player.__query_infos, rfid)
 
 			# Retrieve stats
 			stats = {}
@@ -111,7 +115,7 @@ class Player(QObject):
 				if val==None:
 					stats[key] = 0
 
-			return Player(id, rfid, fname, lname, pic, stats)
+			return Player(id, rfid, login, fname, lname, stats)
 
 		except DatabaseError as e:
 			logging.warn('DB Error: {}'.format(e))
@@ -128,7 +132,7 @@ class Player(QObject):
 			return PlayerGuest
 		else:
 			infos = json.loads(response)
-			Database.instance().insert_player(infos['rfid'], infos['nom'], infos['prenom'])
+			Database.instance().insert_player(infos['rfid'], infos['login'], infos['nom'], infos['prenom'])
 
 		return Player._loadFromDB(rfid)
 
@@ -153,6 +157,7 @@ class Player(QObject):
 
 	def forgetPicture(self):
 		self.pic_path = Player._placeholder_pic_path
+		self.login = None
 		Database.instance().delete_playerpic(self.id)
 
 	def make_private(self):

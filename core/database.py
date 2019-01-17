@@ -75,7 +75,7 @@ class Database():
 		self._connection.commit()
 
 	def delete_playerpic(self, playerID):
-		self._cursor.execute('UPDATE Players SET pic=null WHERE id==?', (playerID,))
+		self._cursor.execute('UPDATE Players SET login=null WHERE id==?', (playerID,))
 		self._connection.commit()
 
 	def make_player_private(self, playerID):
