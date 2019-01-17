@@ -63,6 +63,37 @@ case "$1" in
 		cd ..
 		python -m Babyfut.babyfut
 		;;
+	"install")
+		echo "Installing.."
+		echo "** Assuming debian-like environment. This shouldn't be run more than once"
+		echo "** Updating the system to make sure everything is up-to-date."
+		echo ""
+		sudo apt-get update && sudo apt-get upgrade
+
+		echo ""
+		echo "** Installing python3 and python tools"
+		# Sometimes the PYTHONPATH wont be set accordingly for some raspbian distributions
+		# In which case, manually import the right path (/usr/lib/python3/dist-packages) in
+		# the virtual environment's activation script
+		sudo apt-get install -y python3 python3-venv python3-pyqt5 python3-pip qtmultimedia5-examples \
+			 pyqt5-dev pyqt5-dev-tools
+
+		echo ""
+		echo "** Setting up the python virtual environment"
+		python3 -m venv ../PyQt5
+		source ../PyQt5/bin/activate
+
+		echo ""
+		echo "** Installing libraries used by the software"
+		pip install pi-rc522 pyautogui Xlib RPi.GPIO request
+	
+		echo ""
+		echo "****************************"
+		echo ""
+		echo "Installation done successfully! You may have to source the v-env."
+		echo "Don't forget to download the \"content\" folder from another source."
+		bash ./devtools.sh "allc"
+		;;
 	*)
 		echo "Unknown command \"$1\". See script for available commands."
 		;;

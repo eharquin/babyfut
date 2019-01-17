@@ -66,12 +66,12 @@
         <translation>Stat</translation>
     </message>
     <message>
-        <location filename="../ui/endgame_ui.py" line="104"/>
+        <location filename="../ui/endgame_ui.py" line="92"/>
         <source>Player 1</source>
         <translation>Joueur 1</translation>
     </message>
     <message>
-        <location filename="../ui/endgame_ui.py" line="105"/>
+        <location filename="../ui/endgame_ui.py" line="93"/>
         <source>Player 2</source>
         <translation>Joueur 2</translation>
     </message>
@@ -91,7 +91,7 @@
         <translation>Joueur 4</translation>
     </message>
     <message>
-        <location filename="../ui/endgame_ui.py" line="103"/>
+        <location filename="../ui/endgame_ui.py" line="91"/>
         <source>Congratulations!</source>
         <translation>Félicitations !</translation>
     </message>

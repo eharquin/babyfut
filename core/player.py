@@ -128,7 +128,7 @@ class Player(QObject):
 		'''
 		Retrieves a player's informations from the Ginger API
 		'''
-		response = Ginger.call('badge/{}'.format(rfid))
+		response = Ginger.instance.get('badge/{}'.format(rfid))
 		if isinstance(response, HTTPStatus):
 			logging.warn('Request to Ginger failed ({}): returning Guest'.format(response.value))
 			return PlayerGuest
@@ -138,7 +138,7 @@ class Player(QObject):
 
 		return Player._loadFromDB(rfid)
 
-	def displayImg(self, container_widget, *args):
+	def displayImg(self, container_widget):
 		self.pic_container = container_widget
 
 		if self.pic_path.startswith('http'):

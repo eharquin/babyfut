@@ -28,20 +28,18 @@ def getMainWin():
 
 ON_RASP = os.uname()[1] == 'raspberrypi'
 IMG_PATH = getContent('img')
-SIDE = None
 
 if __name__=='__main__':
 	__package__ = 'Babyfut'
 	from Babyfut.ui.mainwin import MainWin
 	from Babyfut.modules import GameModule
 	from Babyfut.core.player import Side
-	from Babyfut.core.input import GPIOThread
+	from Babyfut.core.input import Input
 	from Babyfut.core.downloader import Downloader
 	from Babyfut.core.database import Database
 	from Babyfut.core.replay import Replay as ReplayThread
 
 	try:
-		SIDE = Side.Left
 		#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
 		logging.basicConfig(level=logging.DEBUG)
 
@@ -56,9 +54,10 @@ if __name__=='__main__':
 			threadReplay.start()
 			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
 
-		threadGPIO = GPIOThread()
-		threadGPIO.rfidReceived.connect(myapp.rfidHandler)
-		threadGPIO.start()
+		input = Input()
+		input.rfidReceived.connect(lambda side: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
+		input.goalDetected.connect(lambda side: myapp.dispatchMessage({'goal': True, 'source': side}))
+		input.start()
 
 		threadDownloader = Downloader.instance()
 		threadDownloader.start()
@@ -66,18 +65,16 @@ if __name__=='__main__':
 		myapp.show()
 		app.exec_()
 
-		threadDownloader.stop()
-		threadGPIO.stop()
 
 		if ReplayThread.isCamAvailable():
 			threadReplay.stop()
 			threadReplay.join()
 
-		threadGPIO.join()
+		input.stop()
+		threadDownloader.stop()
 		threadDownloader.join()
 
 	finally:
-		GPIOThread.clean()
 		Database.instance().close()
 		for f in glob.glob(join(IMG_PATH, '*')):
 			os.remove(f)
