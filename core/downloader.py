@@ -46,9 +46,13 @@ class Downloader(Thread, QObject):
 		if nAttemps==None:
 			nAttemps = Downloader.N_ATTEMPS
 
-		print('Adding "{}". {} before it'.format(url_in, len(self._request_stack)))
-
-		self._request_stack.append((url_in, uri_out, nAttemps))
+		# Add if not already queued
+		req = (url_in, uri_out, nAttemps)
+		if req not in self._request_stack:
+			logging.debug('Adding "{}". {} before it'.format(url_in, len(self._request_stack)))
+			self._request_stack.append(req)
+		else:
+			logging.debug('"{}" is already queued, ignoring.'.format(url_in))
 
 	def run(self):
 		while not self._close:

@@ -46,12 +46,12 @@
         <translation>Form</translation>
     </message>
     <message>
-        <location filename="../ui/authquick_ui.py" line="231"/>
+        <location filename="../ui/authquick_ui.py" line="222"/>
         <source>Identify yourselves! </source>
         <translation>Identifiez vous ! </translation>
     </message>
     <message>
-        <location filename="../ui/authquick_ui.py" line="232"/>
+        <location filename="../ui/authquick_ui.py" line="223"/>
         <source>Use the table&apos;s RFID reader with your card.</source>
         <translation>Utilisez les lecteurs RFID de la table avec votre carte étu.</translation>
     </message>
@@ -61,7 +61,7 @@
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../ui/authleague_ui.py" line="147"/>
+        <location filename="../ui/authleague_ui.py" line="138"/>
         <source>Stat</source>
         <translation>Stat</translation>
     </message>
@@ -76,17 +76,17 @@
         <translation>Joueur 2</translation>
     </message>
     <message>
-        <location filename="../ui/authquick_ui.py" line="235"/>
+        <location filename="../ui/authquick_ui.py" line="226"/>
         <source>vs.</source>
         <translation>vs .</translation>
     </message>
     <message>
-        <location filename="../ui/authquick_ui.py" line="236"/>
+        <location filename="../ui/authquick_ui.py" line="227"/>
         <source>Player 3</source>
         <translation>Joueur 3</translation>
     </message>
     <message>
-        <location filename="../ui/authquick_ui.py" line="237"/>
+        <location filename="../ui/authquick_ui.py" line="228"/>
         <source>Player 4</source>
         <translation>Joueur 4</translation>
     </message>

@@ -4,6 +4,7 @@
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
+import os
 import logging
 from enum import Enum
 from http import HTTPStatus
@@ -13,6 +14,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog, QApplication
 
 from Babyfut.babyfut import getMainWin, IMG_PATH
+from Babyfut.core.downloader import Downloader
 from Babyfut.core.ginger import Ginger
 from Babyfut.core.database import Database, DatabaseError
 from Babyfut.ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
@@ -62,6 +64,7 @@ class Player(QObject):
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
+	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
 	def __init__(self, id, rfid, login, fname, lname, stats=None):
 		QObject.__init__(self)
@@ -98,7 +101,6 @@ class Player(QObject):
 
 		return player
 
-	def displayImg(self, container_widget):
 	@staticmethod
 	def _loadFromDB(rfid):
 		db = Database.instance()
@@ -128,7 +130,7 @@ class Player(QObject):
 		'''
 		response = Ginger.call('badge/{}'.format(rfid))
 		if isinstance(response, HTTPStatus):
-			logging.debug('Request to Ginger failed ({}): returning Guest'.format(response.value))
+			logging.warn('Request to Ginger failed ({}): returning Guest'.format(response.value))
 			return PlayerGuest
 		else:
 			infos = json.loads(response)
@@ -136,24 +138,28 @@ class Player(QObject):
 
 		return Player._loadFromDB(rfid)
 
+	def displayImg(self, container_widget, *args):
 		self.pic_container = container_widget
 
 		if self.pic_path.startswith('http'):
-			# Download from the internet
+			# Download from the internet but display a temporary image between
 			self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
 			Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
 			Downloader.instance().finished.connect(self._downloader_callback)
 		else:
 			# Already downloaded and stored locally
 			self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
-			self._forceWidgetUpdate()
 			QApplication.processEvents()
 
 	@pyqtSlot(str)
 	def _downloader_callback(self, path):
-		self.pic_path = path
-		Downloader.instance().finished.disconnect(self._downloader_callback)
-		self.displayImg(self.pic_container)
+		# Take the callback if not already done and we are the targer
+		if IMG_PATH in path and str(self.id) in path and IMG_PATH not in self.pic_path:
+			self.pic_path = path
+			Downloader.instance().finished.disconnect(self._downloader_callback)
+
+			if self.pic_container!=None:
+				self.displayImg(self.pic_container)
 
 	def forgetPicture(self):
 		self.pic_path = Player._placeholder_pic_path
