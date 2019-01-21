@@ -64,6 +64,7 @@ class Player(QObject):
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
+	_imgLocalPath         = os.path.join(IMG_PATH, '{}.jpg')
 	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
 	def __init__(self, id, rfid, login, fname, lname, stats=None):
@@ -74,10 +75,13 @@ class Player(QObject):
 		self.fname = fname
 		self.lname = lname
 
-		self.pic_path = Player._placeholder_pic_path
-		if self.login:
+		if os.path.isfile(Player._imgLocalPath.format(self.id)):
+			self.pic_path = Player._imgLocalPath.format(self.id)
+		elif self.login:
 			self.pic_path = Player._utcPictureURL.format(self.login)
-
+		else:
+			self.pic_path = Player._placeholder_pic_path
+		
 		if stats==None:
 			self.stats = { 'time_played': 0, 'goals_scored': 0, 'games_played': 0, 'victories': 0 }
 		else:

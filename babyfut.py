@@ -55,8 +55,8 @@ if __name__=='__main__':
 			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
 
 		input = Input()
-		input.rfidReceived.connect(lambda side: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
-		input.goalDetected.connect(lambda side: myapp.dispatchMessage({'goal': True, 'source': side}))
+		input.rfidReceived.connect(lambda side, rfid: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
+		input.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
 		input.start()
 
 		threadDownloader = Downloader.instance()

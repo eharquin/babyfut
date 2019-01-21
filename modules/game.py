@@ -133,7 +133,7 @@ class GameModule(Module):
 				self.players = val
 
 			elif key=='replayThread':
-				self.replayer = val
+				self.camera = val
 
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
@@ -177,7 +177,7 @@ class GameModule(Module):
 	def goal(self, side):
 		if side not in Side:
 			logging.error('Wrong goal side: {}'.format(side))
-		else:
+		elif not self.video_player:
 			self.scores[side] += 1
 
 			# Show replay

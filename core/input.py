@@ -31,17 +31,25 @@ class Input(QObject):
 	}
 
 	_GoalPins = {
-		'pin_trig':  4,
-		'pin_echo': 16
+		'pin_trig':  3,
+		'pin_echo':  2
 	}
 
 	_keyButtonBindings = {
-		26: 'up',
-		22: 'left',
-		27: 'right',
-		23: 'down',
-		17: 'return',
-		18: 'escape'
+#		26: 'up',
+#		22: 'left',
+#		27: 'right',
+#		23: 'down',
+#		17: 'return',
+#		18: 'escape'
+
+		16: 'up',
+		 6: 'left',
+		12: 'right',
+		13: 'down',
+		26: 'return',
+		20: 'del',
+		19: 'escape'
 	}
 
 	rfidReceived = pyqtSignal(Side, str)
@@ -49,6 +57,7 @@ class Input(QObject):
 
 	def __init__(self):
 		QObject.__init__(self)
+		self.last_input = time.time()
 
 		if ON_RASP:
 			GPIO.setmode(GPIO.BCM)
@@ -72,14 +81,18 @@ class Input(QObject):
 			self.goalThread.stop(); self.goalThread.join()
 
 	def _handleButtonPress(self, button_pin):
+		arrival_time = time.time()
 		if button_pin not in Input._keyButtonBindings.keys():
 			logging.warn('Unknown button pin: {}'.format(button_pin))
-		else:
+		elif arrival_time-self.last_input>0.5:
+			self.last_input = arrival_time
 			key = Input._keyButtonBindings[button_pin]
 			logging.debug('Sending {} as {}'.format(button_pin, key))
 			pyautogui.press(key)
 
 class GPIOThread(Thread):
+	CLEANED = False
+	
 	def __init__(self):
 		Thread.__init__(self)
 		self._running = True
@@ -143,12 +156,12 @@ class GoalThread(GPIOThread):
 		self.parent = parent
 		self.pin_trig = pin_trig
 		self.pin_echo = pin_echo
+		self.last_goal = time.time()
 
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup (self.pin_echo, GPIO.IN)
 		GPIO.setup (self.pin_trig, GPIO.OUT)
 		GPIO.output(self.pin_trig, GPIO.LOW)
-		print(self.pin_trig, pin_echo)
 
 	def run(self):
 		try:
@@ -156,18 +169,29 @@ class GoalThread(GPIOThread):
 			time.sleep(2)
 
 			while self.running():
-				# Trigger a scan
+				# Trigger a scan with a 10us pulse
 				GPIO.output(self.pin_trig, GPIO.HIGH)
 				time.sleep(0.00001)
 				GPIO.output(self.pin_trig, GPIO.LOW)
+				timeout = False
+				start_read = time.time()
 
 				# Read the echo
 				while self.running() and GPIO.input(self.pin_echo)==0:
 					pulse_start_time = time.time()
+					# Prevent infinite loops, add timeout.
+					if (time.time() - start_read) > 0.06:
+						timeout = True
+						break
+				
 				while self.running() and GPIO.input(self.pin_echo)==1:
-					pulse_end_time = time.time()
+					pulse_end_time = time.time()					
+					# Prevent infinite loops, add timeout.
+					if (time.time() - start_read) > 0.06:
+						timeout = True
+						break
 
-				if self.running():
+				if self.running() and not timeout:
 					pulse_duration = pulse_end_time - pulse_start_time
 					distance = round(pulse_duration * 17150, 2)
 					self._handle_dist(distance)
@@ -175,6 +199,11 @@ class GoalThread(GPIOThread):
 			self.clean()
 
 	def _handle_dist(self, dist):
-		logging.debug('Distance: {}cm'.format(dist))
-		if dist<3:
-			self.parent.goalDetected.emit(self.parent.side)
+		#print('Distance: {}cm'.format(dist))
+		if dist<10:
+			if (time.time()-self.last_goal)>1:
+				print('goal')
+				self.parent.goalDetected.emit(self.parent.side)
+			
+			self.last_goal = time.time()
+			

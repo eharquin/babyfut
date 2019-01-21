@@ -83,7 +83,7 @@ class Replay(Thread):
 	def detectCam():
 		if ON_RASP:
 			camdet = subprocess.check_output(["vcgencmd","get_camera"])
-			return int(chr(camdet[-2]))
+			return bool(chr(camdet[-2]))
 		else:
 			return False
 
