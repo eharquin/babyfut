@@ -1,6 +1,6 @@
 # source-rasp
 
-Source code for the foosball embedded Raspberry PI.
+Source code for the football embedded Raspberry PI.
 It runs the UI and manages games.
 The UI is done with PyQt5.
 
@@ -117,7 +117,7 @@ The database is currently in SQLite but should be transposable to MySQL later on
 * Teams: Linking players and matches
 
 ## Todo
-* [ ] Check validity of replays on a real rasp
+* [x] Check validity of replays on a real rasp
 * [ ] Check validity of rfid on a real rasp
 * [ ] League mode
 * [ ] Translation on the fly (instead of having to manually restart)
