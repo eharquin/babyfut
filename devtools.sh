@@ -61,7 +61,7 @@ case "$1" in
 		;;
 	"run"|"exec")
 		cd ..
-		python -m Babyfut.babyfut
+		python3 -m Babyfut.babyfut
 		;;
 	"install")
 		echo "Installing.."
@@ -86,7 +86,7 @@ case "$1" in
 		echo ""
 		echo "** Installing libraries used by the software"
 		pip install pi-rc522 pyautogui Xlib RPi.GPIO request
-	
+
 		echo ""
 		echo "****************************"
 		echo ""

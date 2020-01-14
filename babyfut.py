@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+modifications : Laurine Dictus, Anaël Lacour
 """
 
 import os
@@ -38,6 +39,7 @@ if __name__=='__main__':
 	from Babyfut.core.downloader import Downloader
 	from Babyfut.core.database import Database
 	from Babyfut.core.replay import Replay as ReplayThread
+	from Babyfut.core.server import Server
 
 	try:
 		#logging.basicConfig(filename='babyfoot.log', level=logging.DEBUG)
@@ -59,6 +61,8 @@ if __name__=='__main__':
 		input.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
 		input.start()
 
+		server = Server()
+		server.start()
 		threadDownloader = Downloader.instance()
 		threadDownloader.start()
 
@@ -71,6 +75,9 @@ if __name__=='__main__':
 			threadReplay.join()
 
 		input.stop()
+		server.closeConn()
+		server.stop()
+		server.join()
 		threadDownloader.stop()
 		threadDownloader.join()
 

@@ -47,9 +47,11 @@ To get from one to the other, the current module is unloaded current, then the n
 Each module can overload the load/unload/other method in order to have a specific behavior.
 
 ### Threads
-In addition to the main UI thread, there are 2 other threads running:
+In addition to the main UI thread, there are 3 other threads running:
 * Input, managing buttons control, rfid reading and goal detection
 * Replay, capturing video during a match and storing it when there is a goal
+* Server, waiting for messages from the second raspberry PI
+
 
 ### Settings
 Settings are stored in a JSON file located in the parent's `content` directory, that looks like:
@@ -119,6 +121,6 @@ The database is currently in SQLite but should be transposable to MySQL later on
 * [ ] Check validity of rfid on a real rasp
 * [ ] League mode
 * [ ] Translation on the fly (instead of having to manually restart)
-* [ ] Installation guide
-* [ ] Connection to another PI to exchange RFID and videos
+* [x] Installation guide
+* [x] Connection to another PI to exchange RFID and videos
 * [ ] Integration of the real UTC DB
