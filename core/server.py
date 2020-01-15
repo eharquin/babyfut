@@ -6,6 +6,8 @@
 """
 
 import threading, socket
+
+from Babyfut.babyfut import ON_RASP
 from Babyfut.core.player import Side
 from Babyfut.core.settings import Settings
 
@@ -18,8 +20,9 @@ class Server(threading.Thread):
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connexion.bind((hote, port))
         self.connexion.listen()
-        self.side = Side.Left if Settings['app.side']=='left' else Side.Right
-        self.side.opposite()
+        if ON_RASP:
+            self.side = Side.Left if Settings['app.side']=='left' else Side.Right
+            self.side.opposite()
         print("Waiting for connection with client\n")
 
     def bytetoArray(self, bite):
@@ -32,7 +35,6 @@ class Server(threading.Thread):
         while 1:
             self.connexion_client, self.infos_connexion = self.connexion.accept()
             print("Connection established with client\n")
-            time.sleep(0.5)
             msg_receive = self.connexion_client.recv(4)
             currentsize=0
             print("reception taille replay")
@@ -60,8 +62,8 @@ class Server(threading.Thread):
                             i += 1
                             currentsize += 1024
                     print("fin de reception..")
-                    pyqtSignal(self.side)
-                    #n +=1
+                    if ON_RASP:
+                        pyqtSignal(self.side)
             except :
                 print("erreur reception")
             self.connexion_client.close()
