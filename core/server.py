@@ -7,6 +7,7 @@
 
 import threading, socket
 
+from PyQt5.QtCore import QObject, pyqtSignal
 from Babyfut.babyfut import ON_RASP
 from Babyfut.core.player import Side, opposite
 from Babyfut.core.settings import Settings
