@@ -21,11 +21,12 @@ if ON_RASP:
 hote = ''
 port = 12800
 
-class Server(threading.Thread):
+class Server(threading.Thread, QObject):
 
     goalDetected = pyqtSignal(Side)
 
     def __init__(self):
+        QObject.__init__(self)
         threading.Thread.__init__(self)
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connexion.bind((hote, port))

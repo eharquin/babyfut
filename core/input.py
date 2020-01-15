@@ -32,7 +32,7 @@ class Input(QObject):
 
 	_GoalPins = {
 		'pin_trig':  3,
-		'pin_echo':  2
+		'pin_echo':  17
 	}
 
 	_keyButtonBindings = {
