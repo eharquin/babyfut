@@ -50,32 +50,31 @@ class Server(threading.Thread):
             print("reception taille replay")
             sizetoHave = self.bytetoArray(msg_receive)
             print("\tsizeToHave ", sizetoHave);
-            try:
-                with open('./content/Replay Right.mp4', "wb") as video:
-                    #print("fichier ouvert")
-                    i = 0
-                    #print(i)
-                    print("reception du replay")
-                    while sizetoHave > currentsize:
-                        buffer = self.connexion_client.recv(1024)
-                        if not buffer :
-                            break
-                        if len(buffer) + currentsize >= sizetoHave:
-                            #print("len buffer ", len(buffer))
-                            video.write(buffer)
-                            currentsize += len(buffer)
-                            print(currentsize)
-                            i+=1
-                        else:
-                            video.write(buffer)
-                            #print(currentsize)
-                            i += 1
-                            currentsize += 1024
-                    print("fin de reception..")
-                    if ON_RASP:
-                        self.goalDetected.emit(self.side)
-            except :
-                print("erreur reception")
+            with open('./content/Replay Right.mp4', "wb") as video:
+                #print("fichier ouvert")
+                i = 0
+                #print(i)
+                print("reception du replay")
+                while sizetoHave > currentsize:
+                    buffer = self.connexion_client.recv(1024)
+                    if not buffer :
+                        break
+                    if len(buffer) + currentsize >= sizetoHave:
+                        #print("len buffer ", len(buffer))
+                        video.write(buffer)
+                        currentsize += len(buffer)
+                        print(currentsize)
+                        i+=1
+                    else:
+                        video.write(buffer)
+                        #print(currentsize)
+                        i += 1
+                        currentsize += 1024
+                print("fin de reception..")
+                if ON_RASP:
+                    print("envoie signal")
+                    self.goalDetected.emit(self.side)
+                    print("envoie signal OK")
             self.connexion_client.close()
         self.__close__()
 
