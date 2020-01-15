@@ -27,9 +27,8 @@ class Side(Enum):
 	Left  = 0
 	Right = 1
 
-	@property
-	def opposite(self):
-		return Side.Right if self==Side.Left else Side.Left
+def opposite(side):
+	return Side.Right if side==Side.Left else Side.Left
 
 class ConsentDialog(QDialog):
 	def __init__(self, parent):
@@ -81,7 +80,7 @@ class Player(QObject):
 			self.pic_path = Player._utcPictureURL.format(self.login)
 		else:
 			self.pic_path = Player._placeholder_pic_path
-		
+
 		if stats==None:
 			self.stats = { 'time_played': 0, 'goals_scored': 0, 'games_played': 0, 'victories': 0 }
 		else:

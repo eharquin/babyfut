@@ -8,7 +8,7 @@
 import threading, socket
 
 from Babyfut.babyfut import ON_RASP
-from Babyfut.core.player import Side
+from Babyfut.core.player import Side, opposite
 from Babyfut.core.settings import Settings
 
 hote = ''
@@ -22,7 +22,7 @@ class Server(threading.Thread):
         self.connexion.listen()
         if ON_RASP:
             self.side = Side.Left if Settings['app.side']=='left' else Side.Right
-            self.side.opposite()
+            self.side = opposite(self.side)
         print("Waiting for connection with client\n")
 
     def bytetoArray(self, bite):
