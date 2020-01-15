@@ -11,10 +11,19 @@ from Babyfut.babyfut import ON_RASP
 from Babyfut.core.player import Side, opposite
 from Babyfut.core.settings import Settings
 
+if ON_RASP:
+	import RPi.GPIO as GPIO
+	from pirc522 import RFID # PyPi library
+	import pyautogui # PyPi library
+
+
 hote = ''
 port = 12800
 
 class Server(threading.Thread):
+
+    goalDetected = pyqtSignal(Side)
+
     def __init__(self):
         threading.Thread.__init__(self)
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,7 +72,7 @@ class Server(threading.Thread):
                             currentsize += 1024
                     print("fin de reception..")
                     if ON_RASP:
-                        pyqtSignal(self.side)
+                        self.goalDetected.emit(self.side)
             except :
                 print("erreur reception")
             self.connexion_client.close()
