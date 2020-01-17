@@ -52,9 +52,6 @@ class Server(threading.Thread, QObject):
             sizetoHave = self.bytetoArray(msg_receive)
             print("\tsizeToHave ", sizetoHave);
             with open('./content/Replay Right.mp4', "wb") as video:
-                #print("fichier ouvert")
-                i = 0
-                #print(i)
                 print("reception du replay")
                 while sizetoHave > currentsize:
                     buffer = self.connexion_client.recv(1024)
@@ -65,15 +62,12 @@ class Server(threading.Thread, QObject):
                         video.write(buffer)
                         currentsize += len(buffer)
                         print(currentsize)
-                        i+=1
                     else:
                         video.write(buffer)
                         #print(currentsize)
-                        i += 1
                         currentsize += 1024
                 print("fin de reception..")
                 if ON_RASP:
-                    print("envoie signal")
                     self.goalDetected.emit(self.side)
                     print("envoie signal OK")
             self.connexion_client.close()

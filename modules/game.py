@@ -179,15 +179,20 @@ class GameModule(Module):
 			logging.error('Wrong goal side: {}'.format(side))
 		elif not self.video_player:
 			self.scores[side] += 1
+			print('goal ici')
 
 			# Show replay
 			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
 			if self.camera:
-				replayFile = self.camera.stop_recording()
+                                if (side == Side.Left):
+                                        replayFile = self.camera.stop_recording()
+                                else:
+                                        replayFile = "/home/pi/pr_baby/content/Replay Right.mp4"
 			elif Settings['replay.debug']:
 				replayFile = Replay.Dummy()
 			else:
 				replayFile = ''
+			print(replayFile)
 
 			if replayFile and os.path.exists(replayFile):
 				self.video_player = ReplayPlayer(self)

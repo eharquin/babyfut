@@ -62,12 +62,14 @@ if __name__=='__main__':
 		input.start()
 
 		server = Server()
+		server.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
 		server.start()
 		threadDownloader = Downloader.instance()
 		threadDownloader.start()
 
 		myapp.show()
 		app.exec_()
+		
 
 
 		if ReplayThread.isCamAvailable():
