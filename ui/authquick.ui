@@ -107,9 +107,9 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
-               <widget class="QLabel" name="imgP1">
+               <widget class="QWidget" name="imgP1" native="true">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -126,17 +126,8 @@
                   <height>200</height>
                  </size>
                 </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap resource="assets.qrc">:/ui/img/placeholder_head.jpg</pixmap>
-                </property>
-                <property name="scaledContents">
-                 <bool>true</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                <property name="styleSheet">
+                 <string notr="true">border-image: url(:/ui/img/placeholder_head.jpg);</string>
                 </property>
                </widget>
               </item>
@@ -185,9 +176,9 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QLabel" name="imgP2">
+               <widget class="QWidget" name="imgP2" native="true">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -204,14 +195,8 @@
                   <height>200</height>
                  </size>
                 </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap resource="assets.qrc">:/ui/img/placeholder_head.jpg</pixmap>
-                </property>
-                <property name="scaledContents">
-                 <bool>true</bool>
+                <property name="styleSheet">
+                 <string notr="true">border-image: url(:/ui/img/placeholder_head.jpg);</string>
                 </property>
                </widget>
               </item>
@@ -337,9 +322,9 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QLabel" name="imgP3">
+               <widget class="QWidget" name="imgP3" native="true">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -356,14 +341,8 @@
                   <height>200</height>
                  </size>
                 </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap resource="assets.qrc">:/ui/img/placeholder_head.jpg</pixmap>
-                </property>
-                <property name="scaledContents">
-                 <bool>true</bool>
+                <property name="styleSheet">
+                 <string notr="true">border-image: url(:/ui/img/placeholder_head.jpg);</string>
                 </property>
                </widget>
               </item>
@@ -412,9 +391,9 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
               <item>
-               <widget class="QLabel" name="imgP4">
+               <widget class="QWidget" name="imgP4" native="true">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -431,14 +410,8 @@
                   <height>200</height>
                  </size>
                 </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap resource="assets.qrc">:/ui/img/placeholder_head.jpg</pixmap>
-                </property>
-                <property name="scaledContents">
-                 <bool>true</bool>
+                <property name="styleSheet">
+                 <string notr="true">border-image: url(:/ui/img/placeholder_head.jpg);</string>
                 </property>
                </widget>
               </item>

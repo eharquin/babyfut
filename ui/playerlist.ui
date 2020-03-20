@@ -129,7 +129,7 @@
    <item>
     <widget class="QLabel" name="lblVictories">
      <property name="text">
-      <string>#### Victories</string>
+      <string comment="Form">{} Victories</string>
      </property>
     </widget>
    </item>
@@ -149,7 +149,7 @@
    <item>
     <widget class="QLabel" name="lblGoalsScored">
      <property name="text">
-      <string>#### Goals Scored</string>
+      <string comment="Form">{} Goals Scored</string>
      </property>
     </widget>
    </item>
@@ -169,7 +169,7 @@
    <item>
     <widget class="QLabel" name="lblGamesPlayed">
      <property name="text">
-      <string>#### Games Played</string>
+      <string comment="Form">{} Games Played</string>
      </property>
     </widget>
    </item>
@@ -189,7 +189,7 @@
    <item>
     <widget class="QLabel" name="lblMinutesPlayed">
      <property name="text">
-      <string>#### Minutes Played</string>
+      <string comment="Form">{} Minutes Played</string>
      </property>
     </widget>
    </item>
