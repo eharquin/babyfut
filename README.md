@@ -4,6 +4,8 @@ Source code for the football embedded Raspberry PI.
 It runs the UI and manages games.
 The UI is done with PyQt5.
 
+Mac OS X set up below
+
 ## Dependencies
 * PyQt5
 * pyautogui
@@ -124,3 +126,38 @@ The database is currently in SQLite but should be transposable to MySQL later on
 * [x] Installation guide
 * [x] Connection to another PI to exchange RFID and videos
 * [ ] Integration of the real UTC DB
+
+
+# Mac OS X set up
+
+## Requirements (for Mac)
+- macOS 10.13 or higher (otherwise Pyqt5 will not work)
+- [Homebrew](https://brew.sh/index_fr) installed
+- Python 3.5 (or >): `brew install python3` should do it
+- `pip` installed (the previous command should have done it too)
+- Finally, `virutalenv` installed: `pip install virtualenv`
+
+## Set up the working environment
+
+*You may find in some `readme` files that dependency problems may occure. In order not to use a virtual machine for that, we will set a Python virtual environment.*
+```bash
+cd pr_babyfut
+# the command below creates a virualenv
+virtualenv -p python3 venv
+# we activate the virtualenv (this should be done
+# before each time you will work on the projet)
+source venv/bin/activate
+pip install -r babyfut/requirements.txt
+```
+
+## Compile the UI and launch the app
+
+Once your virtualenv set up is done and activated (`(venv)` should appear in front of the command line) compile the UI source:
+```
+./devtools.sh ui
+```
+
+The project can now be run:
+```
+./devtools.sh exec
+```
