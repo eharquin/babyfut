@@ -130,32 +130,34 @@ The database is currently in SQLite but should be transposable to MySQL later on
 
 # Mac OS X set up
 
-## Requirements
-- First make sure to have Mac OS X 10.13 or higher on your device. Otherwise Pyqt5 will not work.
-- Make sure to have homebrew installed (`https://brew.sh/index_fr` otherwise)
-- Create a folder named "pr_baby"
-- Clone repositories from Gitlab `git clone https://gitlab.utc.fr/pr_babyfut/pr_baby_app_esclave` and `git clone https://gitlab.utc.fr/pr_babyfut/babyfut`
-- Rename babyfut in Babyfut
-- In Babyfut folder, create a new folder named content
-- Put `babyfut.sqlight`and `settings.json`in the content folder
+## Requirements (for Mac)
+- macOS 10.13 or higher (otherwise Pyqt5 will not work)
+- [Homebrew](https://brew.sh/index_fr) installed
+- Python 3.5 (or >): `brew install python3` should do it
+- `pip` installed (the previous command should have done it too)
+- Finally, `virutalenv` installed: `pip install virtualenv`
 
-## Set up a virtualenv
+## Set up the working environment
 
-You may find in the previous readme that dependancies troubles may occure. In order not to use a virtual machine you can set a virtualenv.
+*You may find in some `readme` files that dependency problems may occure. In order not to use a virtual machine for that, we will set a Python virtual environment.*
+```bash
+cd pr_babyfut
+# the command below creates a virualenv
+virtualenv -p python3 venv
+# we activate the virtualenv (this should be done
+# before each time you will work on the projet)
+source venv/bin/activate
+pip install -r babyfut/requirements.txt
+```
 
-- `cd Babyfut`
-- `virtualenv -p python 3 venv`
-- `source venv/bin/activate`
-- `pip install pyqt5`
+## Compile the UI and launch the app
 
-## Compile and launch the app
+Once your virtualenv set up is done and activated (`(venv)` should appear in front of the command line) compile the UI source:
+```
+./devtools.sh ui
+```
 
-Once your virtualenv set up done (venv should appear in front of the command line) compile the UI source
-
-- `./devtools.sh ui`
-
-The project can now be run
-
-- `./devtools.sh exec`
-
-
+The project can now be run:
+```
+./devtools.sh exec
+```
