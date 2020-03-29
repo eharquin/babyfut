@@ -69,7 +69,7 @@ if __name__=='__main__':
 
 		myapp.show()
 		app.exec_()
-		
+
 
 
 		if ReplayThread.isCamAvailable():
