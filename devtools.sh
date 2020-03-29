@@ -9,23 +9,25 @@ case "$1" in
 		echo "Building UI..."
 
 		echo "	Modules"
-		pyuic5 --import-from=Babyfut.ui ui/main.ui        -o ui/main_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/menu.ui        -o ui/menu_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/game.ui        -o ui/game_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/endgame.ui     -o ui/endgame_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/options.ui     -o ui/options_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/authquick.ui   -o ui/authquick_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/authleague.ui  -o ui/authleague_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/leaderboard.ui -o ui/leaderboard_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/privacy.ui     -o ui/privacy_ui.py
+		cd ./babyfut_server
+		pyuic5 --import-from=babyfut_server.ui ui/main.ui        -o ui/main_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/menu.ui        -o ui/menu_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/game.ui        -o ui/game_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/endgame.ui     -o ui/endgame_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/options.ui     -o ui/options_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/authquick.ui   -o ui/authquick_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/authleague.ui  -o ui/authleague_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/leaderboard.ui -o ui/leaderboard_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/privacy.ui     -o ui/privacy_ui.py
 
 		echo "	Custom Widgets"
-		pyuic5 --import-from=Babyfut.ui ui/playerlist.ui     -o ui/playerlist_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/consent_dialog.ui -o ui/consent_dialog_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/playerlist.ui     -o ui/playerlist_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
+		pyuic5 --import-from=babyfut_server.ui ui/consent_dialog.ui -o ui/consent_dialog_ui.py
 
 		echo "	Resources"
-		pyrcc5 -root /Babyfut/ui        ui/assets.qrc     -o ui/assets_rc.py
+		pyrcc5 -root /babyfut_server/ui        ui/assets.qrc     -o ui/assets_rc.py
+		cd ..
 		echo "Done."
 		;;
 	"clean"|"clear")
@@ -33,11 +35,13 @@ case "$1" in
 		rm -f ui/*_ui.py
 		rm -f ui/*_rc.py
 		rm -f translations/*.qm
+		rm -f */*/*.pyc
+		rm -f */*.pyc
 
-		rm -rf __pycache__
-		rm -rf ui/__pycache__
-		rm -rf core/__pycache__
-		rm -rf modules/__pycache__
+		rm -rf */__pycache__
+		rm -rf */ui/__pycache__
+		rm -rf */core/__pycache__
+		rm -rf */modules/__pycache__
 		echo "Done."
 		;;
 	"tru"|"trupdate")
@@ -60,8 +64,7 @@ case "$1" in
 		bash ./devtools.sh "all"
 		;;
 	"run"|"exec")
-		cd ..
-		python3 -m Babyfut.babyfut
+		python3 -m babyfut_server.babyfut_server
 		;;
 	"install")
 		echo "Installing.."
