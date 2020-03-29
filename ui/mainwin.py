@@ -80,7 +80,7 @@ class MainWin(QtWidgets.QMainWindow):
 
 		for modIdx in modulesIdx:
 			self.modules[modIdx].other(**msg)
-		
+
 	def _loadSettings(self):
 		if Settings['ui.fullscreen']:
 			self.showFullScreen()

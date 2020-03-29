@@ -5,6 +5,7 @@
 """
 
 import sqlite3
+from os.path import exists
 
 from Babyfut.babyfut import getContent
 
@@ -17,6 +18,8 @@ class Database():
 	def __init__(self):
 		if not Database.__db:
 			db_path = getContent('babyfut.sqlite')
+			if not exists(db_path):
+				Database.create_database(db_path)
 			self._connection = sqlite3.connect(db_path)
 
 	@staticmethod
@@ -28,6 +31,40 @@ class Database():
 			Database.__db = Database()
 
 		return Database.__db
+
+	@staticmethod
+	def create_database(db_path):
+		conn = sqlite3.connect(db_path)
+		c = conn.cursor()
+
+		c.execute('''CREATE TABLE "Matchs" (
+			`timestamp`	INTEGER NOT NULL UNIQUE,
+			`duration`	INTEGER NOT NULL,
+			`winningTeam`	INTEGER NOT NULL,
+			`losingTeam`	INTEGER NOT NULL,
+			PRIMARY KEY(timestamp)
+		)''')
+
+		c.execute('''CREATE TABLE "Players" (
+			`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`rfid`	INTEGER NOT NULL UNIQUE,
+			`login`	TEXT,
+			`fname`	TEXT NOT NULL,
+			`lname`	TEXT NOT NULL,
+			`category`	TEXT NOT NULL,
+			`private`	INTEGER NOT NULL CHECK(private == 0 or private == 1)
+		)''')
+
+		c.execute('''CREATE TABLE "Teams" (
+			`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+			`nGoals`	INTEGER NOT NULL,
+			`player1`	INTEGER NOT NULL,
+			`player2`	INTEGER
+		)''')
+		c.execute('INSERT INTO PLAYERS (id, rfid, login, fname, lname, category, private) VALUES (?,?,?,?,?,?,?)', (1,-1,1,'Guest','Guest', 'dummy', 0))
+		conn.commit()
+		c.close()
+
 
 	@property
 	def _cursor(self):
