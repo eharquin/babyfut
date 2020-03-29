@@ -1,7 +1,8 @@
-/__pycache__/
-*/__pycache__/
+**/__pycache__/
 /.spyproject/
-*/*.log
-*/*_ui.py
-*/*_rc.py
-translations/*.qm
+**/*.log
+**/*_ui.py
+**/*_rc.py
+*/translations/*.qm
+venv
+**/*.pyc

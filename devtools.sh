@@ -32,26 +32,24 @@ case "$1" in
 		;;
 	"clean"|"clear")
 		echo "Clearing the project..."
-		rm -f ui/*_ui.py
-		rm -f ui/*_rc.py
-		rm -f translations/*.qm
-		rm -f */*/*.pyc
-		rm -f */*.pyc
+		rm -f babyfut_server/ui/*_ui.py
+		rm -f babyfut_server/ui/*_rc.py
+		rm -f babyfut_server/translations/*.qm
+		find . -type f -name '*.pyc' -delete
+		find . -type d -name '__pycache__' -exec rm -rf {} +
 
-		rm -rf */__pycache__
-		rm -rf */ui/__pycache__
-		rm -rf */core/__pycache__
-		rm -rf */modules/__pycache__
 		echo "Done."
 		;;
 	"tru"|"trupdate")
 		echo "Updating translation files..."
+		cd ./babyfut_server
 		pylupdate5 -verbose *.py modules/*.py ui/*.py -ts translations/babyfut_fr.ts
+		cd ..
 		echo "Done. You can modify generated .ts files with Qt Linguist"
 		;;
 	"trr"|"trrelease")
 		echo "Building translation files..."
-		lrelease translations/*
+		lrelease babyfut_server/translations/*
 		echo "Done."
 		;;
 	"all"|"build_all")
