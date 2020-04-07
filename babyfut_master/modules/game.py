@@ -14,12 +14,12 @@ from PyQt5.QtCore import QDateTime, QDate, QTime, QTimer, QRect, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
-from babyfut_master import modules
-from babyfut_master.core.player import Side, PlayerGuest
-from babyfut_master.core.replay import Replay
-from babyfut_master.core.module import Module
-from babyfut_master.core.settings import Settings
-from babyfut_master.ui.game_ui import Ui_Form as GameWidget
+from .. import modules
+from ..core.player import Side, PlayerGuest
+from ..core.replay import Replay
+from ..core.module import Module
+from common.settings import Settings
+from ..ui.game_ui import Ui_Form as GameWidget
 
 class GameOverChecker():
 	def __init__(self, conditionType, limit):

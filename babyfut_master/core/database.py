@@ -64,7 +64,7 @@ class Database():
 		self._connection.commit()
 
 	def select_all_rfid(self, debug=False):
-		from .settings import Settings
+		from common.settings import Settings
 		if Settings['app.mode']=='prod':
 			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid>0 AND private==0').fetchall()
 		else:

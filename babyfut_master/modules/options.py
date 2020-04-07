@@ -9,10 +9,10 @@ import logging
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtWidgets import QRadioButton, QSlider
 
-from babyfut_master import modules
-from babyfut_master.core.settings import Settings
-from babyfut_master.core.module import Module
-from babyfut_master.ui.options_ui import Ui_Form as OptionsWidget
+from .. import modules
+from common.settings import Settings
+from ..core.module import Module
+from ..ui.options_ui import Ui_Form as OptionsWidget
 
 class OptionsModule(Module):
 	def __init__(self, parent):

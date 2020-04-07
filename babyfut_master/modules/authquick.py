@@ -8,9 +8,9 @@ import logging
 
 from PyQt5.QtWidgets import QSizePolicy
 
-from babyfut_master.modules.auth import AuthModuleBase
-from babyfut_master.core.player import Side, PlayerGuest
-from babyfut_master.ui.authquick_ui import Ui_Form as AuthQuickWidget
+from .auth import AuthModuleBase
+from ..core.player import Side, PlayerGuest
+from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
 
 class AuthQuickModule(AuthModuleBase):
 	def __init__(self, parent):

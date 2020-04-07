@@ -9,9 +9,9 @@ import logging
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QAbstractItemView
 
-from babyfut_master.modules.auth import AuthModuleBase
-from babyfut_master.ui.authleague_ui import Ui_Form as AuthLeagueWidget
-from babyfut_master.core.player import Side, PlayerEmpty
+from .auth import AuthModuleBase
+from ..ui.authleague_ui import Ui_Form as AuthLeagueWidget
+from ..core.player import Side, PlayerEmpty
 
 class AuthLeagueModule(AuthModuleBase):
 	def __init__(self, parent):

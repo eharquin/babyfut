@@ -7,7 +7,7 @@ import subprocess
 from threading import Thread, Event
 
 from ..babyfut_master import getContent, ON_RASP
-from .settings import Settings
+from common.settings import Settings
 
 if ON_RASP:
 	import picamera

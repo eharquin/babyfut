@@ -11,13 +11,13 @@ from operator import attrgetter
 from PyQt5.QtWidgets import QWidget, QDialog, QListWidgetItem
 from PyQt5.QtCore import Qt, QItemSelectionModel
 
-from babyfut_master import modules
-from babyfut_master.core.module import Module
-from babyfut_master.core.player import Player, Side
-from babyfut_master.core.database import Database
-from babyfut_master.ui.leaderboard_ui import Ui_Form as LeaderboardWidget
-from babyfut_master.ui.playerlist_ui import Ui_Form as PlayerListWidget
-from babyfut_master.ui.delete_dialog_ui import Ui_Dialog as PlayerDeleteDialog
+from .. import modules
+from ..core.module import Module
+from ..core.player import Player, Side
+from ..core.database import Database
+from ..ui.leaderboard_ui import Ui_Form as LeaderboardWidget
+from ..ui.playerlist_ui import Ui_Form as PlayerListWidget
+from ..ui.delete_dialog_ui import Ui_Dialog as PlayerDeleteDialog
 
 class LeaderboardItemWidget(QWidget):
 	def __init__(self, parent, player):

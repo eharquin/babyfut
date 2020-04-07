@@ -12,10 +12,10 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
 from PyQt5.QtCore import Qt, QTime, QTranslator, pyqtSlot
 
-from babyfut_master import modules
-from babyfut_master.core.player import Side
-from babyfut_master.core.settings import Settings
-from babyfut_master.ui.main_ui import Ui_MainWindow
+from .. import modules
+from ..core.player import Side
+from common.settings import Settings
+from .main_ui import Ui_MainWindow
 
 class MainWin(QtWidgets.QMainWindow):
 	DEFAULT_LANG = 'en'

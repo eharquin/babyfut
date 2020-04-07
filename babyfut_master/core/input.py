@@ -12,7 +12,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 from ..babyfut_master import ON_RASP
 from .player import Side
-from .settings import Settings
+from common.settings import Settings
 
 if ON_RASP:
 	import RPi.GPIO as GPIO

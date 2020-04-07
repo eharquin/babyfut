@@ -8,9 +8,9 @@ import logging
 
 from PyQt5.QtCore import Qt, QCoreApplication
 
-from babyfut_master import modules
-from babyfut_master.core.module import Module
-from babyfut_master.ui.privacy_ui import Ui_Form as PrivacyWidget
+from .. import modules
+from ..core.module import Module
+from ..ui.privacy_ui import Ui_Form as PrivacyWidget
 
 class PrivacyModule(Module):
 	def __init__(self, parent):

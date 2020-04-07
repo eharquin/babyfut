@@ -10,20 +10,20 @@ case "$1" in
 
 		echo "	Modules"
 		cd ./babyfut_master
-		pyuic5 --import-from=babyfut_master.ui ui/main.ui        -o ui/main_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/menu.ui        -o ui/menu_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/game.ui        -o ui/game_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/endgame.ui     -o ui/endgame_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/options.ui     -o ui/options_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/authquick.ui   -o ui/authquick_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/authleague.ui  -o ui/authleague_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/leaderboard.ui -o ui/leaderboard_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/privacy.ui     -o ui/privacy_ui.py
+		pyuic5 --import-from=. ui/main.ui        -o ui/main_ui.py
+		pyuic5 --import-from=. ui/menu.ui        -o ui/menu_ui.py
+		pyuic5 --import-from=. ui/game.ui        -o ui/game_ui.py
+		pyuic5 --import-from=. ui/endgame.ui     -o ui/endgame_ui.py
+		pyuic5 --import-from=. ui/options.ui     -o ui/options_ui.py
+		pyuic5 --import-from=. ui/authquick.ui   -o ui/authquick_ui.py
+		pyuic5 --import-from=. ui/authleague.ui  -o ui/authleague_ui.py
+		pyuic5 --import-from=. ui/leaderboard.ui -o ui/leaderboard_ui.py
+		pyuic5 --import-from=. ui/privacy.ui     -o ui/privacy_ui.py
 
 		echo "	Custom Widgets"
-		pyuic5 --import-from=babyfut_master.ui ui/playerlist.ui     -o ui/playerlist_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
-		pyuic5 --import-from=babyfut_master.ui ui/consent_dialog.ui -o ui/consent_dialog_ui.py
+		pyuic5 --import-from=. ui/playerlist.ui     -o ui/playerlist_ui.py
+		pyuic5 --import-from=. ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
+		pyuic5 --import-from=. ui/consent_dialog.ui -o ui/consent_dialog_ui.py
 
 		echo "	Resources"
 		pyrcc5 -root /babyfut_master/ui        ui/assets.qrc     -o ui/assets_rc.py

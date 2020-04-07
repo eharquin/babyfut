@@ -9,11 +9,11 @@ import logging
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 
-from babyfut_master import modules
-from babyfut_master.core.module import Module
-from babyfut_master.core.settings import Settings
-from babyfut_master.ui.menu_ui import Ui_Form as MenuWidget
-from babyfut_master.core.player import Side
+from .. import modules
+from ..core.module import Module
+from common.settings import Settings
+from ..ui.menu_ui import Ui_Form as MenuWidget
+from ..core.player import Side
 
 class MenuModule(Module):
 	def __init__(self, parent):

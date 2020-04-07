@@ -8,9 +8,9 @@ import logging
 
 from PyQt5.QtCore import Qt
 
-from babyfut_master import modules
-from babyfut_master.core.module import Module
-from babyfut_master.core.player import Side, Player
+from .. import modules #tout le package modules
+from ..core.module import Module
+from ..core.player import Side, Player
 
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):

@@ -9,11 +9,11 @@ import logging
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer, Qt
 
-from babyfut_master import modules
-from babyfut_master.core.database import Database
-from babyfut_master.core.player import Side, PlayerGuest
-from babyfut_master.core.module import Module
-from babyfut_master.ui.endgame_ui import Ui_Form as EndGameWidget
+from .. import modules
+from ..core.database import Database
+from ..core.player import Side, PlayerGuest
+from ..core.module import Module
+from ..ui.endgame_ui import Ui_Form as EndGameWidget
 
 class EndGameModule(Module):
 	def __init__(self, parent=None):
