@@ -18,7 +18,6 @@ class Replay(Thread):
 		self.replayPath = getContent('Replay {}.mp4'.format(side.name))
 		self.shutdown = False
 
-
 		if ON_RASP:
 			self.camera_detected = Replay.detectCam()
 

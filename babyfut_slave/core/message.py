@@ -7,27 +7,23 @@
 
 import uuid
 
-from pr_baby_app_esclave.core.player import Side
-from pr_baby_app_esclave.core.settings import Settings
+from common.side import Side
+from common.settings import Settings
 
 class Message:
     def __init__(self):
-        self._idMsg = str(uuid.uuid4())
+        self.side = Side.Left if Settings['app.side']=='left' else Side.Right
 
-    def getIdMsg(self):
-        return self._idMsg
+    def getSideMsg(self):
+        return self.side
 
 
 class MessageGoal(Message):
     def __init__(self):
         Message.__init__(self)
         self._type = "goal"
-        self.side = Side.Left if Settings['app.side']=='left' else Side.Right
-    """ a voir si on peut envoyer le replay en meme temps """
-    def getMessage(self):
-        message = self._idMsg + "\t" + self._type + "\t" #+ self.side
-        return message.encode()
-
+        #seld._id = 
+    
 
 class MessageRFID(Message):
     def __init__(self, rfid_code):
@@ -35,17 +31,9 @@ class MessageRFID(Message):
         self._type = "rfid"
         self.rfidCode = rfid_code
 
-    def getMessage(self):
-        message = self._idMsg + "\t" + self._type + "\t" + self.rfidCode
-        return message.encode()
-
 
 class MessageReplay(Message):
-    """ voir comment envoyer un fichier video et maybe supp cette classe et tout envoyer avec messageGoal"""
     def __init__(self):
         Message.__init__(self)
         self._type = "replay"
-        self.side = "right"
-    def getMessage(self):
-        message = self._idMsg + "\t" + self._type + "\t" + self.side
-        return message.encode()
+
