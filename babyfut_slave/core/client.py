@@ -5,34 +5,29 @@
 @author: Laurine Dictus, Anaël Lacour
 """
 
-import threading, socket, sys, os, time
-import pickle
+import socket, pickle
+
+from common.message import *
 
 
-class Message:
-    def __init__(self):
-        self.idMsg = str(138492)
-
-    def getIdMsg(self):
-        return self.idMsg
-
-
-class MessageGoal(Message):
-    def __init__(self):
-        Message.__init__(self)
-        self.type = "goal"
-        self.side = "right"
-
-
-hote = "localhost"
+host = "localhost"
 port = 15555
 
-message = MessageGoal()
+class Client:
+    def __init__(self):
+        connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connexion.connect((hote, port))
+        print("Client connecté")
 
-socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socket.connect((hote, port))
 
-data_to_send = pickle.dumps(message)
-socket.send(data_to_send)
-print("Closing")
-socket.close()
+    def sendMessage(self, message):
+        data = pickle.dumps(message)
+        self.connexion.send(data)
+
+
+    def sendGoal(self):
+        self.sendMessage(MessageGoal())
+
+    def sendRFID(self, rfid):
+        self.sendMessage(MessageRFID(rfid))
+
