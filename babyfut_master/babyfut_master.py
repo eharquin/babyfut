@@ -34,7 +34,7 @@ if __name__=='__main__':
 	__package__ = 'babyfut_master'
 	from .ui.mainwin import MainWin
 	from .modules import GameModule
-	from .core.player import Side
+	from common.side import Side
 	from .core.input import Input
 	from .core.downloader import Downloader
 	from .core.database import Database
@@ -50,20 +50,23 @@ if __name__=='__main__':
 
 		if not exists(IMG_PATH):
 			 os.makedirs(IMG_PATH)
-
+'''
 		if ReplayThread.isCamAvailable():
 			threadReplay = ReplayThread(Side.Left)
 			threadReplay.start()
 			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
-
+'''
+		
 		input = Input()
-		input.rfidReceived.connect(lambda side, rfid: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
-		input.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
+		#input.rfidReceived.connect(lambda side, rfid: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
+		#input.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
 		input.start()
 
 		server = Server()
+		#TODO : connecter les 3 types de message
 		server.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
 		server.start()
+		
 		threadDownloader = Downloader.instance()
 		threadDownloader.start()
 
@@ -71,11 +74,11 @@ if __name__=='__main__':
 		app.exec_()
 
 
-
+'''
 		if ReplayThread.isCamAvailable():
 			threadReplay.stop()
 			threadReplay.join()
-
+'''
 		input.stop()
 		server.closeConn()
 		server.stop()

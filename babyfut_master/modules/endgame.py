@@ -11,7 +11,8 @@ from PyQt5.QtCore import QTimer, Qt
 
 from .. import modules
 from ..core.database import Database
-from ..core.player import Side, PlayerGuest
+from ..core.player import PlayerGuest
+from common.side import Side
 from ..core.module import Module
 from ..ui.endgame_ui import Ui_Form as EndGameWidget
 

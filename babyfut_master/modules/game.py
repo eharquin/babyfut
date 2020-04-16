@@ -15,7 +15,8 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
 from .. import modules
-from ..core.player import Side, PlayerGuest
+from ..core.player import PlayerGuest
+from common.side import Side
 from ..core.replay import Replay
 from ..core.module import Module
 from common.settings import Settings

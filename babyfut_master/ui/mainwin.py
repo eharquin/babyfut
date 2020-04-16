@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
 from PyQt5.QtCore import Qt, QTime, QTranslator, pyqtSlot
 
 from .. import modules
-from ..core.player import Side
+from common.side import Side
 from common.settings import Settings
 from .main_ui import Ui_MainWindow
 

@@ -13,7 +13,8 @@ from PyQt5.QtCore import Qt, QItemSelectionModel
 
 from .. import modules
 from ..core.module import Module
-from ..core.player import Player, Side
+from ..core.player import Player
+from common.side import Side
 from ..core.database import Database
 from ..ui.leaderboard_ui import Ui_Form as LeaderboardWidget
 from ..ui.playerlist_ui import Ui_Form as PlayerListWidget

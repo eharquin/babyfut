@@ -13,7 +13,7 @@ from .. import modules
 from ..core.module import Module
 from common.settings import Settings
 from ..ui.menu_ui import Ui_Form as MenuWidget
-from ..core.player import Side
+from common.side import Side
 
 class MenuModule(Module):
 	def __init__(self, parent):

@@ -10,7 +10,8 @@ from PyQt5.QtCore import Qt
 
 from .. import modules #tout le package modules
 from ..core.module import Module
-from ..core.player import Side, Player
+from ..core.player import Player
+from common.side import Side
 
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):

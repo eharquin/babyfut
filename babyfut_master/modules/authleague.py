@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import QAbstractItemView
 
 from .auth import AuthModuleBase
 from ..ui.authleague_ui import Ui_Form as AuthLeagueWidget
-from ..core.player import Side, PlayerEmpty
+from ..core.player import PlayerEmpty
+from common.side import Side
 
 class AuthLeagueModule(AuthModuleBase):
 	def __init__(self, parent):

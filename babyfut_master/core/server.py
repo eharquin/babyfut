@@ -9,7 +9,7 @@ import threading, socket
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from ..babyfut_master import ON_RASP
-from .player import Side, opposite
+from common.side import Side, opposite
 from common.settings import Settings
 
 if ON_RASP:

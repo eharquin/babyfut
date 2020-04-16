@@ -9,7 +9,8 @@ import logging
 from PyQt5.QtWidgets import QSizePolicy
 
 from .auth import AuthModuleBase
-from ..core.player import Side, PlayerGuest
+from ..core.player import PlayerGuest
+from common.side import Side
 from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
 
 class AuthQuickModule(AuthModuleBase):

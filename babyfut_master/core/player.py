@@ -6,7 +6,7 @@
 
 import os
 import logging
-from enum import Enum
+
 from http import HTTPStatus
 
 from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent
@@ -19,16 +19,6 @@ from .ginger import Ginger
 from .database import Database, DatabaseError
 from ..ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
-class Side(Enum):
-	'''
-	Values of the enum are used throughout the code for indexing purposes, not to be changed
-	'''
-	Undef = -1
-	Left  = 0
-	Right = 1
-
-def opposite(side):
-	return Side.Right if side==Side.Left else Side.Left
 
 class ConsentDialog(QDialog):
 	def __init__(self, parent):
