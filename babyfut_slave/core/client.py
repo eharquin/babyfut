@@ -5,7 +5,8 @@
 @author: Laurine Dictus, Anaël Lacour
 """
 
-import socket, pickle
+import socket, pickle, threading
+from PyQt5.QtCore import QObject
 
 from common.message import *
 
@@ -13,11 +14,13 @@ from common.message import *
 host = "localhost"
 port = 15555
 
-class Client:
+class Client(QObject):
     def __init__(self):
-        connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connexion.connect((hote, port))
+        QObject.__init__(self)
+        self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connexion.connect((host, port))
         print("Client connecté")
+        
 
 
     def sendMessage(self, message):
@@ -26,6 +29,7 @@ class Client:
 
 
     def sendGoal(self):
+        print("Ici")
         self.sendMessage(MessageGoal())
 
     def sendRFID(self, rfid):

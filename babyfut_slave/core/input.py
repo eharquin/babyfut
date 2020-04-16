@@ -49,11 +49,16 @@ class Input(QObject):
 			print(self.side)
 			self.rfidThread = RFIDThread(self, **Input._RFIDPins)
 			self.goalThread = GoalThread(self, **Input._GoalPins)
+		
+		else:
+			self.goalThread = GoalSimulation(self)
 
 
 	def start(self):
 		if ON_RASP:
 			self.rfidThread.start()
+			self.goalThread.start()
+		else:
 			self.goalThread.start()
 
 	def stop(self):
@@ -182,6 +187,22 @@ class GoalThread(GPIOThread):
 		if dist<10:
 			if (time.time()-self.last_goal)>1:
 				print('goal')
-				self.parent.goalDetected.emit(self.parent.side)
+				self.parent.goalDetected.emit()
 
 			self.last_goal = time.time()
+
+class GoalSimulation(GPIOThread):
+	def __init__(self, parent):
+		GPIOThread.__init__(self)
+		self.parent = parent
+		self.last_goal = time.time()
+
+	def run(self):
+		while self.running():
+			carac=input("Tapez a pour simuler un goal :")
+			if carac=="a":
+				self.parent.goalDetected.emit()
+				print("C'est OK")
+
+	def clean(self):()
+

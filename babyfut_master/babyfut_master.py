@@ -50,12 +50,12 @@ if __name__=='__main__':
 
 		if not exists(IMG_PATH):
 			 os.makedirs(IMG_PATH)
-'''
+		'''
 		if ReplayThread.isCamAvailable():
 			threadReplay = ReplayThread(Side.Left)
 			threadReplay.start()
 			myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
-'''
+		'''
 		
 		input = Input()
 		#input.rfidReceived.connect(lambda side, rfid: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
@@ -74,11 +74,11 @@ if __name__=='__main__':
 		app.exec_()
 
 
-'''
+		'''
 		if ReplayThread.isCamAvailable():
 			threadReplay.stop()
 			threadReplay.join()
-'''
+		'''
 		input.stop()
 		server.closeConn()
 		server.stop()
