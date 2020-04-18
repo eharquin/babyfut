@@ -5,7 +5,7 @@ from common.message import Message
 import socket, pickle
 
 hote = ''
-port = 12800
+port = 12800 # TODO put in settings 
 
 socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socket.bind(('', 15555))
