@@ -29,13 +29,13 @@ class Client(QObject):
 
 
     def sendGoal(self):
-        self.replayReady.wait()
-        if os.path.exists(replayPath) :
-        	length=os.path.getsize(replayPath)
+        #self.replayReady.wait()
+        if os.path.exists(self.replayPath):
+            print("Replay trouve\n")
+            length=os.path.getsize(self.replayPath)
         else:
-            length=0
-        
-        self.sendMessage(MessageGoal(lenght))
+            length=0      
+        self.sendMessage(MessageGoal(length))
 
         envoiReplay=self.connexion.recv(1)    
         self.sendReplay()
@@ -48,6 +48,6 @@ class Client(QObject):
         self.replayReady.set()
 
     def sendReplay(self):        
-        with open(replayPath, "rb") as video:
+        with open(self.replayPath, "rb") as video:
             buffer = video.read()
             self.connexion.sendall(buffer)
