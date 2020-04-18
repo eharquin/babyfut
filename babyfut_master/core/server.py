@@ -6,7 +6,7 @@
 @modif : Thibaud Le Graverend
 """
 
-import threading, socket, pickle
+import threading, socket, pickle, time
 import _thread
 
 
@@ -50,12 +50,24 @@ class Server(QObject):
         self.slave2 = _thread.start_new_thread(self.client_thread, (self.conn_client2, self.info_client2))
 
 
-    def goalReception(self, message):
-        self.goalSignal.emit(message.Side)
+    def goalReception(self, message, conn_client):
+        #self.goalSignal.emit(message.getSideMsg()) // TODO handle signal
         print("But marqué !")
+        conn_client.send("1".encode())
+        buffersize=0
+        with open("videorec.mp4", "wb") as video:
+            while(buffersize<message.replayLength):
+                buffer = conn_client.recv(1024)
+                time.sleep(5/600)
+                buffersize+=len(buffer)
+                video.write(buffer)
+            print("vid ok")
 
-    def RFIDReception(self, message):
-        self.rfidSignal.emit(message.Side, message.rfidcode)
+
+
+    #def RFIDReception(self, message):
+        #self.rfidSignal.emit(message.side, message.rfidcode) // TODO handle signal
+
 
     def client_thread(self, conn_client, info_client):
         while 1:
@@ -63,9 +75,11 @@ class Server(QObject):
             message = pickle.loads(message)
             if (message.type=='goal'):
                 print("Goal, appel de la fonction")
-                server.goalReception(message)
+                self.goalReception(message, conn_client)
             elif (message.type=='rfid'):
-                server.RFIDReception(message)
+                self.RFIDReception(message)
+            else:
+                pass
 
         
     

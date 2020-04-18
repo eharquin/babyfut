@@ -18,11 +18,7 @@ class MessageGoal(Message):
     def __init__(self, length):
         Message.__init__(self)
         self.type = "goal"
-<<<<<<< HEAD
-        self.replayLenght = lenght
-=======
         self.replayLength = length
->>>>>>> 02a3131b11e5e2c9cb5a28e4391562be4e964226
         #seld._id = 
     
 
