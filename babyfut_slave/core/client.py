@@ -11,6 +11,7 @@ import os
 from common.message import *
 from ..babyfut_slave import getContent
 from threading import Event
+from .replay import Replay
 
 class Client(QObject):
     def __init__(self, host, port):
@@ -29,16 +30,16 @@ class Client(QObject):
 
 
     def sendGoal(self):
-        #self.replayReady.wait()
+        if Replay.isCamAvailable():
+            self.replayReady.wait()
+
+        self.sendMessage(MessageGoal(length))
+        envoiReplay=self.connexion.recv(1) 
         if os.path.exists(self.replayPath):
             print("Replay trouve\n")
             length=os.path.getsize(self.replayPath)
-        else:
-            length=0      
-        self.sendMessage(MessageGoal(length))
-
-        envoiReplay=self.connexion.recv(1)    
         self.sendReplay()
+
 
     def sendRFID(self, rfid):
         self.sendMessage(MessageRFID(rfid))
