@@ -14,6 +14,7 @@ def getContent(path):
 ON_RASP = os.uname()[1] == 'raspberrypi'
 
 if __name__=='__main__':
+    app = QApplication(sys.argv)
     __package__ = 'babyfut_slave'
     from .core.client import Client
     from .core.input import Input
@@ -29,7 +30,7 @@ if __name__=='__main__':
     input.goalDetected.connect(client.sendGoal)
     input.start()
 
-    while 1:()
+    app.exec_()
 
    
 
