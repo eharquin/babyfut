@@ -22,6 +22,8 @@ if __name__=='__main__':
     from .core.client import Client
     from .core.input import Input
     from .core.replay import Replay
+
+    
     #Allow to quit with ctrl+C
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
