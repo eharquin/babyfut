@@ -17,7 +17,7 @@ class Message:
 class MessageGoal(Message):
     def __init__(self, lenght):
         Message.__init__(self)
-        self._type = "goal"
+        self.type = "goal"
         self.replayLenght = lenght
         #seld._id = 
     
@@ -25,12 +25,12 @@ class MessageGoal(Message):
 class MessageRFID(Message):
     def __init__(self, rfid_code):
         Message.__init__(self)
-        self._type = "rfid"
+        self.type = "rfid"
         self.rfidCode = rfid_code
 
 
 class MessageReplay(Message):
     def __init__(self):
         Message.__init__(self)
-        self._type = "replay"
+        self.type = "replay"
 

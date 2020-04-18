@@ -41,13 +41,13 @@ class Server(QObject):
         self.connexion.listen(5)
         self.conn_client1, self.info_client1 = self.connexion.accept()
         print("Connexion établi avec client1" + str(self.conn_client1) + str(self.info_client1))
-        self.slave1 = _thread.start_new_thread(self.client_thread, (self.conn_client1, self.info_client1,))
+        self.slave1 = _thread.start_new_thread(self.client_thread, (self.conn_client1, self.info_client1))
 
         # Wait for 2nd slave
         self.connexion.listen(5)
         self.conn_client2, self.info_client2 = self.connexion.accept()
         print("Connexion établi avec client2" + str(self.conn_client2) + str(self.info_client2))
-        self.slave2 = _thread.start_new_thread(self.client_thread, (self.conn_client2, self.info_client2,))
+        self.slave2 = _thread.start_new_thread(self.client_thread, (self.conn_client2, self.info_client2))
 
 
     def goalReception(self, message):
@@ -57,7 +57,7 @@ class Server(QObject):
     def RFIDReception(self, message):
         self.rfidSignal.emit(message.Side, message.rfidcode)
 
-    def client_thread(self, conn_client, info_clients):
+    def client_thread(self, conn_client, info_client):
         while 1:
             message = conn_client.recv(1024)
             message = pickle.loads(message)
