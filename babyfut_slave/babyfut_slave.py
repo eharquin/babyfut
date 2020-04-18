@@ -25,9 +25,17 @@ if __name__=='__main__':
     #Allow to quit with ctrl+C
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-
+   
     #Starting client communication with master thread
-    client = Client('localhost', 15555, 12800)
+    client = Client('localhost', 15555)
+
+
+    if ReplayThread.isCamAvailable():
+        threadReplay = ReplayThread()
+        threadReplay.start()
+        threadReplay.readyToSend.connect(client.setReplayReady)
+		#myapp.dispatchMessage({'replayThread': threadReplay}, toType=GameModule)
+
 
     #Handling RFID and Goal lecture Threads
     input = Input()
@@ -39,5 +47,12 @@ if __name__=='__main__':
 
     app.exec_()
 
+
+    input.stop()
+    input.join()
+
+    if ReplayThread.isCamAvailable():
+        threadReplay.stop()
+        threadReplay.join()
    
 

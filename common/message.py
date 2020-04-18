@@ -15,9 +15,10 @@ class Message:
 
 
 class MessageGoal(Message):
-    def __init__(self):
+    def __init__(self, lenght):
         Message.__init__(self)
         self._type = "goal"
+        self.replayLenght = lenght
         #seld._id = 
     
 

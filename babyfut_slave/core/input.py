@@ -35,8 +35,10 @@ class Input(QObject):
 		'pin_echo':  17
 	}
 
+	#Defining Qt Signals
 	rfidReceived = pyqtSignal(str)
 	goalDetected = pyqtSignal()
+
 
 	def __init__(self):
 		QObject.__init__(self)
@@ -51,20 +53,23 @@ class Input(QObject):
 			self.goalThread = GoalThread(self, **Input._GoalPins)
 		
 		else:
-			self.goalThread = GoalSimulation(self)
-
+			#On Computer, thread detecting goals with keyborad
+			self.goalSimulation= GoalSimulation(self)
 
 	def start(self):
 		if ON_RASP:
 			self.rfidThread.start()
 			self.goalThread.start()
 		else:
-			self.goalThread.start()
+			self.goalSimulation.start()
 
 	def stop(self):
 		if ON_RASP:
 			self.rfidThread.stop(); self.rfidThread.join()
 			self.goalThread.stop(); self.goalThread.join()
+		else:
+			self.goalSimulation.stop(); self.goalSimulation.join()
+
 
 class GPIOThread(Thread):
 	CLEANED = False
@@ -148,37 +153,33 @@ class GoalThread(GPIOThread):
 			time.sleep(2)
 
 			while self.running():
-				if ON_RASP:
-					# Trigger a scan with a 10us pulse
-					GPIO.output(self.pin_trig, GPIO.HIGH)
-					time.sleep(0.00001)
-					GPIO.output(self.pin_trig, GPIO.LOW)
-					timeout = False
-					start_read = time.time()
+				# Trigger a scan with a 10us pulse
+				GPIO.output(self.pin_trig, GPIO.HIGH)
+				time.sleep(0.00001)
+				GPIO.output(self.pin_trig, GPIO.LOW)
+				timeout = False
+				start_read = time.time()
 
-					# Read the echo
-					while self.running() and GPIO.input(self.pin_echo)==0:
-						pulse_start_time = time.time()
-						# Prevent infinite loops, add timeout.
-						if (time.time() - start_read) > 0.06:
-							timeout = True
-							break
+				# Read the echo
+				while self.running() and GPIO.input(self.pin_echo)==0:
+					pulse_start_time = time.time()
+					# Prevent infinite loops, add timeout.
+					if (time.time() - start_read) > 0.06:
+						timeout = True
+						break
 
-					while self.running() and GPIO.input(self.pin_echo)==1:
-						pulse_end_time = time.time()
-						# Prevent infinite loops, add timeout.
-						if (time.time() - start_read) > 0.06:
-							timeout = True
-							break
+				while self.running() and GPIO.input(self.pin_echo)==1:
+					pulse_end_time = time.time()
+					# Prevent infinite loops, add timeout.
+					if (time.time() - start_read) > 0.06:
+						timeout = True
+						break
 
-					if self.running() and not timeout:
-						pulse_duration = pulse_end_time - pulse_start_time
-						distance = round(pulse_duration * 17150, 2)
-						self._handle_dist(distance)
-				else: #On computer, simulating goals with keyboard
-					carac=input("Tapez a pour simuler un goal :")
-					if carac=='a':
-						self.parent.goalDetected.emit()
+				if self.running() and not timeout:
+					pulse_duration = pulse_end_time - pulse_start_time
+					distance = round(pulse_duration * 17150, 2)
+					self._handle_dist(distance)
+
 		finally:
 			self.clean()
 
@@ -191,6 +192,7 @@ class GoalThread(GPIOThread):
 
 			self.last_goal = time.time()
 
+#Testing Thread started only on computer
 class GoalSimulation(GPIOThread):
 	def __init__(self, parent):
 		GPIOThread.__init__(self)
@@ -202,7 +204,6 @@ class GoalSimulation(GPIOThread):
 			carac=input("Tapez a pour simuler un goal :")
 			if carac=="a":
 				self.parent.goalDetected.emit()
-				print("C'est OK")
 
 	def clean(self):()
 

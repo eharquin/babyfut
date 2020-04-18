@@ -6,17 +6,23 @@
 import subprocess
 from threading import Thread, Event
 
-from pr_baby_app_esclave.babyfut import getContent, ON_RASP
-from pr_baby_app_esclave.core.settings import Settings
+from ..babyfut_slave import getContent, ON_RASP
+from common.settings import Settings
+from PyQt5.QtCore import QObject, pyqtSignal
+
 
 if ON_RASP:
 	import picamera
 
-class Replay(Thread):
-	def __init__(self, side):
+class Replay(Thread,QObject):
+	def __init__(self):
 		Thread.__init__(self)
-		self.replayPath = getContent('Replay {}.mp4'.format(side.name))
+		QObject.__init__(self)
+
+		self.replayPath = getContent('replay.mp4')
 		self.shutdown = False
+
+		readyToSend = pyqtsignal()
 
 		if ON_RASP:
 			self.camera_detected = Replay.detectCam()
@@ -73,7 +79,7 @@ class Replay(Thread):
 				print("copy replay")
 				self.stream.copy_to(self.replayPath)
 				self.stream.clear()
-
+				self.readyToSend.emit()
                 # Set this flag to tell the calling thread that replay is saved
 				self.stopped_flag.set()
 
