@@ -69,11 +69,6 @@ if __name__=='__main__':
 		app.exec_()
 
 
-		'''
-		if ReplayThread.isCamAvailable():
-			threadReplay.stop()
-			threadReplay.join()
-		'''
 		input.stop()
 		server.closeConn()
 		server.stop()

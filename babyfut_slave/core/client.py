@@ -33,7 +33,7 @@ class Client(QObject):
         if os.path.exists(replayPath) :
         	length=os.path.getsize(replayPath)
         else:
-            length=0;
+            length=0
         
         self.sendMessage(MessageGoal(lenght))
 

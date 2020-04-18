@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, sys, signal
-
+from os.path import dirname, abspath, join, exists
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -21,7 +21,7 @@ if __name__=='__main__':
     __package__ = 'babyfut_slave'
     from .core.client import Client
     from .core.input import Input
-
+    from .core.replay import Replay
     #Allow to quit with ctrl+C
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -30,7 +30,7 @@ if __name__=='__main__':
     client = Client('localhost', 15555)
 
 
-    if ReplayThread.isCamAvailable():
+    if Replay.isCamAvailable():
         threadReplay = ReplayThread()
         threadReplay.start()
         threadReplay.readyToSend.connect(client.setReplayReady)
@@ -51,7 +51,7 @@ if __name__=='__main__':
     input.stop()
     input.join()
 
-    if ReplayThread.isCamAvailable():
+    if Replay.isCamAvailable():
         threadReplay.stop()
         threadReplay.join()
    
