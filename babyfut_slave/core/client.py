@@ -22,7 +22,6 @@ class Client(QObject):
         print("Client connecté")
         
 
-
     def sendMessage(self, message):
         data = pickle.dumps(message)
         self.connexion.send(data)

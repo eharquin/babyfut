@@ -1,36 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-#from common.message import *
+from common.message import Message
 import socket, pickle
-
-class Message:
-    def __init__(self):
-        self.side = Side.Left if Settings['app.side']=='left' else Side.Right
-
-    def getSideMsg(self):
-        return self.side
-
-
-class MessageGoal(Message):
-    def __init__(self):
-        Message.__init__(self)
-        self._type = "goal"
-        #seld._id = 
-    
-
-class MessageRFID(Message):
-    def __init__(self, rfid_code):
-        Message.__init__(self)
-        self._type = "rfid"
-        self.rfidCode = rfid_code
-
-
-class MessageReplay(Message):
-    def __init__(self):
-        Message.__init__(self)
-        self._type = "replay"
 
 hote = ''
 port = 12800
@@ -45,7 +17,7 @@ while True:
         response = client.recv(1024)
         if response != "":
                 message = pickle.loads(response)
-                print(message.type)
+                print(message._type)
 
 socket.close()
 print("Server closed")

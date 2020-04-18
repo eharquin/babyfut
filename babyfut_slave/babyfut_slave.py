@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -18,6 +18,7 @@ if __name__=='__main__':
     __package__ = 'babyfut_slave'
     from .core.client import Client
     from .core.input import Input
+    
     #Starting client communication with master thread
     client = Client()
     print("coucou bilou")

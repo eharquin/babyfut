@@ -8,7 +8,7 @@ from common.settings import Settings
 
 class Message:
     def __init__(self):
-        self.side = Side.Left if Settings['app.side']=='left' else Side.Right
+        self.side = 'left' #Side.Left if Settings['app.side']=='left' else Side.Right
 
     def getSideMsg(self):
         return self.side
