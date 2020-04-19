@@ -9,7 +9,7 @@ import socket, pickle, threading
 from PyQt5.QtCore import QObject
 import os
 from common.message import *
-from ..babyfut_slave import getContent
+from ..babyfut_slave import getContent, ON_RASP
 from threading import Event
 from .replay import Replay
 
@@ -30,17 +30,19 @@ class Client(QObject):
 
 
     def sendGoal(self):
-        if Replay.isCamAvailable():
-            self.replayReady.wait()
-
+        #If a Replay is found for sending
+        #if (Replay.isCamAvailable() and os.path.exists(self.replayPath):
         if os.path.exists(self.replayPath):
-            print("Replay trouve\n")
+            print("OK")
+            if ON_RASP:
+                self.replayReady.wait() #Flag set by ReplayThread when copy into replayPath is over
             length=os.path.getsize(self.replayPath)
             self.sendMessage(MessageGoal(length))
-            envoiReplay=self.connexion.recv(1) 
-            self.sendReplay()
+            wantReplay=self.connexion.recv(1) #Waiting order for sending replay
+            if wantReplay.decode() == '1':
+                self.sendReplay()
         else:
-            self.sendMessage(MessageGoal(NULL))
+            self.sendMessage(MessageGoal(0))
 
 
     def sendRFID(self, rfid):

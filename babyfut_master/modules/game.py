@@ -21,6 +21,7 @@ from ..core.replay import Replay
 from ..core.module import Module
 from common.settings import Settings
 from ..ui.game_ui import Ui_Form as GameWidget
+from ..babyfut_master import getContent
 
 class GameOverChecker():
 	def __init__(self, conditionType, limit):
@@ -69,8 +70,8 @@ class ReplayPlayer(QMediaPlayer):
 
 	def stop_replay(self, status):
 		if status==QMediaPlayer.StoppedState:
-			self._playerWidget.setFullScreen(False);
-			self._playerWidget.setVisible(False);
+			self._playerWidget.setFullScreen(False)
+			self._playerWidget.setVisible(False)
 			self.parent().endOfReplay()
 
 class GameModule(Module):
@@ -85,8 +86,9 @@ class GameModule(Module):
 		self.ui.btnScore1.clicked.connect(lambda: self.goal(Side.Left))
 		self.ui.btnScore2.clicked.connect(lambda: self.goal(Side.Right))
 
-		self.camera = None
-		self.video_player = None
+		
+		self.video_player = None #Flag showing if a replay is being played
+		self.replayPath = getContent('replay_received.mp4')
 
 	def load(self):
 		logging.debug('Loading GameModule')
@@ -95,9 +97,9 @@ class GameModule(Module):
 		self.timerUpdateChrono.start(1000)
 		self.ui.lcdChrono.display(QTime(0,0).toString("hh:mm:ss"))
 
-		self.video_player = None
-		if self.camera:
-			self.camera.start_recording()
+		#self.video_player = None
+		#if self.camera:
+		#	self.camera.start_recording()
 
 		gameover_type = Settings['gameover.type']
 		gameover_value = Settings['gameover.value']
@@ -133,8 +135,8 @@ class GameModule(Module):
 			elif key=='players':
 				self.players = val
 
-			elif key=='replayThread':
-				self.camera = val
+			# elif key=='replayThread':
+			# 	self.camera = val
 
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
@@ -184,31 +186,36 @@ class GameModule(Module):
 
 			# Show replay
 			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
-			if self.camera:
-                                if (side == Side.Left):
-                                        replayFile = self.camera.stop_recording()
-                                else:
-                                        replayFile = "/home/pi/pr_baby/content/Replay Right.mp4"
-			elif Settings['replay.debug']:
-				replayFile = Replay.Dummy()
-			else:
-				replayFile = ''
-			print(replayFile)
+			# if self.camera:
+            #                     if (side == Side.Left):
+            #                             replayFile = self.camera.stop_recording()
+            #                     else:
+            #                             replayFile = "/home/pi/pr_baby/content/Replay Right.mp4"
+			# elif Settings['replay.debug']:
+			# 	replayFile = Replay.Dummy()
+			# else:
+			# 	replayFile = ''
+			# print(replayFile)
 
-			if replayFile and os.path.exists(replayFile):
+			# if replayFile and os.path.exists(replayFile):
+			# 	self.video_player = ReplayPlayer(self)
+			# 	self.video_player.start_replay(replayFile)
+			# else:
+			# 	self.updateScores()
+			if os.path.exists(self.replayPath):
 				self.video_player = ReplayPlayer(self)
-				self.video_player.start_replay(replayFile)
+				self.video_player.start_replay(self.replayPath)
 			else:
 				self.updateScores()
+
 
 	def endOfReplay(self):
 		self.video_player = None
 
 		if self.gameStartTime:
 			self.updateScores()
-
-		if self.camera:
-			self.camera.start_recording()
+		# if self.camera:
+		# 	self.camera.start_recording()
 
 	def handleCancel(self):
 		self.switchModule(modules.MenuModule)
