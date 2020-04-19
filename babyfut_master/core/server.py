@@ -26,16 +26,17 @@ host = ''
 port = 15555
 
 class Server(QObject):
+
+    # Signals for goal and rfid detection
+    goalSignal = pyqtSignal(Side)
+    rfidSignal = pyqtSignal(Side, str)
+
     def __init__(self):
         QObject.__init__(self)
         #threading.Thread.__init__(self)
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connexion.bind((host, port))
         print("Serveur instancié\n")
-
-        # Signals for goal and rfid detection
-        self.goalSignal = pyqtSignal(Side)
-        self.rfidSignal = pyqtSignal(Side, str)
 
         # Wait for connection with 1st slave
         self.connexion.listen(5)
@@ -51,7 +52,7 @@ class Server(QObject):
 
 
     def goalReception(self, message, conn_client):
-        #self.goalSignal.emit(message.getSideMsg()) // TODO handle signal
+        self.goalSignal.emit(message.getSideMsg()) # TODO handle signal
         print("But marqué !")
         conn_client.send("1".encode())
         buffersize=0
@@ -65,8 +66,8 @@ class Server(QObject):
 
 
 
-    #def RFIDReception(self, message):
-        #self.rfidSignal.emit(message.side, message.rfidcode) // TODO handle signal
+    def RFIDReception(self, message):
+        self.rfidSignal.emit(message.side, message.rfidcode) # TODO handle signal
 
 
     def client_thread(self, conn_client, info_client):

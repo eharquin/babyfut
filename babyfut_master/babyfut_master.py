@@ -12,6 +12,7 @@ import sys
 import logging
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
 def getContent(path):
@@ -55,12 +56,13 @@ if __name__=='__main__':
 		input = Input()
 		#input.rfidReceived.connect(lambda side, rfid: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
 		#input.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
-		input.start()
+		#input.start()
 
 		server = Server()
 		#TODO : connecter les 3 types de message
-		server.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
-		server.start()
+		server.goalSignal.connect(lambda side	: myapp.dispatchMessage({'goal': True, 'source': side}))
+		server.rfidSignal.connect(lambda side, rfid	: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
+		#server.start()
 		
 		threadDownloader = Downloader.instance()
 		threadDownloader.start()

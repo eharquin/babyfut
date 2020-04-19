@@ -23,25 +23,25 @@ class Input(QObject):
 	'''
 	Defines pins. Uses BCM pin identifiers
 	'''
-'''
-	_RFIDPins = {
-		'pin_rst': 25,
-		'pin_ce' :  8,
-		'pin_irq': 24
-	}
+	'''
+		_RFIDPins = {
+			'pin_rst': 25,
+			'pin_ce' :  8,
+			'pin_irq': 24
+		}
 
-	_GoalPins = {
-		'pin_trig':  3,
-		'pin_echo':  17
-	}
-'''
+		_GoalPins = {
+			'pin_trig':  3,
+			'pin_echo':  17
+		}
+	'''
 	_keyButtonBindings = {
-#		26: 'up',
-#		22: 'left',
-#		27: 'right',
-#		23: 'down',
-#		17: 'return',
-#		18: 'escape'
+		#26: 'up',
+		#22: 'left',
+		#27: 'right',
+		#23: 'down',
+		#17: 'return',
+		#18: 'escape'
 
 		16: 'up',
 		 6: 'left',

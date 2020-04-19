@@ -63,7 +63,7 @@
     "ui": {
         "fullscreen": {
             "type": "boolean",
-            "value": true
+            "value": false
         },
         "language": {
             "type": "combo",

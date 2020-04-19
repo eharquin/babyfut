@@ -33,12 +33,14 @@ class Client(QObject):
         if Replay.isCamAvailable():
             self.replayReady.wait()
 
-        self.sendMessage(MessageGoal(length))
-        envoiReplay=self.connexion.recv(1) 
         if os.path.exists(self.replayPath):
             print("Replay trouve\n")
             length=os.path.getsize(self.replayPath)
-        self.sendReplay()
+            self.sendMessage(MessageGoal(length))
+            envoiReplay=self.connexion.recv(1) 
+            self.sendReplay()
+        else:
+            self.sendMessage(MessageGoal(NULL))
 
 
     def sendRFID(self, rfid):
