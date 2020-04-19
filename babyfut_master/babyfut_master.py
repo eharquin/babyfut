@@ -70,11 +70,7 @@ if __name__=='__main__':
 		myapp.show()
 		app.exec_()
 
-
-		input.stop()
-		server.closeConn()
 		server.stop()
-		server.join()
 		threadDownloader.stop()
 		threadDownloader.join()
 

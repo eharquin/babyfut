@@ -56,3 +56,6 @@ class Client(QObject):
         with open(self.replayPath, "rb") as video:
             buffer = video.read()
             self.connexion.sendall(buffer)
+
+    def stop(self):
+        self.connexion.close()

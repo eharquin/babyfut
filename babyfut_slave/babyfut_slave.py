@@ -53,6 +53,7 @@ if __name__=='__main__':
 
     input.stop()
     input.join()
+    client.stop()
 
     if Replay.isCamAvailable():
         threadReplay.stop()

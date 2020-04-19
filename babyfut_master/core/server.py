@@ -69,7 +69,7 @@ class Server(QObject):
     def RFIDReception(self, message):
         self.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
 
-
+    # Might be changed for a proper class inherited from threading
     def client_thread(self, conn_client, info_client):
         while 1:
             message = conn_client.recv(1024)
@@ -82,6 +82,14 @@ class Server(QObject):
             else:
                 pass
 
+
+    def stop(self):
+        self.conn_client1.close()
+        #self.slave1.stop()
+        self.conn_client2.close()
+        #self.slave2.stop()
+        self.connexion.close()
+        print("Server closed properly")
         
     
 

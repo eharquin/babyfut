@@ -134,7 +134,7 @@
     "network": {
         "host": {
             "type": "string",
-            "value": "192.168.0.14"
+            "value": "localhost"
         },
 
         "port": {
