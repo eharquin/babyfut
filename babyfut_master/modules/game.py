@@ -122,8 +122,6 @@ class GameModule(Module):
 		self.timerUpdateChrono.stop()
 		self.gameStartTime = None
 
-		if self.camera:
-			self.camera.stop_recording()
 
 	def other(self, **kwargs):
 		logging.debug('Other GameModule')
@@ -135,8 +133,6 @@ class GameModule(Module):
 			elif key=='players':
 				self.players = val
 
-			# elif key=='replayThread':
-			# 	self.camera = val
 
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
@@ -154,12 +150,15 @@ class GameModule(Module):
 			ret = QMessageBox.question(self, 'Stop the match?', 'Do you really want to stop this match? It wont be saved.')
 			if ret == QMessageBox.Yes:
 				self.handleCancel()
-
+		
+		'''
+		Enable scoring goals with Keyboard
 		elif e.key() == Qt.Key_Left:
 			self.goal(Side.Left)
 
 		elif e.key() == Qt.Key_Right:
 			self.goal(Side.Right)
+		'''
 
 	def updateChrono(self):
 		# Updated each second
@@ -184,28 +183,11 @@ class GameModule(Module):
 			self.scores[side] += 1
 			print('goal ici')
 
-			# Show replay
-			# May require `sudo apt-get install qtmultimedia5-examples` in order to install the right libraries
-			# if self.camera:
-            #                     if (side == Side.Left):
-            #                             replayFile = self.camera.stop_recording()
-            #                     else:
-            #                             replayFile = "/home/pi/pr_baby/content/Replay Right.mp4"
-			# elif Settings['replay.debug']:
-			# 	replayFile = Replay.Dummy()
-			# else:
-			# 	replayFile = ''
-			# print(replayFile)
-
-			# if replayFile and os.path.exists(replayFile):
-			# 	self.video_player = ReplayPlayer(self)
-			# 	self.video_player.start_replay(replayFile)
-			# else:
-			# 	self.updateScores()
 			if os.path.exists(self.replayPath):
 				self.video_player = ReplayPlayer(self)
 				self.video_player.start_replay(self.replayPath)
 			else:
+				#If replay showed, updateScores is called at end OfReplay
 				self.updateScores()
 
 

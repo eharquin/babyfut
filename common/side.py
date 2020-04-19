@@ -8,6 +8,5 @@ class Side(Enum):
 	Left  = 0
 	Right = 1
 
-	
-def opposite(side):
-	return Side.Right if side==Side.Left else Side.Left
+	def opposite(self):
+		return self.Right if self==Left else self.Left

@@ -39,7 +39,7 @@ class EndGameModule(Module):
 			else:
 				idTeams[side] = db.insert_team([player.id for player in self.players[side]], self.scores[side])
 
-		db.insert_match(int(self.start_time), int(self.duration), idTeams[self.winSide], idTeams[self.winSide.opposite])
+		db.insert_match(int(self.start_time), int(self.duration), idTeams[self.winSide], idTeams[self.winSide.opposite()])
 
 		# Quit the screen after 5 seconds if the user doesn't do it before
 		#self.screenTimeout.start(5000)

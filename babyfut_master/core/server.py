@@ -12,7 +12,7 @@ import _thread
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from ..babyfut_master import ON_RASP, getContent
-from common.side import Side, opposite
+from common.side import Side
 from common.settings import Settings
 from common.message import Message
 
@@ -56,7 +56,7 @@ class Server(QObject):
         print("But marqué !")
         conn_client.send("1".encode())
         buffersize=0
-        with open(getContent("videorec.mp4"), "wb") as video:
+        with open(getContent("replay_received.mp4"), "wb") as video:
             while(buffersize<message.replayLength):
                 buffer = conn_client.recv(1024)
                 time.sleep(5/600)
@@ -101,7 +101,7 @@ class Server(QObject):
     #     self.connexion.listen()
     #     if ON_RASP:
     #         self.side = Side.Left if Settings['app.side']=='left' else Side.Right
-    #         self.side = opposite(self.side)
+    #         self.side = opposite(self.side) #not good
     #     print("Waiting for connection with client\n")
 
     # def bytetoArray(self, bite):
