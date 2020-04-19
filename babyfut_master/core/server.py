@@ -11,7 +11,7 @@ import _thread
 
 
 from PyQt5.QtCore import QObject, pyqtSignal
-from ..babyfut_master import ON_RASP
+from ..babyfut_master import ON_RASP, getContent
 from common.side import Side, opposite
 from common.settings import Settings
 from common.message import Message
@@ -52,11 +52,11 @@ class Server(QObject):
 
 
     def goalReception(self, message, conn_client):
-        self.goalSignal.emit(message.getSideMsg()) # TODO handle signal
+        self.goalSignal.emit(message.getSide()) # TODO handle signal
         print("But marqué !")
         conn_client.send("1".encode())
         buffersize=0
-        with open("videorec.mp4", "wb") as video:
+        with open(getContent("videorec.mp4"), "wb") as video:
             while(buffersize<message.replayLength):
                 buffer = conn_client.recv(1024)
                 time.sleep(5/600)
@@ -67,7 +67,7 @@ class Server(QObject):
 
 
     def RFIDReception(self, message):
-        self.rfidSignal.emit(message.side, message.rfidcode) # TODO handle signal
+        self.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
 
 
     def client_thread(self, conn_client, info_client):

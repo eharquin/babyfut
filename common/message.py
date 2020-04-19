@@ -8,10 +8,11 @@ from common.settings import Settings
 
 class Message:
     def __init__(self):
-        self.side = 'left' #Side.Left if Settings['app.side']=='left' else Side.Right
+        self.side = Side.Left #Side.Left if Settings['app.side']=='left' else Side.Right
 
-    def getSideMsg(self):
+    def getSide(self):
         return self.side
+
 
 
 class MessageGoal(Message):
@@ -27,6 +28,9 @@ class MessageRFID(Message):
         Message.__init__(self)
         self.type = "rfid"
         self.rfidCode = rfid_code
+
+    def getRFID(self):
+        return self.rfidCode
 
 
 class MessageReplay(Message):
