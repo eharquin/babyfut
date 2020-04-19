@@ -29,7 +29,7 @@ if __name__=='__main__':
 
    
     #Starting client communication with master thread
-    client = Client('192.168.0.13', 15555)
+    client = Client('192.168.0.14', 15555)
 
 
     if Replay.isCamAvailable():
