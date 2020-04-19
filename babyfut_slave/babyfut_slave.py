@@ -7,6 +7,7 @@ from os.path import dirname, abspath, join, exists
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QApplication
+from common.settings import Settings
 
 
 def getContent(path):
@@ -29,7 +30,7 @@ if __name__=='__main__':
 
    
     #Starting client communication with master thread
-    client = Client('192.168.0.14', 15555)
+    client = Client(Settings['network.host'], int(Settings['network.port']))
 
 
     if Replay.isCamAvailable():

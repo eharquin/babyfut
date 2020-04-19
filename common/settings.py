@@ -22,6 +22,12 @@ class Setting(object):
 		self.type = type(self).TypeName
 		self.value = value
 
+class SettingString(Setting):
+	TypeName = 'string'
+
+	def __init__(self, value):
+		Setting.__init__(self, value)
+
 class SettingBoolean(Setting):
 	TypeName = 'boolean'
 
@@ -102,6 +108,8 @@ class SettingsHolder(object):
 						setting = SettingCombo(value, content_inner['values'])
 					elif typeName == SettingRange.TypeName:
 						setting = SettingRange(value, content_inner['range'])
+					elif typeName == SettingString.TypeName:
+						setting = SettingString(value)
 					else:
 						raise ValueError('Unknown setting type {}'.format(typeName))
 

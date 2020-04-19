@@ -121,6 +121,25 @@
                 "error",
                 "critical"
             ]
+        },
+        "side": {
+            "type": "combo",
+            "value": "left",
+            "values": [
+                "left",
+                "right"
+            ]        
+        }
+    },
+    "network": {
+        "host": {
+            "type": "string",
+            "value": "192.168.0.14"
+        },
+
+        "port": {
+            "type": "string",
+            "value": "15555"
         }
     }
 }

@@ -5,7 +5,7 @@
 @author: Laurine Dictus, Anaël Lacour
 """
 
-import socket, pickle, threading
+import socket, pickle
 from PyQt5.QtCore import QObject
 import os
 from common.message import *

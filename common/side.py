@@ -9,4 +9,4 @@ class Side(Enum):
 	Right = 1
 
 	def opposite(self):
-		return self.Right if self==Left else self.Left
+		return Side.Right if self is Side.Left else Side.Left
