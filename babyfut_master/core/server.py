@@ -52,19 +52,19 @@ class Server(QObject):
 
 
     def goalReception(self, message, conn_client):
-        self.goalSignal.emit(message.getSide()) # TODO handle signal
+        if message.replayLength != 0:# and inGame:
+            conn_client.send("1".encode())
+            buffersize=0
+            with open(getContent("replay_received.mp4"), "wb") as video:
+                while(buffersize<message.replayLength):
+                    buffer = conn_client.recv(min(1024,message.replayLength-buffersize))
+                    buffersize+=len(buffer)
+                    video.write(buffer)
+                print("vid ok")
+        else:
+            conn_client.send("0".encode())
+        self.goalSignal.emit(message.getSide())
         print("But marqué !")
-        conn_client.send("1".encode())
-        buffersize=0
-        with open(getContent("videorec.mp4"), "wb") as video:
-            while(buffersize<message.replayLength):
-                buffer = conn_client.recv(1024)
-                time.sleep(5/600)
-                buffersize+=len(buffer)
-                video.write(buffer)
-            print("vid ok")
-
-
 
     def RFIDReception(self, message):
         self.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
