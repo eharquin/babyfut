@@ -59,6 +59,7 @@ if __name__=='__main__':
 		#input.start()
 
 		server = Server()
+		server.start()
 		#TODO : connecter les 3 types de message
 		server.goalSignal.connect(lambda side	: myapp.dispatchMessage({'goal': True, 'source': side}))
 		server.rfidSignal.connect(lambda side, rfid	: myapp.dispatchMessage({'rfid': rfid, 'source': side}))

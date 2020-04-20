@@ -32,9 +32,16 @@ class MessageRFID(Message):
     def getRFID(self):
         return self.rfidCode
 
-
+# Included with goal. Might be deleted
 class MessageReplay(Message):
     def __init__(self):
         Message.__init__(self)
         self.type = "replay"
+
+# To close ClientThread. Might be changed...
+class MessageClosing(Message):
+    def __init__(self):
+        Message.__init__(self)
+        self.type = 'close'
+
 

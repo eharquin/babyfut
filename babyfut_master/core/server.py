@@ -6,24 +6,20 @@
 @modif : Thibaud Le Graverend
 """
 
-import threading, socket, pickle, time
-import _thread
+import socket, pickle, time, select
 
-
+from threading import Thread
 from PyQt5.QtCore import QObject, pyqtSignal
 from ..babyfut_master import ON_RASP, getContent
 from common.side import Side
 from common.settings import Settings
-from common.message import Message
+from common.message import *
 
 if ON_RASP:
 	import RPi.GPIO as GPIO
 	from pirc522 import RFID # PyPi library
 	import pyautogui # PyPi library
 
-
-host = ''
-port = 15555
 
 class Server(QObject):
 
@@ -35,127 +31,100 @@ class Server(QObject):
         QObject.__init__(self)
         #threading.Thread.__init__(self)
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connexion.bind((host, port))
+        self.connexion.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.connexion.bind((Settings['network.host'], int(Settings['network.port'])))
         print("Serveur instancié\n")
 
         # Wait for connection with 1st slave
         self.connexion.listen(5)
         self.conn_client1, self.info_client1 = self.connexion.accept()
-        print("Connexion établi avec client1" + str(self.conn_client1) + str(self.info_client1))
-        self.slave1 = _thread.start_new_thread(self.client_thread, (self.conn_client1, self.info_client1))
-
+        print("Connexion établi avec client1 " + str(self.conn_client1))
+        
         # Wait for 2nd slave
         self.connexion.listen(5)
         self.conn_client2, self.info_client2 = self.connexion.accept()
-        print("Connexion établi avec client2" + str(self.conn_client2) + str(self.info_client2))
-        self.slave2 = _thread.start_new_thread(self.client_thread, (self.conn_client2, self.info_client2))
+        print("Connexion établi avec client2 " + str(self.conn_client2))
+
+    def start(self):
+        self.slave1 = ClientThread(self, self.conn_client1, self.info_client1)
+        self.slave1.start()
+        self.slave2 = ClientThread(self, self.conn_client2, self.info_client2)
+        self.slave2.start()
 
 
-    def goalReception(self, message, conn_client):
+    def stop(self):
+
+        self.slave1.stop()
+        self.slave1.join()
+        self.slave2.stop()
+        self.slave2.join()
+
+        self.conn_client1.close()
+        self.conn_client2.close()
+        self.connexion.close()
+
+        # Shutting down threads
+        # message = pickle.dumps(MessageClosing())
+        # self.conn_client1.send(message)
+        # self.conn_client2.send(message)
+        
+        
+        # Shutting down connections
+        
+
+        print("Server closed properly")
+        
+    
+
+class ClientThread(Thread):
+    def __init__(self, parent, conn_client, info_client):
+        Thread.__init__(self)
+        self.running = True
+        self.parent = parent
+        self.conn_client = conn_client
+        self.info_client = info_client
+        self.conn_client.setblocking(0)
+
+
+    def run(self):
+        print("youpi")
+        while self.running:
+            datatoread, wlist, xlist = select.select([self.conn_client], [], [], 0.05)
+            for data in datatoread:
+                message = data.recv(1024)
+                message = pickle.loads(message)
+                if (message.type=='goal'):
+                    print("Goal, appel de la fonction")
+                    self.goalReception(message)
+                elif (message.type=='rfid'):
+                    self.RFIDReception(message)
+                # elif (message.type=='closing'):
+                #     self.stop()
+                else:
+                    pass
+
+
+    def goalReception(self, message):
         if message.replayLength != 0:# and inGame:
-            conn_client.send("1".encode())
+            self.conn_client.send("1".encode())
             buffersize=0
             with open(getContent("replay_received.mp4"), "wb") as video:
                 while(buffersize<message.replayLength):
-                    buffer = conn_client.recv(min(1024,message.replayLength-buffersize))
+                    buffer = self.conn_client.recv(min(1024,message.replayLength-buffersize))
                     buffersize+=len(buffer)
                     video.write(buffer)
                 print("vid ok")
         else:
             conn_client.send("0".encode())
-        self.goalSignal.emit(message.getSide())
+        self.parent.goalSignal.emit(message.getSide())
         print("But marqué !")
 
-    def RFIDReception(self, message):
-        self.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
 
-    # Might be changed for a proper class inherited from threading
-    def client_thread(self, conn_client, info_client):
-        while 1:
-            message = conn_client.recv(1024)
-            message = pickle.loads(message)
-            if (message.type=='goal'):
-                print("Goal, appel de la fonction")
-                self.goalReception(message, conn_client)
-            elif (message.type=='rfid'):
-                self.RFIDReception(message)
-            else:
-                pass
+    def RFIDReception(self, message):
+        self.parent.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
+        print("RFID received")
 
 
     def stop(self):
-        self.conn_client1.close()
-        #self.slave1.stop()
-        self.conn_client2.close()
-        #self.slave2.stop()
-        self.connexion.close()
-        print("Server closed properly")
-        
-    
-
-
-
-
-
-
-
-    # goalDetected = pyqtSignal(Side)
-
-    # def __init__(self):
-    #     QObject.__init__(self)
-    #     threading.Thread.__init__(self)
-    #     self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #     self.connexion.bind((hote, port))
-    #     self.connexion.listen()
-    #     if ON_RASP:
-    #         self.side = Side.Left if Settings['app.side']=='left' else Side.Right
-    #         self.side = opposite(self.side) #not good
-    #     print("Waiting for connection with client\n")
-
-    # def bytetoArray(self, bite):
-    # 	res=0
-    # 	for i in range(4):
-    # 		res += bite[i]<<(i*8)
-    # 	return res
-
-    # def run(self):
-    #     while 1:
-    #         self.connexion_client, self.infos_connexion = self.connexion.accept()
-    #         print("Connection established with client\n")
-    #         msg_receive = self.connexion_client.recv(4)
-    #         currentsize=0
-    #         print("reception taille replay")
-    #         sizetoHave = self.bytetoArray(msg_receive)
-    #         print("\tsizeToHave ", sizetoHave);
-    #         with open('./content/Replay Right.mp4', "wb") as video:
-    #             print("reception du replay")
-    #             while sizetoHave > currentsize:
-    #                 buffer = self.connexion_client.recv(1024)
-    #                 if not buffer :
-    #                     break
-    #                 if len(buffer) + currentsize >= sizetoHave:
-    #                     #print("len buffer ", len(buffer))
-    #                     video.write(buffer)
-    #                     currentsize += len(buffer)
-    #                     print(currentsize)
-    #                 else:
-    #                     video.write(buffer)
-    #                     #print(currentsize)
-    #                     currentsize += 1024
-    #             print("fin de reception..")
-    #             if ON_RASP:
-    #                 self.goalDetected.emit(self.side)
-    #                 print("envoie signal OK")
-    #         self.connexion_client.close()
-    #     self.__close__()
-
-    # def closeConn(self):
-    #     self.connexion_client.send("FIN".encode())
-    #     self.__close__()
-
-    # def stop(self):
-    #     self._running = False
-
-    # def __close__(self):
-    #     print("Connection stoped\n")
-    #     self.connexion.close()
+        self.conn_client.close()
+        self.running = False
