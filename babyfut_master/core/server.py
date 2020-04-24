@@ -2,19 +2,18 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Laurine Dictus, Anaël Lacour
-@modif : Thibaud Le Graverend
+@author: Thibaud Le Graverend, Yoann Malot
 """
 
 import socket, pickle, time, select
 
 from threading import Thread
 from PyQt5.QtCore import QObject, pyqtSignal
-from ..babyfut_master import ON_RASP, getContent
+from ..babyfut_master import ON_RASP, getContent, getMainWin
 from common.side import Side
 from common.settings import Settings
 from common.message import *
-
+from PyQt5.QtWidgets import QMessageBox
 if ON_RASP:
 	import RPi.GPIO as GPIO
 	from pirc522 import RFID # PyPi library
@@ -26,6 +25,7 @@ class Server(QObject):
     # Signals for goal and rfid detection
     goalSignal = pyqtSignal(Side)
     rfidSignal = pyqtSignal(Side, str)
+    clientLostSignal = pyqtSignal(str, str)
 
     def __init__(self):
         QObject.__init__(self)
@@ -33,7 +33,6 @@ class Server(QObject):
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connexion.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connexion.bind((Settings['network.host'], int(Settings['network.port'])))
-        print("Serveur instancié\n")
 
         # Wait for connection with 1st slave
         self.connexion.listen(5)
@@ -52,18 +51,13 @@ class Server(QObject):
         self.slave2.start()
 
 
-
     def stop(self):
-
+        # Stop slave's thread
         self.slave1.stop()
         self.slave1.join()
         self.slave2.stop()
         self.slave2.join()
-        # self.keepAlive1.stop()
-        # self.keepAlive1.join()
-        # self.keepAlive2.stop()
-        # self.keepAlive2.join()
-
+        # Close TCP connections
         self.conn_client1.close()
         self.conn_client2.close()
         self.connexion.close()
@@ -88,15 +82,12 @@ class ClientThread(Thread):
                 try:
                     message = pickle.loads(message)
                     if (message.type=='goal'):
-                        print("Goal, appel de la fonction")
                         self.goalReception(message)
                     elif (message.type=='rfid'):
                         self.RFIDReception(message)
                     elif (message.type=='keepalive'):
                         self.lastKeepAliveTime = time.time()
-                        print("Keep alive reçu")
-                    else:
-                        pass
+                        #print("Keep alive reçu")
                 except:
                     pass
             self.keepAlive()
@@ -119,39 +110,22 @@ class ClientThread(Thread):
 
 
     def RFIDReception(self, message):
-        self.parent.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
+        self.parent.rfidSignal.emit(message.getSide(), message.getRFID())
         print("RFID received")
+
 
     def keepAlive(self):
         if(time.time() - self.lastKeepAliveTime > 5):
-            print("Having connection troubles with client, waiting for client to reconnect")
-            #self.connexion.close()
-            connected = 0
-            while not connected:
-                self.conn_client, self.info_client = self.parent.connexion.accept()
-
+            #displayMessage = QMessageBox.warning(getMainWin(), "Network warning !", "oups")
+            self.parent.clientLostSignal.emit("display", "Having connection troubles with client " + str(self.info_client) + 
+            ". The window will automatically disapear once the client would have reconnected.")
+            self.parent.connexion.listen(5)
+            self.conn_client, self.info_client = self.parent.connexion.accept()
+            print("Client reconnected " + str(self.conn_client))
+            self.parent.clientLostSignal.emit("close", None)
+            #displayMessage.done(1)
 
     def stop(self):
         self.conn_client.close()
         self.running = False
 
-
-# class KeepAlive(Thread):
-#     def __init__(self, parent, connexion):
-#         Thread.__init__(self)
-#         self.running = True
-#         self.parent = parent
-#         self.connexion = connexion
-#         self.time = time.time()
-
-#     def run(self):
-#         keepalive = MessageKeepAlive()
-#         while self.running:
-#             try:
-#                 self.connexion.send(pickle.dumps(MessageKeepAlive()))
-#             except socket.error as Error:
-#                 print("No answer from client" + Error)
-#             time.sleep(2.5)
-
-#     def stop(self):
-#         self.running = False

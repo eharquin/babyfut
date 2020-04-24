@@ -9,7 +9,7 @@ from os.path import join, dirname, abspath
 import logging
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication
+from PyQt5.QtWidgets import QGraphicsBlurEffect, QApplication, QMessageBox
 from PyQt5.QtCore import Qt, QTime, QTranslator, pyqtSlot
 
 from .. import modules
@@ -28,6 +28,8 @@ class MainWin(QtWidgets.QMainWindow):
 		self.lang = MainWin.DEFAULT_LANG
 		self._retranslateUI()
 		self.setWindowTitle('Babyfut')
+		self.networkMessage = QMessageBox(self)
+
 
 		#Background blur
 		bgBlur = QGraphicsBlurEffect()
@@ -81,14 +83,23 @@ class MainWin(QtWidgets.QMainWindow):
 
 		for modIdx in modulesIdx:
 			self.modules[modIdx].other(**msg)
+	
+	def networkWarning(self, action, msg=None):
+		if action=='display':
+			self.networkMessage.setText(msg)
+			self.networkMessage.addButton(QMessageBox.Ok)
+			self.networkMessage.removeButton(self.networkMessage.button(QMessageBox.Ok))
+			self.networkMessage.exec()
+		elif action=='close':
+			self.networkMessage.done(1)
 
 	def _loadSettings(self):
 		if Settings['ui.fullscreen']:
 			self.showFullScreen()
-			QApplication.setOverrideCursor(Qt.BlankCursor);
+			QApplication.setOverrideCursor(Qt.BlankCursor)
 		else:
 			self.showNormal()
-			QApplication.setOverrideCursor(Qt.ArrowCursor);
+			QApplication.setOverrideCursor(Qt.ArrowCursor)
 
 		self._retranslateUI()
 
