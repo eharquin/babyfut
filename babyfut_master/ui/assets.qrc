@@ -7,6 +7,7 @@
     <file>img/bg/bg4.jpg</file>
     <file>img/bg/bg0.jpg</file>
     <file>img/placeholder_head.jpg</file>
+    <file>img/placeholder_default.jpg</file>
   </qresource>
   <qresource prefix="font">
     <file>KaushanScript-Regular.ttf</file>

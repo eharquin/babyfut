@@ -47,10 +47,11 @@ class MainWin(QtWidgets.QMainWindow):
 			modules.PrivacyModule(self)
 		]
 
+		#Adding modules (Widgets) to the QStackedWidget panels
 		for mod in self.modules:
 			self.ui.panels.addWidget(mod)
 
-		self.ui.panels.setCurrentIndex(0)
+		self.ui.panels.setCurrentIndex(0) #Showing the MenuModule
 		self.ui.panels.currentWidget().setFocus()
 		self.ui.panels.setFocusProxy(self.ui.panels.currentWidget())
 		self.ui.panels.currentWidget().load()

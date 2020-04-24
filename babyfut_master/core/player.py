@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QDialog, QApplication
 
 from ..babyfut_master import getMainWin, IMG_PATH
 from .downloader import Downloader
-from .ginger import Ginger
+from .ginger import Ginger, GingerError
 from .database import Database, DatabaseError
 from ..ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
@@ -36,9 +36,9 @@ class ConsentDialog(QDialog):
 			</p>
 
 			<p>
-			It is possible to play withtout connecting yourslef, but this will allow you to keep track of your score and to provide a better experience for you and the ones you play with!
+			It is possible to play withtout connecting yourself, but this will allow you to keep track of your score and to provide a better experience for you and the ones you play with!
 			<br/><br/>
-			Do you agree with this?
+			Do you agree with this? Press ENTER to accept.
 			</p>'''))
 
 	def keyPressEvent(self, e):
@@ -52,6 +52,9 @@ class Player(QObject):
 	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
+	_playerGuest = None #Pointer to a unique Guest Player Object
+
+	_default_pic_path = ':ui/img/placeholder_default.jpg'
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 	_imgLocalPath         = os.path.join(IMG_PATH, '{}.jpg')
 	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
@@ -64,12 +67,19 @@ class Player(QObject):
 		self.fname = fname
 		self.lname = lname
 
-		if os.path.isfile(Player._imgLocalPath.format(self.id)):
-			self.pic_path = Player._imgLocalPath.format(self.id)
-		elif self.login:
-			self.pic_path = Player._utcPictureURL.format(self.login)
-		else:
+		if self.id==-1:
+			#Set Guest Picture
 			self.pic_path = Player._placeholder_pic_path
+
+		elif os.path.isfile(Player._imgLocalPath.format(self.id)):
+			#Set Player's own picture
+			self.pic_path = Player._imgLocalPath.format(self.id)
+		# elif self.login:
+			#Set URL to downloda Player's picture
+		# 	self.pic_path = Player._utcPictureURL.format(self.login)
+		else:
+			#Set default picture for known players
+			self.pic_path = Player._default_pic_path
 
 		if stats==None:
 			self.stats = { 'time_played': 0, 'goals_scored': 0, 'games_played': 0, 'victories': 0 }
@@ -121,38 +131,41 @@ class Player(QObject):
 		'''
 		Retrieves a player's informations from the Ginger API
 		'''
-		response = Ginger.instance.get('badge/{}'.format(rfid))
-		if isinstance(response, HTTPStatus):
-			logging.warn('Request to Ginger failed ({}): returning Guest'.format(response.value))
+		try:
+			infosPlayer = Ginger.instance().getRFID(rfid)
+			Database.instance().insert_player(rfid, infosPlayer['nom'], infosPlayer['prenom'])
+		except GingerError as e:
+			logging.warn('Ginger API Error : {}'.format(e))
 			return PlayerGuest
-		else:
-			infos = json.loads(response)
-			Database.instance().insert_player(infos['rfid'], infos['login'], infos['nom'], infos['prenom'])
 
 		return Player._loadFromDB(rfid)
 
+	# def displayImg(self, container_widget):
+	# 	self.pic_container = container_widget
+
+	# 	if self.pic_path.startswith('http'):
+	# 		# Download from the internet but display a temporary image between
+	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
+	# 		Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
+	# 		Downloader.instance().finished.connect(self._downloader_callback)
+	# 	else:
+	# 		# Already downloaded and stored locally
+	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
+	# 		QApplication.processEvents()
 	def displayImg(self, container_widget):
-		self.pic_container = container_widget
+		self.pic_container=container_widget
+		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
+		QApplication.processEvents()
+		
+	# @pyqtSlot(str)
+	# def _downloader_callback(self, path):
+	# 	# Take the callback if not already done and we are the targer
+	# 	if IMG_PATH in path and str(self.id) in path and IMG_PATH not in self.pic_path:
+	# 		self.pic_path = path
+	# 		Downloader.instance().finished.disconnect(self._downloader_callback)
 
-		if self.pic_path.startswith('http'):
-			# Download from the internet but display a temporary image between
-			self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
-			Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
-			Downloader.instance().finished.connect(self._downloader_callback)
-		else:
-			# Already downloaded and stored locally
-			self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
-			QApplication.processEvents()
-
-	@pyqtSlot(str)
-	def _downloader_callback(self, path):
-		# Take the callback if not already done and we are the targer
-		if IMG_PATH in path and str(self.id) in path and IMG_PATH not in self.pic_path:
-			self.pic_path = path
-			Downloader.instance().finished.disconnect(self._downloader_callback)
-
-			if self.pic_container!=None:
-				self.displayImg(self.pic_container)
+	# 		if self.pic_container!=None:
+	# 			self.displayImg(self.pic_container)
 
 	def forgetPicture(self):
 		self.pic_path = Player._placeholder_pic_path
@@ -183,9 +196,17 @@ class Player(QObject):
 
 		return Stat(self.stats)
 
+
+
 	@staticmethod
 	def allStoredPlayers():
 		return [Player.fromRFID(rfid) for rfid, in Database.instance().select_all_rfid()]
 
-PlayerGuest = Player.fromRFID(-1)
+	@staticmethod
+	def playerGuest():
+		if not Player._playerGuest:
+			Player._playerGuest = Player(-1, None, '', 'Guest','')
+		return Player._playerGuest
+		
+# PlayerGuest = Player.fromRFID(-1)
 PlayerEmpty = Player(-1, -42, '', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''})

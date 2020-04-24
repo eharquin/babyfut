@@ -14,6 +14,9 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="topMargin">
+    <number>9</number>
+   </property>
    <item>
     <widget class="QLabel" name="label_5">
      <property name="minimumSize">
@@ -58,10 +61,13 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>30</height>
       </size>
      </property>
     </spacer>
@@ -89,19 +95,6 @@
        <item>
         <widget class="QWidget" name="widgetLayoutP1" native="true">
          <layout class="QHBoxLayout" name="layoutP1">
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
@@ -234,89 +227,92 @@
             </item>
            </layout>
           </item>
-          <item>
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>
       </layout>
      </item>
      <item>
-      <spacer name="horizontalSpacer_12">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Preferred</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>75</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_7">
-       <property name="font">
-        <font>
-         <pointsize>26</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>vs.</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_13">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Preferred</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>75</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <spacer name="horizontalSpacer_12">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Preferred</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>90</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="font">
+            <font>
+             <pointsize>26</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>vs.</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_13">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Preferred</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>90</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblStarting">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Starting in 5...</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QVBoxLayout" name="layoutP1P2_3">
        <item>
         <widget class="QWidget" name="widgetLayoutP3" native="true">
          <layout class="QHBoxLayout" name="layoutP1_6">
-          <item>
-           <spacer name="horizontalSpacer_10">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_14">
             <item>
@@ -449,19 +445,6 @@
             </item>
            </layout>
           </item>
-          <item>
-           <spacer name="horizontalSpacer_11">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>
@@ -493,12 +476,15 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>30</height>
       </size>
      </property>
     </spacer>
    </item>
   </layout>
+  <zorder>label_6</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>label_5</zorder>
  </widget>
  <resources>
   <include location="assets.qrc"/>

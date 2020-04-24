@@ -3,34 +3,46 @@
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
-
+import json
 import logging
-import request
+import requests
 from http import HTTPStatus
 
+class GingerError(Exception):
+	pass
+
 class Ginger(object):
-	URL = 'https://assos.utc.fr/ginger/v1/'
+	#URL = 'https://assos.utc.fr/ginger/v1/'
+	URL = 'http://localhost/faux-ginger/index.php/v1/'
 	_instance = None
 
 	def __init__(self):
-		if Ginger._instance!=None:
-			self.api_key = Settings['ginger.key']
+		if not Ginger._instance:
+			print('coucou')
+			#self.api_key = Settings['ginger.key']
+			self.api_key  = 'fauxginger'
 			self.url = Ginger.URL
 
-	@property
 	@staticmethod
 	def instance():
 		if Ginger._instance==None:
 			Ginger._instance = Ginger()
 		return Ginger._instance
 
-	@staticmethod
-	def get(endpoint, params={}):
+	def getRFID(self, rfid):
 		# Add the API key to the parameter list
-		params['key'] = Ginger.instance.api_key
+		params= {'key':self.api_key}
+		query = self.url+'badge/{}/'.format(rfid)
 
-		response = request.get(Ginger.instance.url + endpoint, params)
+		response = requests.get(query, params)
 		if response.status_code!=200:
-			return HTTPStatus(response.status_code)
+			raise GingerError("HTTP request returned code : {}".format(response.status_code))
 		else:
-			return response.content
+			return json.loads(response.content)
+
+	
+# code = '01234567'
+# infos = Ginger.instance().getRFID(code)
+
+# print(infos)
+# print("c'est bon !")
