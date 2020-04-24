@@ -75,34 +75,57 @@ class Client(QObject):
             buffer = video.read()
             self.connexion.sendall(buffer)
 
-    def sendKeepAlive(self):
-        self.sendMessage(MessageKeepAlive())
 
     def stop(self):
         self.connexion.close()
 
 
+
 class KeepAlive(Thread):
     def __init__(self, parent, connexion):
+        Thread.__init__(self)
         self.running = True
         self.parent = parent
         self.connexion = connexion
         self.time = time.time()
 
     def run(self):
-        disconnected = 0
         while self.running:
-            datatoread, wlist, xlist = select.select([self.connexion], [], [], 0.5)
-            for data in datatoread:
-                message = data.recv(1024)
-                message = pickle.loads(message)
-                if (message.type=='keepalive'):
-                    print("Keepalive reçu")
-                    self.datetime = datetime.now()
-            if (time.time()-self.time > 3):
-                self.parent.connexion.close()
+            try:
+                self.connexion.send(pickle.dumps(MessageKeepAlive()))
+            except OSError as error:
+                print(str(error))
+                self.connexion.close()
                 self.parent.connect()
                 self.stop()
+            time.sleep(2.5)
 
     def stop(self):
         self.running = False
+
+#     def __init__(self, parent, connexion):
+#         Thread.__init__(self)
+#         self.running = True
+#         self.parent = parent
+#         self.connexion = connexion
+#         self.time = time.time()
+
+#     def run(self):
+#         keepalive = MessageKeepAlive()
+#         while self.running:
+#             datatoread, wlist, xlist = select.select([self.connexion], [], [], 0.05)
+#             for data in datatoread:
+#                 message = data.recv(1024)
+#                 # try:
+#                 message = pickle.loads(message)
+#                 # except:
+#                 if (message.type=='keepalive'):
+#                     print("Keepalive reçu")
+#                     self.time = time.time()
+#             if (time.time()-self.time > 5):
+#                 self.parent.connexion.close()
+#                 self.parent.connect()
+#                 self.stop()
+
+#     def stop(self):
+#         self.running = False

@@ -39,17 +39,18 @@ class Server(QObject):
         self.connexion.listen(5)
         self.conn_client1, self.info_client1 = self.connexion.accept()
         print("Connexion établi avec client1 " + str(self.conn_client1))
+
+        self.slave1 = ClientThread(self, self.conn_client1, self.info_client1)
+        self.slave1.start()
         
         # Wait for 2nd slave
         self.connexion.listen(5)
         self.conn_client2, self.info_client2 = self.connexion.accept()
         print("Connexion établi avec client2 " + str(self.conn_client2))
-
-    def start(self):
-        self.slave1 = ClientThread(self, self.conn_client1, self.info_client1)
-        self.slave1.start()
+        
         self.slave2 = ClientThread(self, self.conn_client2, self.info_client2)
         self.slave2.start()
+
 
 
     def stop(self):
@@ -58,20 +59,14 @@ class Server(QObject):
         self.slave1.join()
         self.slave2.stop()
         self.slave2.join()
+        # self.keepAlive1.stop()
+        # self.keepAlive1.join()
+        # self.keepAlive2.stop()
+        # self.keepAlive2.join()
 
         self.conn_client1.close()
         self.conn_client2.close()
         self.connexion.close()
-
-        # Shutting down threads
-        # message = pickle.dumps(MessageClosing())
-        # self.conn_client1.send(message)
-        # self.conn_client2.send(message)
-        
-        
-        # Shutting down connections
-        
-
         print("Server closed properly")
         
     
@@ -83,24 +78,28 @@ class ClientThread(Thread):
         self.parent = parent
         self.conn_client = conn_client
         self.info_client = info_client
-        #self.conn_client.setblocking(0)
-
+        self.lastKeepAliveTime = time.time()
 
     def run(self):
         while self.running:
             datatoread, wlist, xlist = select.select([self.conn_client], [], [], 0.05)
             for data in datatoread:
                 message = data.recv(1024)
-                message = pickle.loads(message)
-                if (message.type=='goal'):
-                    print("Goal, appel de la fonction")
-                    self.goalReception(message)
-                elif (message.type=='rfid'):
-                    self.RFIDReception(message)
-                # elif (message.type=='closing'):
-                #     self.stop()
-                else:
+                try:
+                    message = pickle.loads(message)
+                    if (message.type=='goal'):
+                        print("Goal, appel de la fonction")
+                        self.goalReception(message)
+                    elif (message.type=='rfid'):
+                        self.RFIDReception(message)
+                    elif (message.type=='keepalive'):
+                        self.lastKeepAliveTime = time.time()
+                        print("Keep alive reçu")
+                    else:
+                        pass
+                except:
                     pass
+            self.keepAlive()
 
 
     def goalReception(self, message):
@@ -123,7 +122,36 @@ class ClientThread(Thread):
         self.parent.rfidSignal.emit(message.getSide(), message.getRFID()) # TODO handle signal
         print("RFID received")
 
+    def keepAlive(self):
+        if(time.time() - self.lastKeepAliveTime > 5):
+            print("Having connection troubles with client, waiting for client to reconnect")
+            #self.connexion.close()
+            connected = 0
+            while not connected:
+                self.conn_client, self.info_client = self.parent.connexion.accept()
+
 
     def stop(self):
         self.conn_client.close()
         self.running = False
+
+
+# class KeepAlive(Thread):
+#     def __init__(self, parent, connexion):
+#         Thread.__init__(self)
+#         self.running = True
+#         self.parent = parent
+#         self.connexion = connexion
+#         self.time = time.time()
+
+#     def run(self):
+#         keepalive = MessageKeepAlive()
+#         while self.running:
+#             try:
+#                 self.connexion.send(pickle.dumps(MessageKeepAlive()))
+#             except socket.error as Error:
+#                 print("No answer from client" + Error)
+#             time.sleep(2.5)
+
+#     def stop(self):
+#         self.running = False
