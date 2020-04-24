@@ -61,8 +61,11 @@ case "$1" in
 		bash ./devtools.sh "clean"
 		bash ./devtools.sh "all"
 		;;
-	"run"|"exec")
+	"run"|"exec"|"master")
 		python3 -m babyfut_master.babyfut_master
+		;;
+	"slave")
+		python3 -m babyfut_slave.babyfut_slave
 		;;
 	"install")
 		echo "Installing.."
