@@ -83,11 +83,10 @@ class ClientThread(Thread):
         self.parent = parent
         self.conn_client = conn_client
         self.info_client = info_client
-        self.conn_client.setblocking(0)
+        #self.conn_client.setblocking(0)
 
 
     def run(self):
-        print("youpi")
         while self.running:
             datatoread, wlist, xlist = select.select([self.conn_client], [], [], 0.05)
             for data in datatoread:

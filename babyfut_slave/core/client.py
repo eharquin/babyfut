@@ -5,12 +5,12 @@
 @author: Laurine Dictus, Anaël Lacour
 """
 
-import socket, pickle
+import socket, pickle, time, select
 from PyQt5.QtCore import QObject
 import os
 from common.message import *
 from ..babyfut_slave import getContent, ON_RASP
-from threading import Event
+from threading import Event, Thread
 from .replay import Replay
 
 class Client(QObject):
@@ -20,9 +20,27 @@ class Client(QObject):
         self.replayReady = Event()
         self.replayReady.clear()
 
+        self.host = host
+        self.port = port
+
+        self.connect()
+
+
+    def connect(self):
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connexion.connect((host, port))
-        print("Client connecté")
+        connected = 0
+        while not connected:
+            try:
+                self.connexion.connect((self.host, self.port))
+                connected = 1
+                print("Client connected")
+                self.keepalive = KeepAlive(self, self.connexion)
+                self.keepalive.run()
+            except ConnectionError:
+                print("Unreachable server, trying again in 2 seconds")
+                time.sleep(2)
+
+
 
     def sendMessage(self, message):
         data = pickle.dumps(message)
@@ -57,5 +75,34 @@ class Client(QObject):
             buffer = video.read()
             self.connexion.sendall(buffer)
 
+    def sendKeepAlive(self):
+        self.sendMessage(MessageKeepAlive())
+
     def stop(self):
         self.connexion.close()
+
+
+class KeepAlive(Thread):
+    def __init__(self, parent, connexion):
+        self.running = True
+        self.parent = parent
+        self.connexion = connexion
+        self.time = time.time()
+
+    def run(self):
+        disconnected = 0
+        while self.running:
+            datatoread, wlist, xlist = select.select([self.connexion], [], [], 0.5)
+            for data in datatoread:
+                message = data.recv(1024)
+                message = pickle.loads(message)
+                if (message.type=='keepalive'):
+                    print("Keepalive reçu")
+                    self.datetime = datetime.now()
+            if (time.time()-self.time > 3):
+                self.parent.connexion.close()
+                self.parent.connect()
+                self.stop()
+
+    def stop(self):
+        self.running = False

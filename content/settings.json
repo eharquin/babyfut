@@ -139,7 +139,7 @@
 
         "port": {
             "type": "string",
-            "value": "15555"
+            "value": "15556"
         }
     }
 }
