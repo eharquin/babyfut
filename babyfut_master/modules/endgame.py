@@ -11,7 +11,7 @@ from PyQt5.QtCore import QTimer, Qt
 
 from .. import modules
 from ..core.database import Database
-from ..core.player import PlayerGuest
+from ..core.player import Player
 from common.side import Side
 from ..core.module import Module
 from ..ui.endgame_ui import Ui_Form as EndGameWidget
@@ -34,7 +34,7 @@ class EndGameModule(Module):
 		idTeams = {}
 
 		for side in [Side.Left, Side.Right]:
-			if PlayerGuest in self.players[side]:
+			if Player.playerGuest() in self.players[side]:
 				idTeams[side] = db.select_guest_team()
 			else:
 				idTeams[side] = db.insert_team([player.id for player in self.players[side]], self.scores[side])
@@ -77,6 +77,8 @@ class EndGameModule(Module):
 			self.handleQuit()
 
 	def setActiveP2(self, active):
+		#Organise Widgets for display either 1 or 2 Players
+
 		self.ui.widgetLayoutP2.setVisible(active)
 		spacer = self.ui.horizontalLayout.itemAt(2).spacerItem()
 

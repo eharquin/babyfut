@@ -46,8 +46,8 @@ class Database():
 	def select_guest_team(self):
 		return self.select_one('SELECT id FROM Players WHERE fname LIKE "guest"')[0]
 
-	def insert_player(self, rfid, fname, lname,):
-		self._cursor.execute('INSERT INTO Players (rfid, fname, lname, category, pic, private) VALUES (?, ?, ?, ?, ?)', (rfid, fname, lname, None, 0,))
+	def insert_player(self, rfid, fname, lname):
+		self._cursor.execute('INSERT INTO Players (rfid, fname, lname, category, private) VALUES (?, ?, ?, ?, ?)', (rfid, fname, lname, 'dummy', 0,))
 		self._connection.commit()
 		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Players"').fetchone()[0]
 

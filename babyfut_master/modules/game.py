@@ -15,7 +15,7 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
 from .. import modules
-from ..core.player import PlayerGuest
+from ..core.player import Player
 from common.side import Side
 from ..core.replay import Replay
 from ..core.module import Module
@@ -109,9 +109,9 @@ class GameModule(Module):
 
 		self.gameoverChecker = GameOverChecker(gameover_type, gameover_value)
 
-		if all([len(val)==0 for val in self.players.values()]):
-			self.players[Side.Left ].append(PlayerGuest)
-			self.players[Side.Right].append(PlayerGuest)
+		# if all([len(val)==0 for val in self.players.values()]):
+		# 	self.players[Side.Left ].append(PlayerGuest)
+		# 	self.players[Side.Right].append(PlayerGuest)
 
 		self.scores = {Side.Left: 0, Side.Right: 0}
 		self.updateScores()
