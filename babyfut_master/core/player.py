@@ -48,7 +48,6 @@ class ConsentDialog(QDialog):
 			self.reject()
 
 class Player(QObject):
-	__query_infos = 'SELECT id, login, fname, lname FROM Players WHERE rfid==?'
 	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
 	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
@@ -92,15 +91,15 @@ class Player(QObject):
 			player = Player._loadFromDB(rfid)
 		else:
 			### Retrieve player from API
+			
 			# Ask for consent
 			consentDialog = ConsentDialog(getMainWin())
 			consentDialog.exec()
-
 			if consentDialog.result()==QDialog.Accepted:
 				player = Player._loadFromAPI(rfid)
 			else:
 				logging.info('Consent refused when retrieving a player, returning Guest')
-				player = PlayerGuest
+				player = Player.playerGuest()
 
 		return player
 
@@ -109,7 +108,7 @@ class Player(QObject):
 		db = Database.instance()
 		try:
 			# Retrieve generic informations
-			id, login, fname, lname = db.select_one(Player.__query_infos, rfid)
+			id, login, fname, lname = db.selectPlayer(rfid)
 
 			# Retrieve stats
 			stats = {}
@@ -133,7 +132,7 @@ class Player(QObject):
 		'''
 		try:
 			infosPlayer = Ginger.instance().getRFID(rfid)
-			Database.instance().insert_player(rfid, infosPlayer['nom'], infosPlayer['prenom'])
+			Database.instance().insertPlayer(rfid, infosPlayer['nom'], infosPlayer['prenom'])
 		except GingerError as e:
 			logging.warn('Ginger API Error : {}'.format(e))
 			return PlayerGuest

@@ -26,30 +26,35 @@ class Database():
 		'''
 		if not Database.__db:
 			Database.__db = Database()
-
 		return Database.__db
 
 	@property
 	def _cursor(self):
 		return self._connection.cursor()
 
-	def rfid_exists(self, rfid):
+	def rfidExists(self, rfid):
 		return bool(self._cursor.execute('SELECT rfid FROM Players WHERE rfid==?', (rfid,)).fetchone())
 
-	def select_one(self, query, *args):
+	def selectPlayer(rfid):
+		query = 'SELECT id, login, fname, lname FROM Players WHERE rfid==?'
+		return self._selectOne(query, rfid)
+
+
+	def _selectOne(self, query, *args):
+		#Base query function
 		res = self._cursor.execute(query, args).fetchone()
 		if not res:
 			raise DatabaseError('Query \"{}\" returned nothing with args {}'.format(query, args))
-
 		return res
 
-	def select_guest_team(self):
-		return self.select_one('SELECT id FROM Players WHERE fname LIKE "guest"')[0]
+	# def select_guest_team(self):
+	# 	return self.select_one('SELECT id FROM Players WHERE fname LIKE "guest"')[0]
 
-	def insert_player(self, rfid, fname, lname):
+	def insertPlayer(self, rfid, fname, lname):
 		self._cursor.execute('INSERT INTO Players (rfid, fname, lname, category, private) VALUES (?, ?, ?, ?, ?)', (rfid, fname, lname, 'dummy', 0,))
 		self._connection.commit()
-		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Players"').fetchone()[0]
+		#return new player ID (auto-incremented)
+		return self._selectOne('SELECT seq FROM sqlite_sequence WHERE name="Players"')
 
 	def insert_team(self, players, goals):
 		if len(players)<2:
@@ -59,7 +64,7 @@ class Database():
 		self._connection.commit()
 		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
-	def insert_match(self, start_time, duration, team1, team2):
+	def insertMatch(self, start_time, duration, team1, team2):
 		self._cursor.execute('INSERT INTO Matchs (timestamp, duration, winningTeam, losingTeam) VALUES (?, ?, ?, ?)', (start_time, duration, team1, team2,))
 		self._connection.commit()
 
@@ -70,15 +75,15 @@ class Database():
 		else:
 			return self._cursor.execute('SELECT rfid FROM Players WHERE rfid<-1 AND private==0').fetchall()
 
-	def delete_player(self, playerID):
+	def deletePlayer(self, playerID):
 		self._cursor.execute('DELETE FROM Players WHERE id==?', (playerID,))
 		self._connection.commit()
 
-	def delete_playerpic(self, playerID):
+	def deletePicture(self, playerID):
 		self._cursor.execute('UPDATE Players SET login=null WHERE id==?', (playerID,))
 		self._connection.commit()
 
-	def make_player_private(self, playerID):
+	def setPlayerPrivate(self, playerID):
 		self._cursor.execute('UPDATE Players SET private=1 WHERE id==?', (playerID,))
 		self._connection.commit()
 

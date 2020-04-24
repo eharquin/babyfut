@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
-@modifications : Yoann MALOT, Thibaud Le Graverend
+@modifications : Yoann Malot, Thibaud Le Graverend
 """
 
 import logging
@@ -59,7 +59,7 @@ class AuthQuickModule(AuthModuleBase):
 			self.players[side].append(player)
 			self.updateSides(side)
 
-		if len(self.players[Side.Left])==2 and len(self.players[Side.Right]):			
+		if len(self.players[Side.Left])==2 and len(self.players[Side.Right])==2:			
 			self.timerCount = 5
 			self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
 			self.ui.lblStarting.setVisible(True)
@@ -86,8 +86,3 @@ class AuthQuickModule(AuthModuleBase):
 			labelPlayerBottom[side].setText(self.players[side][1].name)
 			widgetLayoutBottom[side].setVisible(True)
 			
-	def keyPressEvent(self, e):
-		#simulating RFID badging with master's Keyboard
-		super().keyPressEvent(e)
-		if e.key() == Qt.Key_T:
-			self.addPlayer(Side.Left, Player.fromRFID('01234567'))

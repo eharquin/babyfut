@@ -26,14 +26,28 @@ class AuthModuleBase(Module):
 		self.createPlayerList()
 		self.numPlayers = 0
 
+	def isPlayerHere(self, player):
+		#Checks if a player is already authentified
+		for liste in self.players.values():
+			for elem in liste:
+				if elem.id ==player.id:
+					return True
+		return False
+
 	def other(self, **kwargs):
 		for key, val in kwargs.items():
 			if key=='rfid' and 'source' in kwargs:
 				side = kwargs['source']
 				self.numPlayers += 1
-				self.addPlayer(side, Player.fromRFID(val))
+				newPlayer = Player.fromRFID(val)
+				if not self.isPlayerHere(newPlayer):
+					self.addPlayer(side, newPlayer)
 
 	def keyPressEvent(self, e):
+		#Simulating RFIDs in DB with keyboard
+		dictKeysLeft = {Qt.Key_A :'-2', Qt.Key_Z :'-3', Qt.Key_E :'-4', Qt.Key_R :'-6',Qt.Key_T :'01234567'}
+		dictKeysRight = {Qt.Key_Q :'-2', Qt.Key_S :'-3', Qt.Key_D :'-4', Qt.Key_F:'-6',Qt.Key_G :'01234567'}
+
 		if e.key() == Qt.Key_Escape:
 			self.handleCancel()
 
@@ -44,6 +58,11 @@ class AuthModuleBase(Module):
 			side = Side.Left if e.key() == Qt.Key_Left else Side.Right
 			rfid = -(2 + self.numPlayers%5)
 			self.send(type(self), rfid=rfid, source=side)
+
+		elif e.key() in dictKeysLeft.keys():
+			self.other(rfid=dictKeysLeft[e.key()],  source =Side.Left)
+		elif e.key() in dictKeysRight.keys():
+			self.other(rfid=dictKeysRight[e.key()],  source =Side.Right)
 
 	def createPlayerList(self):
 		logging.warning('Base function meant to be reimplemented')
