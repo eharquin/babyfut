@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Laurine Dictus, Anaël Lacour
+@author: Thibaud Le Graverend, Yoann Malot
 """
 
 import socket, pickle, time, select
 from PyQt5.QtCore import QObject
 import os
+import logging
 from common.message import *
 from ..babyfut_slave import getContent, ON_RASP
 from threading import Event, Thread
@@ -34,17 +35,19 @@ class Client(QObject):
                 self.connexion.connect((self.host, self.port))
                 connected = 1
                 print("Client connected")
-                self.keepalive = KeepAlive(self, self.connexion)
-                self.keepalive.run()
+                self.keepalive = KeepAlive(self)
+                self.keepalive.start()
             except ConnectionError:
                 print("Unreachable server, trying again in 2 seconds")
-                time.sleep(2)
-
+                time.sleep(3)
 
 
     def sendMessage(self, message):
         data = pickle.dumps(message)
-        self.connexion.send(data)
+        try:
+            self.connexion.send(data)
+        except OSError as Error:
+            logging.debug(str(Error))
 
 
     def sendGoal(self):
@@ -75,34 +78,30 @@ class Client(QObject):
             buffer = video.read()
             self.connexion.sendall(buffer)
 
-    def sendKeepAlive(self):
-        self.sendMessage(MessageKeepAlive())
 
     def stop(self):
         self.connexion.close()
 
 
+
 class KeepAlive(Thread):
-    def __init__(self, parent, connexion):
+    def __init__(self, parent):
+        Thread.__init__(self)
         self.running = True
         self.parent = parent
-        self.connexion = connexion
-        self.time = time.time()
+
 
     def run(self):
-        disconnected = 0
         while self.running:
-            datatoread, wlist, xlist = select.select([self.connexion], [], [], 0.5)
-            for data in datatoread:
-                message = data.recv(1024)
-                message = pickle.loads(message)
-                if (message.type=='keepalive'):
-                    print("Keepalive reçu")
-                    self.datetime = datetime.now()
-            if (time.time()-self.time > 3):
+            try:
+                self.parent.connexion.send(pickle.dumps(MessageKeepAlive()))
+            except OSError as error:
+                print(str(error))
                 self.parent.connexion.close()
                 self.parent.connect()
                 self.stop()
+            time.sleep(1)
+
 
     def stop(self):
         self.running = False
