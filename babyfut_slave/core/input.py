@@ -54,21 +54,21 @@ class Input(QObject):
 		
 		else:
 			#On Computer, thread detecting goals with keyborad
-			self.goalSimulation= GoalSimulation(self)
+			self.inputSimulation= InputSimulation(self)
 
 	def start(self):
 		if ON_RASP:
 			self.rfidThread.start()
 			self.goalThread.start()
 		else:
-			self.goalSimulation.start()
+			self.inputSimulation.start()
 
 	def stop(self):
 		if ON_RASP:
 			self.rfidThread.stop(); self.rfidThread.join()
 			self.goalThread.stop(); self.goalThread.join()
 		else:
-			self.goalSimulation.stop(); self.goalSimulation.join()
+			self.inputSimulation.stop(); self.goalSimulation.join()
 
 
 class GPIOThread(Thread):
@@ -193,7 +193,7 @@ class GoalThread(GPIOThread):
 			self.last_goal = time.time()
 
 #Testing Thread started only on computer
-class GoalSimulation(GPIOThread):
+class InputSimulation(GPIOThread):
 	def __init__(self, parent):
 		GPIOThread.__init__(self)
 		self.parent = parent
@@ -201,9 +201,12 @@ class GoalSimulation(GPIOThread):
 
 	def run(self):
 		while self.running():
-			carac=input("Tapez a pour simuler un goal :")
+			carac=input("Tapez a pour simuler un goal ou chaine carac pour rfid :")
 			if carac=="a":
 				self.parent.goalDetected.emit()
+			else:
+				self.parent.rfidReceived.emit(carac)
+
 
 	def clean(self):()
 
