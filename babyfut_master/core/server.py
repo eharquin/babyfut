@@ -74,6 +74,7 @@ class ClientThread(Thread):
         self.info_client = info_client
         self.lastKeepAliveTime = time.time()
 
+
     def run(self):
         while self.running:
             datatoread, wlist, xlist = select.select([self.conn_client], [], [], 0.05)
@@ -87,14 +88,13 @@ class ClientThread(Thread):
                         self.RFIDReception(message)
                     elif (message.type=='keepalive'):
                         self.lastKeepAliveTime = time.time()
-                        #print("Keep alive reçu")
                 except:
                     pass
             self.keepAlive()
 
 
     def goalReception(self, message):
-        if message.replayLength != 0:# and inGame:
+        if message.replayLength != 0:
             self.conn_client.send("1".encode())
             buffersize=0
             with open(getContent("replay_received.mp4"), "wb") as video:
@@ -102,28 +102,25 @@ class ClientThread(Thread):
                     buffer = self.conn_client.recv(min(1024,message.replayLength-buffersize))
                     buffersize+=len(buffer)
                     video.write(buffer)
-                print("vid ok")
+                    self.lastKeepAliveTime = time.time()
         else:
             conn_client.send("0".encode())
         self.parent.goalSignal.emit(message.getSide())
-        print("But marqué !")
 
 
     def RFIDReception(self, message):
         self.parent.rfidSignal.emit(message.getSide(), message.getRFID())
-        print("RFID received")
 
 
     def keepAlive(self):
         if(time.time() - self.lastKeepAliveTime > 5):
-            #displayMessage = QMessageBox.warning(getMainWin(), "Network warning !", "oups")
             self.parent.clientLostSignal.emit("display", "Having connection troubles with client " + str(self.info_client) + 
             ". The window will automatically disapear once the client would have reconnected.")
             self.parent.connexion.listen(5)
             self.conn_client, self.info_client = self.parent.connexion.accept()
             print("Client reconnected " + str(self.conn_client))
             self.parent.clientLostSignal.emit("close", None)
-            #displayMessage.done(1)
+
 
     def stop(self):
         self.conn_client.close()

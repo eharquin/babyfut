@@ -24,6 +24,9 @@ class Client(QObject):
         self.host = host
         self.port = port
 
+        self.socketToken = Event()
+        self.socketToken.set()
+
         self.connect()
 
 
@@ -73,10 +76,12 @@ class Client(QObject):
         #Slot of the Replay Thread Signal 
         self.replayReady.set()
 
-    def sendReplay(self):        
+    def sendReplay(self):    
+        self.socketToken.clear()    
         with open(self.replayPath, "rb") as video:
             buffer = video.read()
             self.connexion.sendall(buffer)
+        self.socketToken.set()
 
 
     def stop(self):
@@ -93,6 +98,8 @@ class KeepAlive(Thread):
 
     def run(self):
         while self.running:
+            if not self.parent.socketToken.isSet():
+                self.parent.socketToken.wait()
             try:
                 self.parent.connexion.send(pickle.dumps(MessageKeepAlive()))
             except OSError as error:

@@ -183,7 +183,7 @@ class GameModule(Module):
 			self.scores[side] += 1
 			print('goal ici')
 
-			if os.path.exists(self.replayPath):
+			if os.path.exists(self.replayPath) and Settings['replay.activated']:
 				self.video_player = ReplayPlayer(self)
 				self.video_player.start_replay(self.replayPath)
 			else:

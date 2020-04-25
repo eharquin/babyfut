@@ -58,6 +58,10 @@
         "debug": {
             "type": "boolean",
             "value": true
+        },
+        "activated": {
+            "type": "boolean",
+            "value": false
         }
     },
     "ui": {

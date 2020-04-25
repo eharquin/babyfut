@@ -87,7 +87,7 @@ class Player(QObject):
 
 	@staticmethod
 	def fromRFID(rfid):
-		if Database.instance().rfid_exists(rfid):
+		if Database.instance().rfidExists(rfid):
 			player = Player._loadFromDB(rfid)
 		else:
 			### Retrieve player from API

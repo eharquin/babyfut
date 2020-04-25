@@ -35,7 +35,7 @@ class Database():
 	def rfidExists(self, rfid):
 		return bool(self._cursor.execute('SELECT rfid FROM Players WHERE rfid==?', (rfid,)).fetchone())
 
-	def selectPlayer(rfid):
+	def selectPlayer(self, rfid):
 		query = 'SELECT id, login, fname, lname FROM Players WHERE rfid==?'
 		return self._selectOne(query, rfid)
 
