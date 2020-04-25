@@ -45,8 +45,8 @@ class AuthModuleBase(Module):
 
 	def keyPressEvent(self, e):
 		#Simulating RFIDs in DB with keyboard
-		dictKeysLeft = {Qt.Key_A :'-2', Qt.Key_Z :'-3', Qt.Key_E :'-4', Qt.Key_R :'-6',Qt.Key_T :'01234567'}
-		dictKeysRight = {Qt.Key_Q :'-2', Qt.Key_S :'-3', Qt.Key_D :'-4', Qt.Key_F:'-6',Qt.Key_G :'01234567'}
+		dictKeysLeft = {Qt.Key_A :'123456AB', Qt.Key_Z :'ABCDABCD', Qt.Key_E :'-4', Qt.Key_R :'-6',Qt.Key_T :'01234567'}
+		dictKeysRight = {Qt.Key_Q :'123456AB', Qt.Key_S :'ABCDABCD', Qt.Key_D :'-4', Qt.Key_F:'-6',Qt.Key_G :'01234567'}
 
 		if e.key() == Qt.Key_Escape:
 			self.handleCancel()
@@ -54,10 +54,10 @@ class AuthModuleBase(Module):
 		elif e.key() == Qt.Key_Return:
 			self.handleDone()
 
-		elif e.key() == Qt.Key_Left or e.key() == Qt.Key_Right:
-			side = Side.Left if e.key() == Qt.Key_Left else Side.Right
-			rfid = -(2 + self.numPlayers%5)
-			self.send(type(self), rfid=rfid, source=side)
+		# elif e.key() == Qt.Key_Left or e.key() == Qt.Key_Right:
+		# 	side = Side.Left if e.key() == Qt.Key_Left else Side.Right
+		# 	rfid = -(2 + self.numPlayers%5)
+		# 	self.send(type(self), rfid=rfid, source=side)
 
 		elif e.key() in dictKeysLeft.keys():
 			self.other(rfid=dictKeysLeft[e.key()],  source =Side.Left)
