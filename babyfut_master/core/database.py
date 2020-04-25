@@ -39,6 +39,15 @@ class Database():
 		query = 'SELECT id, login, fname, lname FROM Players WHERE rfid==?'
 		return self._selectOne(query, rfid)
 
+	def selectStats(self, rfid):
+		query="SELECT SUM(Matchs.duration) AS timePlayed, \
+		SUM(Teams.nGoals) AS goalsScored, \
+		COUNT(*) AS gamesPlayed, \
+		COUNT (CASE WHEN Teams.id=Matchs.winningteam THEN '1' ELSE NULL END) AS victories\
+		FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) \
+		WHERE (Teams.player1==? OR player2==?)"
+		return self._selectOne(query, rfid, rfid)
+
 
 	def _selectOne(self, query, *args):
 		#Base query function

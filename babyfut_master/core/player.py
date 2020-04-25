@@ -48,8 +48,6 @@ class ConsentDialog(QDialog):
 			self.reject()
 
 class Player(QObject):
-	__query_time_goals_games = 'SELECT SUM(Matchs.duration) AS timePlayed, SUM(Teams.nGoals) AS goalsScored, COUNT(*) AS gamesPlayed FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) WHERE (Teams.player1==? OR player2==?)'
-	__query_victories = 'SELECT COUNT(*) AS victories FROM Players INNER JOIN Teams ON (Players.id==Teams.player1 OR Players.id==Teams.player2) INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam) WHERE Players.id==?'
 
 	_playerGuest = None #Pointer to a unique Guest Player Object
 
@@ -112,8 +110,7 @@ class Player(QObject):
 
 			# Retrieve stats
 			stats = {}
-			stats['time_played'], stats['goals_scored'], stats['games_played'] = db.select_one(Player.__query_time_goals_games, id, id)
-			stats['victories'], = db.select_one(Player.__query_victories, id)
+			stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(rfid)
 
 			for key, val in stats.items():
 				if val==None:
