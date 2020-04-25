@@ -7,8 +7,6 @@
 
 import socket, pickle, time, select
 from PyQt5.QtCore import QObject
-import os
-import logging
 from common.message import *
 from ..babyfut_slave import getContent, ON_RASP
 from threading import Event, Thread

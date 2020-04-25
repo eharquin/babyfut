@@ -29,7 +29,6 @@ class Server(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        #threading.Thread.__init__(self)
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connexion.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connexion.bind((Settings['network.host'], int(Settings['network.port'])))

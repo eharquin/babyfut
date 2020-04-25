@@ -99,7 +99,7 @@
     "league": {
         "playerPerTeam": {
             "type": "range",
-            "value": 1,
+            "value": 2,
             "range": [
                 1,
                 2
@@ -132,7 +132,7 @@
             "values": [
                 "left",
                 "right"
-            ]        
+            ]
         }
     },
     "network": {
@@ -140,7 +140,6 @@
             "type": "string",
             "value": "localhost"
         },
-
         "port": {
             "type": "string",
             "value": "15556"
