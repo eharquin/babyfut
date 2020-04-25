@@ -94,8 +94,9 @@ class EndGameModule(Module):
 		self.ui.lblP1.setText(players[0].name)
 
 		if len(self.players[self.winSide])>1:
-			players[1].displayImg(self.ui.imgP2)
+			players[1].displayImg(self.ui.ImgP2)
 			self.ui.lblP2.setText(players[1].name)
+
 
 	def handleQuit(self):
 		self.switchModule(modules.MenuModule)
