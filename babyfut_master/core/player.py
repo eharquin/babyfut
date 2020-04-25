@@ -196,7 +196,7 @@ class Player(QObject):
 
 	@staticmethod
 	def allStoredPlayers():
-		return [Player.fromRFID(rfid) for rfid, in Database.instance().select_all_rfid()]
+		return [Player.fromRFID(rfid) for rfid in Database.instance().select_all_rfid()]
 
 	@staticmethod
 	def playerGuest():

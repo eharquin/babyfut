@@ -35,9 +35,9 @@ class EndGameModule(Module):
 
 		for side in [Side.Left, Side.Right]:
 			if Player.playerGuest() in self.players[side]:
-				idTeams[side] = db.select_guest_team()
+				idTeams[side] = None
 			else:
-				idTeams[side] = db.insert_team([player.id for player in self.players[side]], self.scores[side])
+				idTeams[side] = db.insertTeam([player.id for player in self.players[side]], self.scores[side])
 
 		db.insertMatch(int(self.start_time), int(self.duration), idTeams[self.winSide], idTeams[self.winSide.opposite()])
 
@@ -94,7 +94,7 @@ class EndGameModule(Module):
 		self.ui.lblP1.setText(players[0].name)
 
 		if len(self.players[self.winSide])>1:
-			players[1].displayImg(self.ui.ImgP2)
+			players[1].displayImg(self.ui.imgP2)
 			self.ui.lblP2.setText(players[1].name)
 
 
