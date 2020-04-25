@@ -107,7 +107,8 @@ class LeaderboardModule(Module):
 				# Do something corresponding to the selected action
 				action = self.deleteDialog.action()
 				if action==DeleteDialog.Actions.DeleteAll:
-					Database.instance().delete_player(self.deleteDialog.player.id)
+					#Database.instance().delete_player(self.deleteDialog.player.id)
+					print("Deleted")
 				elif action==DeleteDialog.Actions.DeletePicture:
 					self.deleteDialog.player.forgetPicture()
 				elif action==DeleteDialog.Actions.HideAccount:
@@ -167,7 +168,7 @@ class LeaderboardModule(Module):
 			newSort = curSort+1 if curSort!=len(self.sortMethodRB)-1 else 0
 			self.sortMethodRB[newSort].animateClick()
 
-		elif e.key() == Qt.Key_Delete:
+		elif e.key() == Qt.Key_A:
 			self.deleteDialog = DeleteDialog(self, self.players[curRow])
 			self.deleteDialog.open()
 

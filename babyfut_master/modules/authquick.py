@@ -59,6 +59,7 @@ class AuthQuickModule(AuthModuleBase):
 			self.players[side].append(player)
 			self.updateSides(side)
 
+		# Display 
 		if len(self.players[Side.Left])==2 and len(self.players[Side.Right])==2:			
 			self.timerCount = 5
 			self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))

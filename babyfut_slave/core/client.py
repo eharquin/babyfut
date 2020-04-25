@@ -5,7 +5,7 @@
 @author: Thibaud Le Graverend, Yoann Malot
 """
 
-import socket, pickle, time, select
+import socket, pickle, time, select, os
 from PyQt5.QtCore import QObject
 from common.message import *
 from ..babyfut_slave import getContent, ON_RASP

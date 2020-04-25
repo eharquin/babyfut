@@ -59,7 +59,7 @@ class Player(QObject):
 	def __init__(self, id, rfid, login, fname, lname, stats=None):
 		QObject.__init__(self)
 		self.id = id
-		self.rfid = rfid
+		self.rfid = str(rfid)
 		self.login = login
 		self.fname = fname
 		self.lname = lname
