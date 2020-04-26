@@ -77,7 +77,7 @@ class Player(QObject):
 			self.pic_path = Player._default_pic_path
 
 		if stats==None:
-			self.stats = { 'time_played': 0, 'goals_scored': 0, 'games_played': 0, 'victories': 0 }
+			self.stats = self.Stat()
 		else:
 			self.stats = stats
 
@@ -110,12 +110,15 @@ class Player(QObject):
 			login, fname, lname = db.selectPlayer(login)
 
 			# Retrieve stats
-			stats = {}
-			stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(login)
+			# stats = {}
+			# stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(login)
 
-			for key, val in stats.items():
-				if val==None:
-					stats[key] = 0
+			stats = Player.Stat()
+			stats.time_played, stats.goals_scored, stats.games_played, stats.victories = db.selectStats(login)
+
+			# for key, val in stats.items():
+			# 	if val==None:
+			# 		stats[key] = 0
 
 			return Player(login, fname, lname, stats)
 
@@ -176,27 +179,34 @@ class Player(QObject):
 	def name(self):
 		return '{} {}'.format(self.fname, self.lname.upper())
 
-	@property
-	def stats_property(self):
-		'''
-		Compatibility property allowing to access stats as a object member and not dict
-		ex: player.stats['victories'] can be accessed with player.stats_property.victories'
-		This is mostly used for sorting players in leaderboard.py
-		'''
-		class Stat:
-			def __init__(self, stats):
-				self.victories = stats['victories']
-				self.time_played = stats['time_played']
-				self.goals_scored = stats['goals_scored']
-				self.games_played = stats['games_played']
+	# @property
+	# def stats_property(self):
+	# 	'''
+	# 	Compatibility property allowing to access stats as a object member and not dict
+	# 	ex: player.stats['victories'] can be accessed with player.stats_property.victories'
+	# 	This is mostly used for sorting players in leaderboard.py
+	# 	'''
+	# 	class Stat:
+	# 		def __init__(self, stats):
+	# 			self.victories = stats['victories']
+	# 			self.time_played = stats['time_played']
+	# 			self.goals_scored = stats['goals_scored']
+	# 			self.games_played = stats['games_played']
 
-		return Stat(self.stats)
+	# 	return Stat(self.stats)
+
+	class Stat:
+		def __init__(self):
+			self.victories = 0
+			self.time_played = 0
+			self.goals_scored = 0
+			self.games_played = 0
 
 
 
 	@staticmethod
 	def allStoredPlayers():
-		return [Player(row[0], row[1], row[2]) for row in Database.instance().selectAllPlayer()]
+		return [Player._loadFromDB(row[0]) for row in Database.instance().selectAllPlayer()]
 
 	@staticmethod
 	def playerGuest():
