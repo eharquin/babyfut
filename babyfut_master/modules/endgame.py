@@ -37,9 +37,9 @@ class EndGameModule(Module):
 			if Player.playerGuest() in self.players[side]:
 				idTeams[side] = None
 			else:
-				idTeams[side] = db.insertTeam([player.id for player in self.players[side]], self.scores[side])
+				idTeams[side] = db.insertTeam([player.login for player in self.players[side]])
 
-		db.insertMatch(int(self.start_time), int(self.duration), idTeams[self.winSide], idTeams[self.winSide.opposite()])
+		db.insertMatch(int(self.start_time), int(self.duration), idTeams[self.winSide], self.scores[self.winSide], idTeams[self.winSide.opposite()], self.scores[self.winSide.opposite()])
 
 		# Quit the screen after 5 seconds if the user doesn't do it before
 		#self.screenTimeout.start(5000)

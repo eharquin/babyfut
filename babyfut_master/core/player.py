@@ -56,21 +56,19 @@ class Player(QObject):
 	_imgLocalPath         = os.path.join(IMG_PATH, '{}.jpg')
 	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
-	def __init__(self, id, rfid, login, fname, lname, stats=None):
+	def __init__(self, login, fname, lname, stats=None):
 		QObject.__init__(self)
-		self.id = id
-		self.rfid = str(rfid)
 		self.login = login
 		self.fname = fname
 		self.lname = lname
 
-		if self.id==-1:
+		if self.login=='guest':
 			#Set Guest Picture
 			self.pic_path = Player._placeholder_pic_path
 
-		elif os.path.isfile(Player._imgLocalPath.format(self.id)):
-			#Set Player's own picture
-			self.pic_path = Player._imgLocalPath.format(self.id)
+		elif os.path.isfile(Player._imgLocalPath.format(self.login)):
+			#Set Player's personal picture
+			self.pic_path = Player._imgLocalPath.format(self.login)
 		# elif self.login:
 			#Set URL to downloda Player's picture
 		# 	self.pic_path = Player._utcPictureURL.format(self.login)
@@ -85,38 +83,41 @@ class Player(QObject):
 
 	@staticmethod
 	def fromRFID(rfid):
-		if Database.instance().rfidExists(rfid):
-			player = Player._loadFromDB(rfid)
-		else:
-			### Retrieve player from API
-			
+		try:
+			infosPlayer = Ginger.instance().getRFID(rfid)
+		except GingerError as e:
+			logging.warn('Ginger API Error : {}'.format(e))
+			return Player.playerGuest()
+		
+		
+		if not Database.instance().loginExists(infosPlayer['login']):					
 			# Ask for consent
 			consentDialog = ConsentDialog(getMainWin())
 			consentDialog.exec()
 			if consentDialog.result()==QDialog.Accepted:
-				player = Player._loadFromAPI(rfid)
+				Database.instance().insertPlayer(infosPlayer['login'], infosPlayer['prenom'], infosPlayer['nom'])
 			else:
 				logging.info('Consent refused when retrieving a player, returning Guest')
-				player = Player.playerGuest()
+				return Player.playerGuest()
 
-		return player
+		return Player._loadFromDB(infosPlayer['login'])
 
 	@staticmethod
-	def _loadFromDB(rfid):
+	def _loadFromDB(login):
 		db = Database.instance()
 		try:
 			# Retrieve generic informations
-			id, login, fname, lname = db.selectPlayer(rfid)
+			login, fname, lname = db.selectPlayer(login)
 
 			# Retrieve stats
 			stats = {}
-			stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(rfid)
+			stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(login)
 
 			for key, val in stats.items():
 				if val==None:
 					stats[key] = 0
 
-			return Player(id, rfid, login, fname, lname, stats)
+			return Player(login, fname, lname, stats)
 
 		except DatabaseError as e:
 			logging.warn('DB Error: {}'.format(e))
@@ -165,12 +166,11 @@ class Player(QObject):
 
 	def forgetPicture(self):
 		self.pic_path = Player._placeholder_pic_path
-		self.login = None
-		Database.instance().delete_playerpic(self.id)
+		Database.instance().delete_playerpic(self.login)
 
 	def make_private(self):
 		self.private = True
-		Database.instance().make_player_private(self.id)
+		Database.instance().make_player_private(self.login)
 
 	@property
 	def name(self):
@@ -196,13 +196,13 @@ class Player(QObject):
 
 	@staticmethod
 	def allStoredPlayers():
-		return [Player.fromRFID(rfid) for rfid in Database.instance().select_all_rfid()]
+		return [Player(row[0], row[1], row[2]) for row in Database.instance().selectAllPlayer()]
 
 	@staticmethod
 	def playerGuest():
 		if not Player._playerGuest:
-			Player._playerGuest = Player(-1, None, '', 'Guest','')
+			Player._playerGuest = Player('guest', 'Guest','')
 		return Player._playerGuest
 		
 # PlayerGuest = Player.fromRFID(-1)
-PlayerEmpty = Player(-1, -42, '', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''})
+PlayerEmpty = Player('', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''})

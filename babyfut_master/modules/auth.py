@@ -30,7 +30,7 @@ class AuthModuleBase(Module):
 		#Checks if a player is already authentified
 		for liste in self.players.values():
 			for elem in liste:
-				if elem.id ==player.id:
+				if elem.login ==player.login:
 					return True
 		return False
 
