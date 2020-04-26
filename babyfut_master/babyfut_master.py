@@ -52,30 +52,25 @@ if __name__=='__main__':
 		if not exists(IMG_PATH):
 			 os.makedirs(IMG_PATH)
 		
-		
+		db = Database.instance()
 		input = Input()
-		#input.rfidReceived.connect(lambda side, rfid: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
-		#input.goalDetected.connect(lambda side      : myapp.dispatchMessage({'goal': True, 'source': side}))
-		#input.start()
 
 		server = Server()
-		server.start()
-		#TODO : connecter les 3 types de message
 		server.goalSignal.connect(lambda side	: myapp.dispatchMessage({'goal': True, 'source': side}))
 		server.rfidSignal.connect(lambda side, rfid	: myapp.dispatchMessage({'rfid': rfid, 'source': side}))
-		#server.start()
+		server.clientLostSignal.connect(lambda action, msg	: myapp.networkWarning(action, msg))
 		
-		threadDownloader = Downloader.instance()
-		threadDownloader.start()
+		# threadDownloader = Downloader.instance()
+		# threadDownloader.start()
 
 		myapp.show()
 		app.exec_()
 
 		server.stop()
-		threadDownloader.stop()
-		threadDownloader.join()
+		# threadDownloader.stop()
+		# threadDownloader.join()
 
 	finally:
 		Database.instance().close()
-		for f in glob.glob(join(IMG_PATH, '*')):
-			os.remove(f)
+		# for f in glob.glob(join(IMG_PATH, '*')):
+		# 	os.remove(f)

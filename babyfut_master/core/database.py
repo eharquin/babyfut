@@ -6,7 +6,7 @@
 
 import sqlite3
 from os.path import exists
-# from ..babyfut_master import getContent
+from ..babyfut_master import getContent
 
 class DatabaseError(Exception):
 	pass
@@ -16,8 +16,7 @@ class Database():
 
 	def __init__(self):
 		if not Database.__db:
-			# db_path = getContent('babyfut.sqlite')
-			db_path = '/home/yoann/Bureau/pr_baby/Babyfut/content/babyfut.sqlite'
+			db_path = getContent('babyfut.sqlite')
 			if not exists(db_path):
 				Database.createDatabase(db_path)
 
@@ -114,9 +113,9 @@ class Database():
 				`timestamp`	INTEGER NOT NULL,
 				`babyfoot` NOT NULL REFERENCES Babyfoots(id),
 				`duration`	INTEGER NOT NULL,
-				`winningTeam`	INTEGER NOT NULL REFERENCES Teams(id),
+				`winningTeam`	INTEGER REFERENCES Teams(id),
 				`scoreWinner` INTEGER NOT NULL,
-				`losingTeam`	INTEGER NOT NULL REFERENCES Teams(id),
+				`losingTeam`	INTEGER REFERENCES Teams(id),
 				`scoreLoser` INTEGER NOT NULL,
 				CHECK (scoreWinner > scoreLoser)
 			)''')
@@ -145,7 +144,6 @@ class Database():
 			conn.commit()
 			c.close()
 
-
 # def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
 # 	t1 = db.insertTeam(WTeam)
 # 	t2 = db.insertTeam(LTeam)
@@ -156,10 +154,10 @@ class Database():
 # db.insertPlayer('tlegrave', 'Thibaud', 'Le Graverend')
 # db.insertPlayer('bonnetst', 'Stéphane', 'Bonnet')
 # db.insertPlayer('sophsti', 'Sophie', 'Stické')
-# db.insertPlayer('toilthe', 'Théo', 'Toalet')
+# db.insertPlayer('toalthe', 'Théo', 'Toalet')
 # ajoutMatch(123, 12, ['malotyoa'], 5, ['tlegrave', 'bonnetst'], 2)
-# ajoutMatch(124, 12, ['sophsti'], 10, ['toilthe'], 9)
-# ajoutMatch(125, 78, ['toilthe'], 10, ['sophsti'], 3)
+# ajoutMatch(124, 12, ['sophsti'], 10, ['toalthe'], 9)
+# ajoutMatch(125, 78, ['toalthe'], 10, ['sophsti'], 3)
 # db.insertPlayer('jambon', 'James', 'Bond')
 # db.setPlayerPrivate('jambon')
 
