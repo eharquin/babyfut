@@ -30,10 +30,10 @@ class LeaderboardItemWidget(QWidget):
 		self.ui.lblFName.setText(player.fname)
 		self.ui.lblLName.setText(player.lname)
 
-		self.ui.lblVictories.setText    (self.ui.lblVictories.text().format(player.stats['victories']     ))
-		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().format(player.stats['games_played']  ))
-		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().format(player.stats['goals_scored']  ))
-		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('{}', '{0:.2f}').format(player.stats['time_played']/60))
+		self.ui.lblVictories.setText    (self.ui.lblVictories.text().format(player.stats.victories     ))
+		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().format(player.stats.games_played  ))
+		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().format(player.stats.goals_scored  ))
+		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('{}', '{0:.2f}').format(player.stats.time_played/60))
 
 class DeleteDialog(QDialog):
 	class Actions(Enum):
@@ -83,7 +83,7 @@ class LeaderboardModule(Module):
 
 		self.selectedSort = 0
 		self.sortMethodRB = [self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
-		self.sortMethodAttr = ['lname', 'stats_property.victories', 'stats_property.goals_scored', 'stats_property.games_played', 'stats_property.time_played']
+		self.sortMethodAttr = ['lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
 
 		self.sortMethodRB[self.selectedSort].setChecked(True)
 		self.deleteDialog = None
@@ -138,6 +138,7 @@ class LeaderboardModule(Module):
 
 		for player in self.players:
 			item = QListWidgetItem()
+			#data = Player._loadFromDB(player.login)
 			playerWidget = LeaderboardItemWidget(self.ui.listWidget, player)
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)
