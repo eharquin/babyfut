@@ -123,6 +123,17 @@ class LeaderboardModule(Module):
 				self.players = []
 				self.ui.listWidget.clear()
 				self.loadList()
+			elif key=='rfid':
+				login = (Player.fromRFID(val)).login
+				row=0
+				for player in self.players:
+					if player.login == login:
+						self.ui.listWidget.setCurrentRow(row)
+					else:
+						row+=1
+
+
+
 
 	def changeSort(self, rbSort):
 		self.selectedSort = self.sortMethodRB.index(rbSort)
