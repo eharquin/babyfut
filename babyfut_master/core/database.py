@@ -39,7 +39,7 @@ class Database():
 		return bool(self._cursor.execute('SELECT login FROM Players WHERE login==?', [login]).fetchone())
 
 	def selectPlayer(self, login):
-		query = 'SELECT login, fname, lname FROM Players WHERE login==?'
+		query = 'SELECT login, fname, lname, elo FROM Players WHERE login==?'
 		return self._selectOne(query, login)
 
 	def selectStats(self, login):
@@ -62,8 +62,8 @@ class Database():
 	# def select_guest_team(self):
 	# 	return self.select_one('SELECT id FROM Players WHERE fname LIKE "guest"')[0]
 
-	def insertPlayer(self, login, fname, lname, private=0):
-		self._cursor.execute('INSERT INTO Players (login, fname, lname, private) VALUES (?, ?, ?, ?)', (login, fname, lname, private))
+	def insertPlayer(self, login, fname, lname, elo, private=0):
+		self._cursor.execute('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
 		self._connection.commit()
 		return self._selectOne('SELECT login FROM Players WHERE login=?',(login))
 
@@ -100,6 +100,10 @@ class Database():
 		self._cursor.execute("UPDATE Players SET private=1 WHERE login==?", [login])
 		self._connection.commit()
 
+	def setEloRating(self, login, elo):
+		self._cursor.execute("UPDATE Players SET elo=? WHERE login==?", [elo, login])
+		self._connection.commit()
+
 	def close(self):
 		self._connection.close()
 
@@ -124,6 +128,7 @@ class Database():
 				`login` TEXT PRIMARY KEY,
 				`fname`	TEXT NOT NULL,
 				`lname`	TEXT NOT NULL,
+				`elo` INTEGER,
 				`private`	INTEGER NOT NULL CHECK(private == 0 or private == 1)
 			)''')
 
@@ -144,22 +149,22 @@ class Database():
 			conn.commit()
 			c.close()
 
-# def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
-# 	t1 = db.insertTeam(WTeam)
-# 	t2 = db.insertTeam(LTeam)
-# 	db.insertMatch(start_time, duration, t1, scoreW, t2, scoreL)
+def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
+	t1 = db.insertTeam(WTeam)
+	t2 = db.insertTeam(LTeam)
+	db.insertMatch(start_time, duration, t1, scoreW, t2, scoreL)
 
 # db = Database.instance()
-# db.insertPlayer('malotyoa', 'Yoann', 'Malot')
-# db.insertPlayer('tlegrave', 'Thibaud', 'Le Graverend')
-# db.insertPlayer('bonnetst', 'Stéphane', 'Bonnet')
-# db.insertPlayer('sophsti', 'Sophie', 'Stické')
-# db.insertPlayer('toalthe', 'Théo', 'Toalet')
+# db.insertPlayer('malotyoa', 'Yoann', 'Malot', 1500)
+# db.insertPlayer('tlegrave', 'Thibaud', 'Le Graverend', 1500)
+# db.insertPlayer('bonnetst', 'Stéphane', 'Bonnet', 1500)
+# db.insertPlayer('sophsti', 'Sophie', 'Stické', 1500)
+# db.insertPlayer('toalthe', 'Théo', 'Toalet', 1500)
 # ajoutMatch(123, 12, ['malotyoa'], 5, ['tlegrave', 'bonnetst'], 2)
 # ajoutMatch(124, 12, ['sophsti'], 10, ['toalthe'], 9)
 # ajoutMatch(125, 78, ['toalthe'], 10, ['sophsti'], 3)
-# db.insertPlayer('jambon', 'James', 'Bond')
+# db.insertPlayer('jambon', 'James', 'Bond', 1500)
 # db.setPlayerPrivate('jambon')
 
-# print([row for row in db.selectAllPlayer()])
-# print(db.selectStats('malotyoa'))
+#print([row for row in db.selectAllPlayer()])
+#print(db.selectStats('malotyoa'))

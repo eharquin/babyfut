@@ -4,7 +4,7 @@
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
 """
 
-import logging
+import logging, math
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer, Qt
@@ -38,6 +38,8 @@ class EndGameModule(Module):
 				idTeams[side] = None
 			else:
 				idTeams[side] = db.insertTeam([player.login for player in self.players[side]])
+
+		self.newEloRating(db)
 
 		db.insertMatch(int(self.start_time), int(self.duration), idTeams[self.winSide], self.scores[self.winSide], idTeams[self.winSide.opposite()], self.scores[self.winSide.opposite()])
 
@@ -97,6 +99,22 @@ class EndGameModule(Module):
 			players[1].displayImg(self.ui.imgP2)
 			self.ui.lblP2.setText(players[1].name)
 
+	def eloProbability(self, rating1, rating2):
+		return 1.0 / (1 + math.pow(10, (rating2 - rating1) / 400))
+
+	def newEloRating(self, db):
+		ratingWinner = int(sum(p.eloRating for p in self.players[self.winSide])/len(self.players[self.winSide]))
+		ratingLoser = int(sum(p.eloRating for p in self.players[self.winSide.opposite()])/len(self.players[self.winSide.opposite()]))
+		
+		for player in self.players[self.winSide]:
+			player.eloRating += 80*(1-self.eloProbability(ratingWinner, ratingLoser))
+		for player in self.players[self.winSide.opposite()]:
+			player.eloRating -= 80*(self.eloProbability(ratingLoser, ratingWinner))
+
+		for liste in self.players.values():
+			for elem in liste:
+				if elem != Player.playerGuest():
+					db.setEloRating(elem.login, elem.eloRating)
 
 	def handleQuit(self):
 		self.switchModule(modules.MenuModule)

@@ -20,6 +20,7 @@ from .database import Database, DatabaseError
 from ..ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
 
+
 class ConsentDialog(QDialog):
 	def __init__(self, parent):
 		QDialog.__init__(self, parent)
@@ -46,6 +47,7 @@ class ConsentDialog(QDialog):
 			self.accept()
 		else:
 			self.reject()
+		
 
 class Player(QObject):
 
@@ -56,11 +58,12 @@ class Player(QObject):
 	_imgLocalPath         = os.path.join(IMG_PATH, '{}.jpg')
 	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
-	def __init__(self, login, fname, lname, stats=None):
+	def __init__(self, login, fname, lname, stats, elo = 1500):
 		QObject.__init__(self)
 		self.login = login
 		self.fname = fname
 		self.lname = lname
+		self.eloRating = elo
 
 		if self.login=='guest':
 			#Set Guest Picture
@@ -95,7 +98,7 @@ class Player(QObject):
 			consentDialog = ConsentDialog(getMainWin())
 			consentDialog.exec()
 			if consentDialog.result()==QDialog.Accepted:
-				Database.instance().insertPlayer(infosPlayer['login'], infosPlayer['prenom'], infosPlayer['nom'])
+				Database.instance().insertPlayer(infosPlayer['login'], infosPlayer['prenom'], infosPlayer['nom'], 1500)
 			else:
 				logging.info('Consent refused when retrieving a player, returning Guest')
 				return Player.playerGuest()
@@ -107,19 +110,14 @@ class Player(QObject):
 		db = Database.instance()
 		try:
 			# Retrieve generic informations
-			login, fname, lname = db.selectPlayer(login)
+			login, fname, lname, elo = db.selectPlayer(login)
 
 			# Retrieve stats
-			# stats = {}
-			# stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(login)
 
 			time_played, goals_scored, games_played, victories = db.selectStats(login)
 			stats = Player.Stat(time_played, goals_scored, games_played, victories)
-			# for key, val in stats.items():
-			# 	if val==None:
-			# 		stats[key] = 0
 
-			return Player(login, fname, lname, stats)
+			return Player(login, fname, lname, stats, elo)
 
 		except DatabaseError as e:
 			logging.warn('DB Error: {}'.format(e))
@@ -178,21 +176,6 @@ class Player(QObject):
 	def name(self):
 		return '{} {}'.format(self.fname, self.lname.upper())
 
-	# @property
-	# def stats_property(self):
-	# 	'''
-	# 	Compatibility property allowing to access stats as a object member and not dict
-	# 	ex: player.stats['victories'] can be accessed with player.stats_property.victories'
-	# 	This is mostly used for sorting players in leaderboard.py
-	# 	'''
-	# 	class Stat:
-	# 		def __init__(self, stats):
-	# 			self.victories = stats['victories']
-	# 			self.time_played = stats['time_played']
-	# 			self.goals_scored = stats['goals_scored']
-	# 			self.games_played = stats['games_played']
-
-	# 	return Stat(self.stats)
 
 	class Stat:
 		def __init__(self, time_played=0, goals_scored=0, games_played=0, victories=0):
@@ -210,7 +193,7 @@ class Player(QObject):
 	@staticmethod
 	def playerGuest():
 		if not Player._playerGuest:
-			Player._playerGuest = Player('guest', 'Guest','')
+			Player._playerGuest = Player('guest', 'Guest','', 1500)
 		return Player._playerGuest
 		
 # PlayerGuest = Player.fromRFID(-1)

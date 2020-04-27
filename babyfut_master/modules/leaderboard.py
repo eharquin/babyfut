@@ -75,6 +75,7 @@ class LeaderboardModule(Module):
 		super().__init__(parent, LeaderboardWidget())
 		self.players = []
 
+		self.ui.rbRating.clicked.connect(lambda: self.changeSort(self.ui.rbRating))
 		self.ui.rbName.clicked.connect(lambda: self.changeSort(self.ui.rbName))
 		self.ui.rbVictories.clicked.connect(lambda: self.changeSort(self.ui.rbVictories))
 		self.ui.rbScore.clicked.connect(lambda: self.changeSort(self.ui.rbScore))
@@ -82,8 +83,8 @@ class LeaderboardModule(Module):
 		self.ui.rbTimePlayed.clicked.connect(lambda: self.changeSort(self.ui.rbTimePlayed))
 
 		self.selectedSort = 0
-		self.sortMethodRB = [self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
-		self.sortMethodAttr = ['lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
+		self.sortMethodRB = [self.ui.rbRating, self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
+		self.sortMethodAttr = ['eloRating', 'lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
 
 		self.sortMethodRB[self.selectedSort].setChecked(True)
 		self.deleteDialog = None
@@ -129,6 +130,7 @@ class LeaderboardModule(Module):
 				for player in self.players:
 					if player.login == login:
 						self.ui.listWidget.setCurrentRow(row)
+						break
 					else:
 						row+=1
 
