@@ -7,13 +7,22 @@
     <x>0</x>
     <y>0</y>
     <width>1270</width>
-    <height>150</height>
+    <height>82</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="topMargin">
+    <number>8</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
    <item>
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -24,7 +33,7 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>50</width>
+       <width>40</width>
        <height>20</height>
       </size>
      </property>
@@ -32,16 +41,16 @@
    </item>
    <item>
     <widget class="QWidget" name="picHolder" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="minimumSize">
       <size>
-       <width>125</width>
-       <height>125</height>
+       <width>65</width>
+       <height>65</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>65</width>
+       <height>65</height>
       </size>
      </property>
      <property name="styleSheet">
@@ -128,6 +137,12 @@
    </item>
    <item>
     <widget class="QLabel" name="lblVictories">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
       <string comment="Form">{} Victories</string>
      </property>
@@ -148,6 +163,12 @@
    </item>
    <item>
     <widget class="QLabel" name="lblGoalsScored">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
       <string comment="Form">{} Goals Scored</string>
      </property>
@@ -168,6 +189,12 @@
    </item>
    <item>
     <widget class="QLabel" name="lblGamesPlayed">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
       <string comment="Form">{} Games Played</string>
      </property>
@@ -188,36 +215,16 @@
    </item>
    <item>
     <widget class="QLabel" name="lblMinutesPlayed">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
       <string comment="Form">{} Minutes Played</string>
      </property>
     </widget>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer_8">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer_10">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item>
     <spacer name="horizontalSpacer_9">
@@ -226,7 +233,7 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
+       <width>180</width>
        <height>20</height>
       </size>
      </property>
@@ -259,7 +266,7 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
+       <width>20</width>
        <height>20</height>
       </size>
      </property>
