@@ -113,9 +113,8 @@ class Player(QObject):
 			# stats = {}
 			# stats['time_played'], stats['goals_scored'], stats['games_played'], stats['victories']= db.selectStats(login)
 
-			stats = Player.Stat()
-			stats.time_played, stats.goals_scored, stats.games_played, stats.victories = db.selectStats(login)
-
+			time_played, goals_scored, games_played, victories = db.selectStats(login)
+			stats = Player.Stat(time_played, goals_scored, games_played, victories)
 			# for key, val in stats.items():
 			# 	if val==None:
 			# 		stats[key] = 0
@@ -196,11 +195,11 @@ class Player(QObject):
 	# 	return Stat(self.stats)
 
 	class Stat:
-		def __init__(self):
-			self.victories = 0
-			self.time_played = 0
-			self.goals_scored = 0
-			self.games_played = 0
+		def __init__(self, time_played=0, goals_scored=0, games_played=0, victories=0):
+			self.time_played = time_played if time_played else 0
+			self.goals_scored = goals_scored if goals_scored else 0
+			self.games_played = games_played if games_played else 0
+			self.victories = victories if victories else 0
 
 
 
