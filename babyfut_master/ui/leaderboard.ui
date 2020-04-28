@@ -92,14 +92,37 @@
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="rbRating">
+      <widget class="QRadioButton" name="rbRatio">
        <property name="text">
-        <string>Rating</string>
+        <string>Ratio index</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rbElo">
+       <property name="text">
+        <string>ELO</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_11">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -226,42 +249,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <spacer name="horizontalSpacer_8">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_7">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Jump to</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox"/>
-     </item>
     </layout>
    </item>
    <item>
@@ -300,7 +287,6 @@
   <tabstop>rbScore</tabstop>
   <tabstop>rbGamesPlayed</tabstop>
   <tabstop>rbTimePlayed</tabstop>
-  <tabstop>comboBox</tabstop>
   <tabstop>listWidget</tabstop>
   <tabstop>scrollArea</tabstop>
  </tabstops>

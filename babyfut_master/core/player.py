@@ -6,7 +6,7 @@
 
 import os
 import logging
-
+from math import sqrt
 from http import HTTPStatus
 
 from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent
@@ -83,6 +83,7 @@ class Player(QObject):
 			self.stats = self.Stat()
 		else:
 			self.stats = stats
+
 
 	@staticmethod
 	def fromRFID(rfid):
@@ -184,6 +185,17 @@ class Player(QObject):
 			self.games_played = games_played if games_played else 0
 			self.victories = victories if victories else 0
 
+			#Calculate Index of Perf based on ratio weighted by number of game played
+			#Middle of confidence Intervalle on theorical %age of victories
+			if self.games_played==0:
+				self.ratioIndex =0
+			else:
+				n = self.games_played
+				p = self.victories/n
+				u = 1.96 #For confidence rate at 95%
+				sup = (2*n*p+u*u+sqrt(u*u+4*n*p*(1-p)))/(2*n+2*u*u)
+				inf = (2*n*p+u*u-sqrt(u*u+4*n*p*(1-p)))/(2*n+2*u*u)
+				self.ratioIndex=(sup+inf)/2
 
 
 	@staticmethod
