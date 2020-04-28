@@ -40,6 +40,8 @@ class Module(QWidget):
 			self.mainwin.modules[newmod_idx].focusPreviousChild()
 			self.mainwin.modules[newmod_idx].ui.retranslateUi(self.mainwin)
 			self.mainwin.modules[newmod_idx].load()
+			self.mainwin.setWindowTitle('Babyfut')
+
 
 	def send(self, to, **kwargs):
 		mod_idx = self.mainwin.findMod(to)
