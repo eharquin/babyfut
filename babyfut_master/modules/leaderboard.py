@@ -34,6 +34,9 @@ class LeaderboardItemWidget(QWidget):
 		self.ui.lblGamesPlayed.setText  (self.ui.lblGamesPlayed.text().format(player.stats.games_played  ))
 		self.ui.lblGoalsScored.setText  (self.ui.lblGoalsScored.text().format(player.stats.goals_scored  ))
 		self.ui.lblMinutesPlayed.setText(self.ui.lblMinutesPlayed.text().replace('{}', '{0:.2f}').format(player.stats.time_played/60))
+		self.ui.lblElo.setText  (self.ui.lblElo.text().format(player.eloRating))
+		self.ui.lblRatio.setText(self.ui.lblRatio.text().replace('{}', '{:.2f}').format(player.stats.ratioIndex))
+
 
 class DeleteDialog(QDialog):
 	class Actions(Enum):
@@ -75,7 +78,8 @@ class LeaderboardModule(Module):
 		super().__init__(parent, LeaderboardWidget())
 		self.players = []
 
-		self.ui.rbRating.clicked.connect(lambda: self.changeSort(self.ui.rbRating))
+		self.ui.rbRatio.clicked.connect(lambda: self.changeSort(self.ui.rbRatio))
+		self.ui.rbElo.clicked.connect(lambda: self.changeSort(self.ui.rbElo))
 		self.ui.rbName.clicked.connect(lambda: self.changeSort(self.ui.rbName))
 		self.ui.rbVictories.clicked.connect(lambda: self.changeSort(self.ui.rbVictories))
 		self.ui.rbScore.clicked.connect(lambda: self.changeSort(self.ui.rbScore))
@@ -83,8 +87,8 @@ class LeaderboardModule(Module):
 		self.ui.rbTimePlayed.clicked.connect(lambda: self.changeSort(self.ui.rbTimePlayed))
 
 		self.selectedSort = 0
-		self.sortMethodRB = [self.ui.rbRating, self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
-		self.sortMethodAttr = ['eloRating', 'lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
+		self.sortMethodRB = [self.ui.rbRatio, self.ui.rbElo, self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
+		self.sortMethodAttr = ['stats.ratioIndex','eloRating', 'lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
 
 		self.sortMethodRB[self.selectedSort].setChecked(True)
 		self.deleteDialog = None
