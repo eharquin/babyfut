@@ -136,7 +136,6 @@ class LeaderboardModule(Module):
 
 
 
-
 	def changeSort(self, rbSort):
 		self.selectedSort = self.sortMethodRB.index(rbSort)
 		self.loadList()
@@ -153,6 +152,8 @@ class LeaderboardModule(Module):
 			item = QListWidgetItem()
 			#data = Player._loadFromDB(player.login)
 			playerWidget = LeaderboardItemWidget(self.ui.listWidget, player)
+			#row = self.ui.listWidget.count()-1
+			playerWidget.ui.deleteButton.clicked.connect(lambda: self.deletePlayer())
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)
 			self.ui.listWidget.setItemWidget(item, playerWidget)
@@ -183,8 +184,16 @@ class LeaderboardModule(Module):
 			self.sortMethodRB[newSort].animateClick()
 
 		elif e.key() == Qt.Key_A:
-			self.deleteDialog = DeleteDialog(self, self.players[curRow])
-			self.deleteDialog.open()
+			self.deletePlayer(curRow)
+			
+	def deletePlayer(self):
+		# print((self.ui.listWidget.itemWidget(self.ui.listWidget.item(1))))
+		# print(self.sender().parent())
+		for num in range(0, self.ui.listWidget.count()):
+			if self.ui.listWidget.itemWidget(self.ui.listWidget.item(num))==self.sender().parent():
+				row = num
+		self.deleteDialog = DeleteDialog(self, self.players[row])
+		self.deleteDialog.open()
 
 	def handleExit(self):
 		self.switchModule(modules.MenuModule)

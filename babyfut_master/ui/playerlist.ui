@@ -240,7 +240,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="deleteButton">
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
