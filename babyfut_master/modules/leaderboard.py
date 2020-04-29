@@ -50,6 +50,7 @@ class DeleteDialog(QDialog):
 		self.ui.setupUi(self)
 		self.player = player
 		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(player.name))
+		self.setWindowTitle('Data account manager')
 
 	def check(self, rfid):
 		return rfid == self.player.rfid
@@ -117,7 +118,7 @@ class LeaderboardModule(Module):
 				elif action==DeleteDialog.Actions.DeletePicture:
 					self.deleteDialog.player.forgetPicture()
 				elif action==DeleteDialog.Actions.HideAccount:
-					self.deleteDialog.player.make_private()
+					self.deleteDialog.player.makePrivate()
 				else:
 					logging.error('Unknown action {}'.format(action))
 

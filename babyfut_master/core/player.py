@@ -169,7 +169,7 @@ class Player(QObject):
 		self.pic_path = Player._placeholder_pic_path
 		Database.instance().delete_playerpic(self.login)
 
-	def make_private(self):
+	def makePrivate(self):
 		self.private = True
 		Database.instance().make_player_private(self.login)
 
