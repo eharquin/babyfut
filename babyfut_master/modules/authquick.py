@@ -5,17 +5,19 @@
 @modifications : Yoann Malot, Thibaud Le Graverend
 """
 
-import logging
+import logging, csv, random
 from PyQt5.QtCore import Qt, QTimer
 
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QSizePolicy, QDialog
 
 from .auth import AuthModuleBase
 from ..core.player import Player
 from common.side import Side
 from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
-from ..ui.team_name_dialog import Ui_Dialog as TeamNameDialog
+from ..ui.team_name_dialog_ui import Ui_Dialog as TeamNameDialog
 from ..core.database import Database
+from ..babyfut_master import getContent
+
 
 class AuthQuickModule(AuthModuleBase):
 	def __init__(self, parent):
@@ -64,7 +66,8 @@ class AuthQuickModule(AuthModuleBase):
 		if len(self.players[side])==2:
 			db = Database.instance()
 			if (not db.checkTeam(self.players[side])):
-				self.getTeamName = TeamNameDialog(self.parent, players[side])
+				print('coucou')
+				self.getTeamName = TeamName(self, self.players[side])
 				self.getTeamName.open()
 
 
@@ -102,10 +105,37 @@ class AuthQuickModule(AuthModuleBase):
 			widgetLayoutBottom[side].setVisible(True)
 			
 
-class TeamNameDialog(QDialog):
+class TeamName(QDialog):
 	def __init__(self, parent, players):
 		QDialog.__init__(self, parent)
 		self.ui = TeamNameDialog()
 		self.ui.setupUi(self)
 		self.setWindowTitle('Create a team')
-		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(players[0].fname, self.ui.lblTitle.text().format(players[1].name)))
+		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(players[0].fname, players[1].fname))
+		self.ui.nameInupt.setText(self.setRandomName())
+		self.ex = KeyboardUI()
+		self.ex.show()
+
+	def setRandomName(self):
+		wordsPath = getContent('words.csv')
+		adjectivesPath = getContent('adjectives.csv')
+
+		wordsFile = open(wordsPath, newline='')
+		wordsContent = csv.reader(wordsFile, delimiter=';')
+		wordsList = [row for row in wordsContent]
+		word = wordsList[random.randint(0, len(wordsList))]
+
+		adjectivesFile = open(adjectivesPath, newline='')
+		adjectivesContent = csv.reader(adjectivesFile, delimiter=';')
+		adjectivesList = [row for row in adjectivesContent]
+		if word[1]=='masc':
+			adjective = adjectivesList[random.randrange(0, len(adjectivesList))][0]
+		elif word[1]=='fem':
+			adjective = adjectivesList[random.randrange(0, len(adjectivesList))][1]
+		
+		wordsFile.close()
+		adjectivesFile.close()
+		return str('Les ' + word[0] + ' ' + adjective)
+
+
+### Keyboard from https://gist.github.com/arunreddy/ee01b4ccdd1f2e5773cdd5352783d9c6
