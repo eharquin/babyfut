@@ -24,6 +24,7 @@ case "$1" in
 		pyuic5 --import-from=. ui/playerlist.ui     -o ui/playerlist_ui.py
 		pyuic5 --import-from=. ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
 		pyuic5 --import-from=. ui/consent_dialog.ui -o ui/consent_dialog_ui.py
+		pyuic5 --import-from=. ui/team_name_dialog.ui -o ui/team_name_dialog_ui.py
 
 		echo "	Resources"
 		pyrcc5 -root /babyfut_master/ui        ui/assets.qrc     -o ui/assets_rc.py
