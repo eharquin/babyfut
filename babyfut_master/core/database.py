@@ -67,12 +67,17 @@ class Database():
 		self._connection.commit()
 		return self._selectOne('SELECT login FROM Players WHERE login=?',(login))
 
+	# Return select result
+	def checkTeam(self, logins):
+		args = (logins[0].login, logins[1].login, logins[1].login, logins[0].login)
+		return len(self._cursor.execute('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', args ).fetchall())>0
+
+
 	def insertTeam(self, logins):
 		if len(logins)<2:
 			logins.append('NULL')
 		#Checking if the Team is already in  DB
-		args = (logins[0], logins[1], logins[1], logins[0])
-		rep = self._cursor.execute('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', args ).fetchall()
+		rep = self.checkTeam(self.logins)
 		if len(rep)==0:
 			self._cursor.execute('INSERT INTO Teams (player1, player2) VALUES (?, ?)', (logins[0], logins[1]))
 			self._connection.commit()

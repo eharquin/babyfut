@@ -14,6 +14,8 @@ from .auth import AuthModuleBase
 from ..core.player import Player
 from common.side import Side
 from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
+from ..ui.team_name_dialog import Ui_Dialog as TeamNameDialog
+from ..core.database import Database
 
 class AuthQuickModule(AuthModuleBase):
 	def __init__(self, parent):
@@ -59,12 +61,24 @@ class AuthQuickModule(AuthModuleBase):
 			self.players[side].append(player)
 			self.updateSides(side)
 
+		if len(self.players[side])==2:
+			db = Database.instance()
+			if (not db.checkTeam(self.players[side])):
+				self.getTeamName = TeamNameDialog(self.parent, players[side])
+				self.getTeamName.open()
+
+
 		# Display 
 		if len(self.players[Side.Left])==2 and len(self.players[Side.Right])==2:			
 			self.timerCount = 5
 			self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
 			self.ui.lblStarting.setVisible(True)
 			self.startingGameTimer.start(1000)
+
+	#def getTeamName(self):
+
+
+
 
 	def updateSides(self, side):
 
@@ -87,3 +101,11 @@ class AuthQuickModule(AuthModuleBase):
 			labelPlayerBottom[side].setText(self.players[side][1].name)
 			widgetLayoutBottom[side].setVisible(True)
 			
+
+class TeamNameDialog(QDialog):
+	def __init__(self, parent, players):
+		QDialog.__init__(self, parent)
+		self.ui = TeamNameDialog()
+		self.ui.setupUi(self)
+		self.setWindowTitle('Create a team')
+		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(players[0].fname, self.ui.lblTitle.text().format(players[1].name)))
