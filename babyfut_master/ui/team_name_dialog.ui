@@ -97,7 +97,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="nameInupt">
+      <widget class="QLineEdit" name="nameInput">
        <property name="minimumSize">
         <size>
          <width>500</width>
@@ -164,7 +164,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="editName">
        <property name="minimumSize">
         <size>
          <width>200</width>
@@ -196,7 +196,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="enter">
        <property name="minimumSize">
         <size>
          <width>200</width>
