@@ -15,7 +15,7 @@ case "$1" in
 		pyuic5 --import-from=. ui/game.ui        -o ui/game_ui.py
 		pyuic5 --import-from=. ui/endgame.ui     -o ui/endgame_ui.py
 		pyuic5 --import-from=. ui/options.ui     -o ui/options_ui.py
-		pyuic5 --import-from=. ui/authquick2.ui   -o ui/authquick_ui.py
+		pyuic5 --import-from=. ui/authquick.ui   -o ui/authquick_ui.py
 		pyuic5 --import-from=. ui/authleague.ui  -o ui/authleague_ui.py
 		pyuic5 --import-from=. ui/leaderboard.ui -o ui/leaderboard_ui.py
 		pyuic5 --import-from=. ui/privacy.ui     -o ui/privacy_ui.py

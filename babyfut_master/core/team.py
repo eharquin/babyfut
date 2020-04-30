@@ -28,11 +28,15 @@ class Team(QObject):
         self.name = None
         self.id = None
 
+    def setName(self, name):
+        if self.size()==2:
+            self.name = name
+
     def size(self):
         return len(self.players)
 
     def addPlayer(self, player):
-        if player==Player.playerGuest:
+        if player==Player.playerGuest():
             return
 
         if Player.playerGuest() in self.players:
@@ -42,20 +46,24 @@ class Team(QObject):
             self.players.append(player)
 
     def insertDB(self):
+        print("En dev")
 
     def exists(self):
         if not Player.playerGuest() in self.players:
-            if len(self.players)==2
-                result = Database.instance().checkTeam(self.players[0].login, self.players[1].login)
-            elif len(self.players)==1
-                result = Database.instance().checkTeam(self.players[0].login)
-            
-            if len(result)!=0:
+            try:
+                if len(self.players)==2:
+                    result = Database.instance().checkTeam(self.players[0].login, self.players[1].login)
+                elif len(self.players)==1:
+                    result = Database.instance().checkTeam(self.players[0].login)
                 self.id=result[0]
                 self.name = result[1]
-                return 1
-            else:
-                return 0
+                return True
+            except:
+                return False
 
-
+    def isPlayer(self, player):
+        if any(p.login == player.login for p in self.players):
+            return True
+        else:
+            return False
 

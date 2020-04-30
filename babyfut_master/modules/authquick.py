@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QSizePolicy, QDialog
 
 from .auth import AuthModuleBase
 from ..core.player import Player
+from ..core.team import Team
 from common.side import Side
 from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
 from ..ui.team_name_dialog_ui import Ui_Dialog as TeamNameDialog
@@ -40,10 +41,8 @@ class AuthQuickModule(AuthModuleBase):
 	def load(self):
 		logging.debug('Loading AuthQuickModule')
 		super().load()
-
-		for side in [Side.Left, Side.Right]:
-			if len(self.players[side])==0:
-				self.addPlayer(side, Player.playerGuest())
+		self.updateSides(Side.Left)
+		self.updateSides(Side.Right)
 		
 		self.ui.lblStarting.setVisible(False)
 		
@@ -51,8 +50,8 @@ class AuthQuickModule(AuthModuleBase):
 		logging.debug('Unloading AuthQuickModule')
 		super().unload()
 
-	def createPlayerList(self):
-		self.players = {Side.Left: list(), Side.Right: list()}
+	def createTeamList(self):
+		self.teams = {Side.Left: Team(), Side.Right: Team()}
 
 	def _timerHandler(self):
 		self.timerCount = self.timerCount -1
@@ -62,32 +61,24 @@ class AuthQuickModule(AuthModuleBase):
 			self.handleDone()
 		
 	def addPlayer(self, side, player):
-		# If there is a placeholder Guest, clear it from the list, we don't need it anymore
-		if len(self.players[side])>0 and self.players[side][0]==Player.playerGuest():
-			self.players[side].clear()
-
-		if len(self.players[side])<2:
-			self.players[side].append(player)
-
-			if len(self.players[side])==2:
-				db = Database.instance()
-				if (not db.checkTeam(self.players[side])):
-					self.getTeamName = TeamName(self, self.players[side])
-					self.getTeamName.open()
-
+		if self.teams[side].size()<2:
+			self.teams[side].addPlayer(player)
 			self.updateSides(side)
+			if self.teams[side].size()==2:
+				if not self.teams[side].exists():
+					self.getTeamName = TeamName(self, self.teams[side])
+					self.getTeamName.exec()
+					self.changeTeamName(side)
+				elif self.teams[side.opposite()]==2:
+					self.timerCount = 5
+					self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
+					self.ui.lblStarting.setVisible(True)
+					self.startingGameTimer.start(1000)
+		
 
-		# Display 
-		# if len(self.players[Side.Left])==2 and len(self.players[Side.Right])==2:			
-		# 	self.timerCount = 5
-		# 	self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
-		# 	self.ui.lblStarting.setVisible(True)
-		# 	self.startingGameTimer.start(1000)
-
-
-	def insertTeam(self, name, players):
-		db = Database.instance()
-
+	def changeTeamName(self, side):
+		lblTeamName = {Side.Left:self.ui.lblTeamLeft, Side.Right:self.ui.lblTeamRight}
+		lblTeamName[side].setText(self.teams[side].name)
 
 	def updateSides(self, side):
 		
@@ -97,42 +88,42 @@ class AuthQuickModule(AuthModuleBase):
 		labelPlayerBottom = {Side.Left:self.ui.lblP2, Side.Right:self.ui.lblP4 }
 		lblTeamName = {Side.Left:self.ui.lblTeamLeft, Side.Right:self.ui.lblTeamRight}
 
-		if len(self.players[side])==1:
-			self.players[side][0].displayImg(widgetPlayerTop[side])
+		if self.teams[side].size()==1:
+			self.teams[side].players[0].displayImg(widgetPlayerTop[side])
 			widgetPlayerTop[side].setFixedSize(self.bigPicSize, self.bigPicSize)
-			labelPlayerTop[side].setText(self.players[side][0].name)
+			labelPlayerTop[side].setText(self.teams[side].players[0].name)
 			widgetPlayerBottom[side].setVisible(False)
 			labelPlayerBottom[side].setVisible(False)
 			lblTeamName[side].setVisible(False)
 			
-		elif len(self.players[side])==2:
+		elif self.teams[side].size()==2:
 			widgetPlayerTop[side].setFixedSize(self.smallPicSize, self.smallPicSize)
-			self.players[side][1].displayImg(widgetPlayerBottom[side])
-			labelPlayerBottom[side].setText(self.players[side][1].name)
-			# lblTeamName[side].setText
+			self.teams[side].players[1].displayImg(widgetPlayerBottom[side])
+			labelPlayerBottom[side].setText(self.teams[side].players[1].name)
 			widgetPlayerBottom[side].setVisible(True)
 			labelPlayerBottom[side].setVisible(True)
 			lblTeamName[side].setVisible(True)
+			self.changeTeamName(side)
 
 
 class TeamName(QDialog):
-	def __init__(self, parent, players):
+	def __init__(self, parent, team):
 		QDialog.__init__(self, parent)
 		self.parent = parent
-		self.players = players
+		self.team = team
 		self.ui = TeamNameDialog()
 		self.ui.setupUi(self)
 		self.setWindowTitle('Create a team')
-		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(players[0].fname, players[1].fname))
+		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(team.players[0].fname, team.players[1].fname))
 		self.ui.nameInput.setText(self.setRandomName())
 		self.ui.nameInput.setReadOnly(True)
 		self.keyboard = KeyboardWidget(self)
 		self.keyboard.hide()
 		self.ui.editName.clicked.connect(self.keyboard.show)
-		self.ui.enter.clicked.connect(self.sendName)
+		self.ui.enter.clicked.connect(self.finish)
 
-	def sendName(self):
-		self.parent.insertTeam(self.ui.nameInput.text(), self.players)
+	def finish(self):
+		self.team.setName(self.ui.nameInput.text())
 		self.done(1)
 
 	def setRandomName(self):

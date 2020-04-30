@@ -70,7 +70,7 @@ class Database():
 	# Return select result
 	def checkTeam(self, login1, login2='NULL'):
 		args = (login1, login2, login2, login1)
-		return self._selectOne('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', args )
+		return self._selectOne('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', *args )
 
 	def insertTeam(self, logins):
 		if len(logins)<2:

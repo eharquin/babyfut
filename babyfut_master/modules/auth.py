@@ -12,27 +12,20 @@ from .. import modules #tout le package modules
 from ..core.module import Module
 from ..core.player import Player
 from common.side import Side
+from ..core.team import Team
 
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):
 		super().__init__(parent, widget)
-		self.createPlayerList()
+		self.createTeamList()
 		self.numPlayers = 0
 
 	def load(self):
 		pass
 
 	def unload(self):
-		self.createPlayerList()
+		self.createTeamList()
 		self.numPlayers = 0
-
-	def isPlayerHere(self, player):
-		#Checks if a player is already authentified
-		for liste in self.players.values():
-			for elem in liste:
-				if elem.login ==player.login:
-					return True
-		return False
 
 	def other(self, **kwargs):
 		for key, val in kwargs.items():
@@ -40,13 +33,13 @@ class AuthModuleBase(Module):
 				side = kwargs['source']
 				self.numPlayers += 1
 				newPlayer = Player.fromRFID(val)
-				if not self.isPlayerHere(newPlayer):
+				if not any(team.isPlayer(newPlayer) for team  in self.teams.values()):
 					self.addPlayer(side, newPlayer)
 
 	def keyPressEvent(self, e):
 		#Simulating RFIDs in DB with keyboard
-		dictKeysLeft = {Qt.Key_A :'123456AB', Qt.Key_Z :'ABCDABCD', Qt.Key_E :'-4', Qt.Key_R :'-6',Qt.Key_T :'01234567'}
-		dictKeysRight = {Qt.Key_Q :'123456AB', Qt.Key_S :'ABCDABCD', Qt.Key_D :'-4', Qt.Key_F:'-6',Qt.Key_G :'01234567'}
+		dictKeysLeft = {Qt.Key_A :'123456AB', Qt.Key_Z :'ABCDABCD', Qt.Key_E :'YM', Qt.Key_R :'TLG',Qt.Key_T :'01234567'}
+		dictKeysRight = {Qt.Key_Q :'123456AB', Qt.Key_S :'ABCDABCD', Qt.Key_D :'YM', Qt.Key_F:'TLG',Qt.Key_G :'01234567'}
 
 		if e.key() == Qt.Key_Escape:
 			self.handleCancel()
@@ -71,5 +64,5 @@ class AuthModuleBase(Module):
 		self.switchModule(modules.MenuModule)
 
 	def handleDone(self):
-		self.send(modules.GameModule, players=self.players)
+		self.send(modules.GameModule, teams=self.teams)
 		self.switchModule(modules.GameModule)

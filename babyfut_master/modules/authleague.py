@@ -10,6 +10,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QAbstractItemView
 
 from .auth import AuthModuleBase
+from ..core.team import Team
 from ..ui.authleague_ui import Ui_Form as AuthLeagueWidget
 from ..core.player import PlayerEmpty
 from common.side import Side
@@ -28,15 +29,15 @@ class AuthLeagueModule(AuthModuleBase):
 		super().unload()
 		self.ui.playersList.clear()
 
-	def createPlayerList(self):
+	def createTeamList(self):
 		'''
 		Duplicates the player list to be the same on both sides.
 		That way, adding a player on the left or on the right have the exact same effect,
 		and thus the AuthModuleBase code can remain generic.
 		'''
 
-		l = list()
-		self.players = {Side.Left: l, Side.Right: l}
+		t =  Team()
+		self.teams = {Side.Left: t, Side.Right: t}
 
 	def addPlayer(self, side, player):
 		_translate = QCoreApplication.translate
