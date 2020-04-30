@@ -73,4 +73,7 @@ class Team(QObject):
             return True
         else:
             return False
+    
+    def hasGuest(self):
+        return self.isPlayer(Player.playerGuest())
 

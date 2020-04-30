@@ -7,7 +7,6 @@
 import logging, math
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QTimer, Qt
 
 from .. import modules
 from ..core.database import Database
@@ -19,9 +18,6 @@ from ..ui.endgame_ui import Ui_Form as EndGameWidget
 class EndGameModule(Module):
 	def __init__(self, parent=None):
 		super().__init__(parent, EndGameWidget())
-		self.screenTimeout = QTimer()
-		self.screenTimeout.timeout.connect(self.handleQuit)
-		self.screenTimeout.setSingleShot(True)
 
 	def load(self):
 		logging.debug('Loading EndGameModule')
@@ -29,24 +25,13 @@ class EndGameModule(Module):
 		self.displayPlayers()
 
 		db = Database.instance()
-		# idTeams = {}
-
-		# for side in [Side.Left, Side.Right]:
-		# 	if Player.playerGuest() in self.players[side]:
-		# 		idTeams[side] = None
-		# 	else:
-		# 		idTeams[side] = db.insertTeam([player.login for player in self.players[side]])
-
-		self.newEloRating()
-
-		db.insertMatch(int(self.start_time), int(self.duration), idTeams[self.winSide], self.scores[self.winSide], idTeams[self.winSide.opposite()], self.scores[self.winSide.opposite()])
-
-		# Quit the screen after 5 seconds if the user doesn't do it before
-		#self.screenTimeout.start(5000)
-
+		
+		if not any(team.hasGuest() for team in self.teams.values()):
+			db.insertMatch(int(self.start_time), int(self.duration), self.teams[self.winSide].id, self.scores[self.winSide], self.teams[self.winSide.opposite()].id, self.scores[self.winSide.opposite()])
+			self.newEloRating()
+	
 	def unload(self):
 		logging.debug('Unloading EndGameModule')
-		self.screenTimeout.stop()
 
 		del self.teams
 		del self.gameType
@@ -97,19 +82,18 @@ class EndGameModule(Module):
 		return 1.0 / (1 + math.pow(10, (rating2 - rating1) / 400))
 
 	def newEloRating(self):
-		db = Database.instance()
-		ratingWinner = int(sum(p.eloRating for p in self.players[self.winSide])/len(self.players[self.winSide]))
-		ratingLoser = int(sum(p.eloRating for p in self.players[self.winSide.opposite()])/len(self.players[self.winSide.opposite()]))
+		winners = self.teams[winSide].players
+		losers = self.teams[winSide.opposite()].players
+		ratingWinner = int(sum(p.eloRating for p in winners/self.teams[winSide].size()))
+		ratingLoser = int(sum(p.eloRating for p in losers/self.teams[winSide.opposite()].size()))
 		
-		for player in self.players[self.winSide]:
+		for player in winners:
 			player.eloRating += 80*(1-self.eloProbability(ratingWinner, ratingLoser))
-		for player in self.players[self.winSide.opposite()]:
+		for player in losers:
 			player.eloRating -= 80*(self.eloProbability(ratingLoser, ratingWinner))
 
-		for liste in self.players.values():
-			for elem in liste:
-				if elem != Player.playerGuest():
-					db.setEloRating(elem.login, elem.eloRating)
+		for player in winners + losers:
+			Database.instance().setEloRating(player.login, player.eloRating)
 
 	def handleQuit(self):
 		self.switchModule(modules.MenuModule)

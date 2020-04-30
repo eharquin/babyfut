@@ -55,7 +55,7 @@ class Player(QObject):
 
 	_default_pic_path = ':ui/img/placeholder_default.jpg'
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
-	_imgLocalPath         = os.path.join(IMG_PATH, '{}.jpg')
+	_imgLocalPath         = os.path.join(IMG_PATH, '{}.png')
 	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
 	def __init__(self, login, fname, lname, stats, elo = 1500):

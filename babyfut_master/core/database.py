@@ -73,7 +73,6 @@ class Database():
 		return self._selectOne('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', *args )
 
 	def insertTeam(self, name, login1, login2='NULL'):
-		print("Insertion")
 		self._cursor.execute('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', (name, login1, login2))
 		self._connection.commit()
 		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]

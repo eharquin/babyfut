@@ -42,8 +42,8 @@ class AuthModuleBase(Module):
 
 	def keyPressEvent(self, e):
 		#Simulating RFIDs in DB with keyboard
-		dictKeysLeft = {Qt.Key_A :'123456AB', Qt.Key_Z :'ABCDABCD', Qt.Key_E :'YM', Qt.Key_R :'TLG',Qt.Key_T :'01234567'}
-		dictKeysRight = {Qt.Key_Q :'123456AB', Qt.Key_S :'ABCDABCD', Qt.Key_D :'YM', Qt.Key_F:'TLG',Qt.Key_G :'01234567'}
+		dictKeysLeft = {Qt.Key_A :'123456AB', Qt.Key_Z :'ABCDABCD', Qt.Key_E :'YM', Qt.Key_R :'TLG',Qt.Key_T :'SB'}
+		dictKeysRight = {Qt.Key_Q :'123456AB', Qt.Key_S :'ABCDABCD', Qt.Key_D :'YM', Qt.Key_F:'TLG',Qt.Key_G :'SB'}
 
 		if e.key() == Qt.Key_Escape:
 			self.handleCancel()
