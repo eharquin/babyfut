@@ -72,17 +72,11 @@ class Database():
 		args = (login1, login2, login2, login1)
 		return self._selectOne('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', *args )
 
-	def insertTeam(self, logins):
-		if len(logins)<2:
-			logins.append('NULL')
-		#Checking if the Team is already in  DB
-		rep = self.checkTeam(self.logins)
-		if len(rep)==0:
-			self._cursor.execute('INSERT INTO Teams (player1, player2) VALUES (?, ?)', (logins[0], logins[1]))
-			self._connection.commit()
-			return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
-		else:
-			return rep[0][0]
+	def insertTeam(self, name, login1, login2='NULL'):
+		print("Insertion")
+		self._cursor.execute('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', (name, login1, login2))
+		self._connection.commit()
+		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
 	def insertMatch(self, start_time, duration, WTeam, scoreW, LTeam, scoreL):
 		args = (start_time, 1,  duration, WTeam, scoreW,LTeam, scoreL)
@@ -138,6 +132,7 @@ class Database():
 
 			c.execute('''CREATE TABLE "Teams" (
 				`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+				`name` TEXT,
 				`player1`	TEXT NOT NULL REFERENCES Players(login),
 				`player2`	TEXT REFERENCES Players(login)
 			)''')
@@ -153,10 +148,10 @@ class Database():
 			conn.commit()
 			c.close()
 
-def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
-	t1 = db.insertTeam(WTeam)
-	t2 = db.insertTeam(LTeam)
-	db.insertMatch(start_time, duration, t1, scoreW, t2, scoreL)
+# def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
+# 	t1 = db.insertTeam(WTeam)
+# 	t2 = db.insertTeam(LTeam)
+# 	db.insertMatch(start_time, duration, t1, scoreW, t2, scoreL)
 
 # db = Database.instance()
 # db.insertPlayer('malotyoa', 'Yoann', 'Malot', 1500)

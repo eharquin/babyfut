@@ -29,15 +29,15 @@ class EndGameModule(Module):
 		self.displayPlayers()
 
 		db = Database.instance()
-		idTeams = {}
+		# idTeams = {}
 
-		for side in [Side.Left, Side.Right]:
-			if Player.playerGuest() in self.players[side]:
-				idTeams[side] = None
-			else:
-				idTeams[side] = db.insertTeam([player.login for player in self.players[side]])
+		# for side in [Side.Left, Side.Right]:
+		# 	if Player.playerGuest() in self.players[side]:
+		# 		idTeams[side] = None
+		# 	else:
+		# 		idTeams[side] = db.insertTeam([player.login for player in self.players[side]])
 
-		self.newEloRating(db)
+		self.newEloRating()
 
 		db.insertMatch(int(self.start_time), int(self.duration), idTeams[self.winSide], self.scores[self.winSide], idTeams[self.winSide.opposite()], self.scores[self.winSide.opposite()])
 
@@ -96,7 +96,8 @@ class EndGameModule(Module):
 	def eloProbability(self, rating1, rating2):
 		return 1.0 / (1 + math.pow(10, (rating2 - rating1) / 400))
 
-	def newEloRating(self, db):
+	def newEloRating(self):
+		db = Database.instance()
 		ratingWinner = int(sum(p.eloRating for p in self.players[self.winSide])/len(self.players[self.winSide]))
 		ratingLoser = int(sum(p.eloRating for p in self.players[self.winSide.opposite()])/len(self.players[self.winSide.opposite()]))
 		

@@ -74,6 +74,7 @@ class AuthQuickModule(AuthModuleBase):
 					self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
 					self.ui.lblStarting.setVisible(True)
 					self.startingGameTimer.start(1000)
+		self.changeTeamName(side)
 		
 
 	def changeTeamName(self, side):

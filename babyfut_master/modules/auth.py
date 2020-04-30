@@ -14,6 +14,7 @@ from ..core.player import Player
 from common.side import Side
 from ..core.team import Team
 
+
 class AuthModuleBase(Module):
 	def __init__(self, parent, widget):
 		super().__init__(parent, widget)
@@ -24,6 +25,8 @@ class AuthModuleBase(Module):
 		pass
 
 	def unload(self):
+		for team in self.teams.values():
+			team.insertDB()
 		self.createTeamList()
 		self.numPlayers = 0
 
@@ -35,6 +38,7 @@ class AuthModuleBase(Module):
 				newPlayer = Player.fromRFID(val)
 				if not any(team.isPlayer(newPlayer) for team  in self.teams.values()):
 					self.addPlayer(side, newPlayer)
+			
 
 	def keyPressEvent(self, e):
 		#Simulating RFIDs in DB with keyboard
