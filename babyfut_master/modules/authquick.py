@@ -72,11 +72,11 @@ class AuthQuickModule(AuthModuleBase):
 
 
 		# Display 
-		if len(self.players[Side.Left])==2 and len(self.players[Side.Right])==2:			
-			self.timerCount = 5
-			self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
-			self.ui.lblStarting.setVisible(True)
-			self.startingGameTimer.start(1000)
+		# if len(self.players[Side.Left])==2 and len(self.players[Side.Right])==2:			
+		# 	self.timerCount = 5
+		# 	self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
+		# 	self.ui.lblStarting.setVisible(True)
+		# 	self.startingGameTimer.start(1000)
 
 	#def getTeamName(self):
 
@@ -84,26 +84,30 @@ class AuthQuickModule(AuthModuleBase):
 
 
 	def updateSides(self, side):
-
-		widgetLayoutTop = {Side.Left:self.ui.widgetLayoutP1, Side.Right:self.ui.widgetLayoutP3 }
-		widgetLayoutBottom = {Side.Left:self.ui.widgetLayoutP2, Side.Right:self.ui.widgetLayoutP4 }
+		
 		widgetPlayerTop = {Side.Left:self.ui.imgP1, Side.Right:self.ui.imgP3 }
 		labelPlayerTop = {Side.Left:self.ui.lblP1, Side.Right:self.ui.lblP3 }
 		widgetPlayerBottom = {Side.Left:self.ui.imgP2, Side.Right:self.ui.imgP4 }
 		labelPlayerBottom = {Side.Left:self.ui.lblP2, Side.Right:self.ui.lblP4 }
+		lblTeamName = {Side.Left:self.ui.lblTeamLeft, Side.Right:self.ui.lblTeamRight}
 
 		if len(self.players[side])==1:
 			self.players[side][0].displayImg(widgetPlayerTop[side])
 			widgetPlayerTop[side].setFixedSize(self.bigPicSize, self.bigPicSize)
 			labelPlayerTop[side].setText(self.players[side][0].name)
-			widgetLayoutBottom[side].setVisible(False)
+			widgetPlayerBottom[side].setVisible(False)
+			labelPlayerBottom[side].setVisible(False)
+			lblTeamName[side].setVisible(False)
 			
 		elif len(self.players[side])==2:
 			widgetPlayerTop[side].setFixedSize(self.smallPicSize, self.smallPicSize)
 			self.players[side][1].displayImg(widgetPlayerBottom[side])
 			labelPlayerBottom[side].setText(self.players[side][1].name)
-			widgetLayoutBottom[side].setVisible(True)
-			
+			# lblTeamName[side].setText
+			widgetPlayerBottom[side].setVisible(True)
+			labelPlayerBottom[side].setVisible(True)
+			lblTeamName[side].setVisible(True)
+
 
 class TeamName(QDialog):
 	def __init__(self, parent, players):
@@ -113,8 +117,8 @@ class TeamName(QDialog):
 		self.setWindowTitle('Create a team')
 		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(players[0].fname, players[1].fname))
 		self.ui.nameInupt.setText(self.setRandomName())
-		self.ex = KeyboardUI()
-		self.ex.show()
+		# self.ex = KeyboardUI()
+		# self.ex.show()
 
 	def setRandomName(self):
 		wordsPath = getContent('words.csv')

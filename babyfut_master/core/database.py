@@ -68,10 +68,9 @@ class Database():
 		return self._selectOne('SELECT login FROM Players WHERE login=?',(login))
 
 	# Return select result
-	def checkTeam(self, logins):
-		args = (logins[0].login, logins[1].login, logins[1].login, logins[0].login)
-		return len(self._cursor.execute('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', args ).fetchall())>0
-
+	def checkTeam(self, login1, login2='NULL'):
+		args = (login1, login2, login2, login1)
+		return self._selectOne('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', args )
 
 	def insertTeam(self, logins):
 		if len(logins)<2:
