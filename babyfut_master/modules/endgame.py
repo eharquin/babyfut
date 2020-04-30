@@ -22,12 +22,10 @@ class EndGameModule(Module):
 		self.screenTimeout = QTimer()
 		self.screenTimeout.timeout.connect(self.handleQuit)
 		self.screenTimeout.setSingleShot(True)
-		self.middleSpacerWidth = self.ui.horizontalLayout.itemAt(2).spacerItem().geometry().width()
 
 	def load(self):
 		logging.debug('Loading EndGameModule')
 
-		self.setActiveP2(len(self.players[self.winSide])>1)
 		self.displayPlayers()
 
 		db = Database.instance()
@@ -50,7 +48,7 @@ class EndGameModule(Module):
 		logging.debug('Unloading EndGameModule')
 		self.screenTimeout.stop()
 
-		del self.players
+		del self.teams
 		del self.gameType
 		del self.winSide
 		del self.scores
@@ -61,8 +59,8 @@ class EndGameModule(Module):
 		logging.debug('Other EndGameModule')
 
 		for key, val in kwargs.items():
-			if key=='players':
-				self.players = val
+			if key=='teams':
+				self.teams = val
 			elif key=='gameType':
 				self.gameType = val
 			elif key=='winSide':
@@ -78,26 +76,22 @@ class EndGameModule(Module):
 		if e.key() == Qt.Key_Escape or e.key() == Qt.Key_Return:
 			self.handleQuit()
 
-	def setActiveP2(self, active):
-		#Organise Widgets for display either 1 or 2 Players
-
-		self.ui.widgetLayoutP2.setVisible(active)
-		spacer = self.ui.horizontalLayout.itemAt(2).spacerItem()
-
-		if active:
-			spacer.changeSize(self.middleSpacerWidth, spacer.geometry().height(), QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-		else:
-			spacer.changeSize(0, spacer.geometry().height(), QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
-
 	def displayPlayers(self):
-		players = self.players[self.winSide]
+		players = self.teams[self.winSide].players
 
 		players[0].displayImg(self.ui.imgP1)
 		self.ui.lblP1.setText(players[0].name)
 
-		if len(self.players[self.winSide])>1:
+		spacer = self.ui.horizontalLayout.itemAt(2).spacerItem()
+		if self.teams[self.winSide].size()==2:
 			players[1].displayImg(self.ui.imgP2)
 			self.ui.lblP2.setText(players[1].name)
+			self.ui.widgetLayoutP2.setVisible(True)
+			spacer.changeSize(80, spacer.geometry().height(), QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+		else:
+			self.ui.widgetLayoutP2.setVisible(False)
+			spacer.changeSize(0, spacer.geometry().height(), QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
+
 
 	def eloProbability(self, rating1, rating2):
 		return 1.0 / (1 + math.pow(10, (rating2 - rating1) / 400))

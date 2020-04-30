@@ -105,7 +105,7 @@
         <widget class="QLabel" name="lblTeamLeft">
          <property name="maximumSize">
           <size>
-           <width>400</width>
+           <width>600</width>
            <height>16777215</height>
           </size>
          </property>
@@ -358,7 +358,7 @@
         <widget class="QLabel" name="lblTeamRight">
          <property name="maximumSize">
           <size>
-           <width>400</width>
+           <width>600</width>
            <height>16777215</height>
           </size>
          </property>
