@@ -46,7 +46,12 @@ class Team(QObject):
             self.players.append(player)
 
     def insertDB(self):
-        print("En dev")
+        db = Database.instance()
+        if not self.exists():
+            if len(self.players)==2:
+                db.insertTeam(self.name, self.players[0].login, self.players[1].login)
+            if len(self.players)==1:
+                db.insertTeam(self.name, self.players[0].login)
 
     def exists(self):
         if not Player.playerGuest() in self.players:
@@ -60,6 +65,8 @@ class Team(QObject):
                 return True
             except:
                 return False
+        else:
+            return True
 
     def isPlayer(self, player):
         if any(p.login == player.login for p in self.players):
