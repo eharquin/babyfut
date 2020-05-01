@@ -53,8 +53,6 @@ class Team(QObject):
             if len(self.players)==2:
                 if not self.name:
                     self.name='2 Players Team'
-                print(self.players[0].login)
-                print(self.name)
                 self.id = db.insertTeam(self.players[0].login, self.players[1].login, self.name)
             if len(self.players)==1:
                 self.name=None
@@ -65,10 +63,12 @@ class Team(QObject):
             try:
                 logins = [p.login for p in self.players]
                 result = Database.instance().checkTeam(*logins)
-                self.id=result[0]
-                self.name = result[1]
-                return True
-            except:
+                if result:
+                    self.id=result[0]
+                    self.name = result[1]
+                    return True
+            except DatabaseError as e:
+                logging.error('DatabaseError : {}'.format(e))
                 return False
         else:
             return True

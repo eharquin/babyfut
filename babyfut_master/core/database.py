@@ -5,11 +5,13 @@
 """
 
 import sqlite3
+import logging
 from os.path import exists
 from ..babyfut_master import getContent
 
 class DatabaseError(Exception):
 	pass
+
 
 class Database():
 	__db = None
@@ -34,13 +36,20 @@ class Database():
 	@property
 	def _cursor(self):
 		return self._connection.cursor()
+		
+	def _exec(self, query, args=()):
+		try:
+			return self._cursor.execute(query, args)
+		except sqlite3.Error as err:
+			logging.error('sqlite3 error : {}'.format(err))
+			raise DatabaseError() from err
 
 	def loginExists(self, login):
-		return bool(self._cursor.execute('SELECT login FROM Players WHERE login==?', [login]).fetchone())
+		return bool(self._exec('SELECT login FROM Players WHERE login==?', (login,)).fetchone())
 
 	def selectPlayer(self, login):
 		query = 'SELECT login, fname, lname, elo FROM Players WHERE login==?'
-		return self._selectOne(query, login)
+		return self._exec(query, (login,)).fetchone()
 
 	def selectStats(self, login):
 		query="SELECT SUM(Matchs.duration) AS timePlayed, \
@@ -49,31 +58,28 @@ class Database():
 		COUNT (CASE WHEN Teams.id=Matchs.winningteam THEN '1' ELSE NULL END) AS victories\
 		FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) \
 		WHERE (Teams.player1==? OR player2==?)"
-		return self._selectOne(query, login, login)
+		return self._exec(query, (login, login)).fetchone()
 
 
-	def _selectOne(self, query, *args):
-		#Base query function
-		res = self._cursor.execute(query, args).fetchone()
-		if not res:
-			raise DatabaseError('Query \"{}\" returned nothing with args {}'.format(query, args))
-		return res
+	# def _selectOne(self, query, *args):
+	# 	#Base query function
+	# 	return self._cursor.execute(query, args).fetchone()
 
 	def insertPlayer(self, login, fname, lname, elo, private=0):
-		self._cursor.execute('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
+		self._exec('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
 		self._connection.commit()
-		return self._selectOne('SELECT login FROM Players WHERE login=?',(login))
+		return self._exec('SELECT login FROM Players WHERE login=?',(login,))[0]
 
 	def checkTeam(self, *logins):
 		if len(logins)==1:
-			args = [logins[0]]
-			query = 'SELECT * FROM Teams WHERE player1=? AND player2 IS NULL AND NAME IS NULL'
+			args = (logins[0],)
+			query = "SELECT * FROM Teams WHERE player1=? AND player2 IS NULL AND NAME IS NULL"
 		elif len(logins)==2:
-			query='SELECT * FROM Teams WHERE (player1=? AND player2=? OR player1=? AND player2=?) AND NAME IS NOT NULL'
-			args = (logins[0], logins[1], logins[1], login[0])
+			query="SELECT * FROM Teams WHERE (player1=? AND player2=? OR player1=? AND player2=?) AND NAME IS NOT NULL"
+			args = (logins[0], logins[1], logins[1], logins[0])
 		else:
 			raise DatabaseError('Argument must be a list of 1 or 2 logins')	
-		return self._selectOne(query, *args )
+		return self._exec(query, args).fetchone()
 
 	def insertTeam(self, login1, login2=None, name=None):
 		if not login2 and not name:
@@ -83,31 +89,31 @@ class Database():
 		else:
 			raise DatabaseError('Not a valid Team format')
 		
-		self._cursor.execute('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
+		self._exec('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
 		self._connection.commit()
 		#Returns the new Team auto-incremented ID 
-		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
+		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
 	def insertMatch(self, start_time, duration, WTeam, scoreW, LTeam, scoreL):
 		args = (start_time, 1,  duration, WTeam, scoreW,LTeam, scoreL)
-		self._cursor.execute('INSERT INTO Matchs (timestamp, babyfoot, duration, winningTeam,scoreWinner, losingTeam, scoreLoser) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
+		self._exec('INSERT INTO Matchs (timestamp, babyfoot, duration, winningTeam,scoreWinner, losingTeam, scoreLoser) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
 		self._connection.commit()
 
 	def selectAllPlayer(self):
-		return self._cursor.execute('SELECT login, fname, lname FROM Players WHERE private==0').fetchall()
+		return self._exec('SELECT login, fname, lname FROM Players WHERE private==0').fetchall()
 
 	def deletePlayer(self, login):
-		self._cursor.execute('UPDATE Teams SET player1=NULL WHERE player1==?',[login])
-		self._cursor.execute('UPDATE Teams SET player2=NULL WHERE player2==?',[login])
-		self._cursor.execute('DELETE FROM Players WHERE login==?', [login])
+		self._exec('UPDATE Teams SET player1=NULL WHERE player1==?',(login,))
+		self._exec('UPDATE Teams SET player2=NULL WHERE player2==?',(login,))
+		self._exec('DELETE FROM Players WHERE login==?', (login,))
 		self._connection.commit()
 
 	def setPlayerPrivate(self, login):
-		self._cursor.execute("UPDATE Players SET private=1 WHERE login==?", [login])
+		self._exec("UPDATE Players SET private=1 WHERE login==?", (login,))
 		self._connection.commit()
 
 	def setEloRating(self, login, elo):
-		self._cursor.execute("UPDATE Players SET elo=? WHERE login==?", [elo, login])
+		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
 		self._connection.commit()
 
 	def close(self):

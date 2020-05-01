@@ -7,7 +7,7 @@
 import logging, math
 
 from PyQt5 import QtWidgets
-
+from PyQt5.QtCore import Qt
 from .. import modules
 from ..core.database import Database
 from ..core.player import Player
