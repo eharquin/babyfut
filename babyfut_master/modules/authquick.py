@@ -122,6 +122,7 @@ class TeamName(QDialog):
 		self.keyboard.hide()
 		self.ui.editName.clicked.connect(self.keyboard.show)
 		self.ui.enter.clicked.connect(self.finish)
+		self.ui.enter.setDefault(True)
 
 	def finish(self):
 		self.team.setName(self.ui.nameInput.text())
@@ -166,25 +167,33 @@ class KeyboardWidget(QWidget):
 		self.initUI()
 
 	def initUI(self):
+		self.verticalLayout = QVBoxLayout()
 		self.layout = QGridLayout()
+
+		self.title = QLabel("How should we call you ?")
+		self.title.setFont(QFont('Arial', 25))
+		self.verticalLayout.addWidget(self.title, 0, Qt.AlignHCenter)
 
 		self.setAutoFillBackground(True)
 		self.text_box = QLineEdit()
 		self.text_box.setReadOnly(True)
+		self.text_box.setMaxLength(30)
 		self.text_box.setFont(QFont('Arial', 20))
 
-		self.layout.addWidget(self.text_box, 0, 0, 1, 13)
+		self.verticalLayout.addWidget(self.text_box)
 
 		self.maj = True
-		self.namesMaj = ['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Q', 'S', 'D',
-					'F', 'G', 'H', 'J', 'K', 'L', 'M', 'W', 'X', 'C', 'V', 'B', 'N',
-					'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '(', ')']
+		self.namesMaj = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+						'A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+						'Q', 'S', 'D','F', 'G', 'H', 'J', 'K', 'L', 'M', 
+						'W', 'X', 'C', 'V', 'B', 'N', '?', '!', '.', '-']
 		
-		self.namesMin =  ['a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'q', 's', 'd',
-					'f', 'g', 'h', 'j', 'k', 'l', 'm', 'w', 'x', 'c', 'v', 'b', 'n',
-					'é', 'è', 'à', '!', '?', "'", 'ç', '@', '*', '<', '>', '_', '-']
+		self.namesMin =  ['é', 'è', 'à', 'ç', '(', ')', '[', ']', '_', '@',
+						'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
+						'q', 's', 'd','f', 'g', 'h', 'j', 'k', 'l', 'm',
+						'w', 'x', 'c', 'v', 'b', 'n',',',';',':','/']
 
-		self.positions = [(i + 1, j) for i in range(3) for j in range(13)]
+		self.positions = [(i, j) for i in range(4) for j in range(10)]
 
 		for position, name in zip(self.positions, self.namesMaj):
 
@@ -222,7 +231,7 @@ class KeyboardWidget(QWidget):
 		space_button = QPushButton('Space')
 		space_button.setFont(QFont('Arial', 20))
 		space_button.KEY_CHAR = Qt.Key_Space
-		self.layout.addWidget(space_button, 5, 5, 1, 3)
+		self.layout.addWidget(space_button, 5, 4, 1, 2)
 		space_button.clicked.connect(self.signalMapper.map)
 		self.signalMapper.setMapping(space_button, space_button.KEY_CHAR)
 		space_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -231,7 +240,7 @@ class KeyboardWidget(QWidget):
 		back_button = QPushButton('Back')
 		back_button.setFont(QFont('Arial', 20))
 		back_button.KEY_CHAR = Qt.Key_Backspace
-		self.layout.addWidget(back_button, 5, 9, 1, 2)
+		self.layout.addWidget(back_button, 5, 6, 1, 2)
 		back_button.clicked.connect(self.signalMapper.map)
 		self.signalMapper.setMapping(back_button, back_button.KEY_CHAR)
 		back_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -241,12 +250,14 @@ class KeyboardWidget(QWidget):
 		done_button = QPushButton('Done')
 		done_button.setFont(QFont('Arial', 20))
 		done_button.KEY_CHAR = Qt.Key_Home
-		self.layout.addWidget(done_button, 5, 11, 1, 2)
+		self.layout.addWidget(done_button, 5, 8, 1, 2)
 		done_button.clicked.connect(self.signalMapper.map)
 		self.signalMapper.setMapping(done_button, done_button.KEY_CHAR)
 		done_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-		self.setLayout(self.layout)
+		# Insert Grid in Vertical Layout
+		self.verticalLayout.insertLayout(3,self.layout)
+		self.setLayout(self.verticalLayout)
 
 
 	def convertLetters(self):
@@ -259,7 +270,7 @@ class KeyboardWidget(QWidget):
 			self.maj=True
 		# Changes button placeholder and add new mapping
 		for i in range(0, len(names)):
-			row, col, rowspan, colspan = self.layout.getItemPosition(i+1)
+			row, col, rowspan, colspan = self.layout.getItemPosition(i)
 			self.layout.itemAtPosition(row, col).widget().setText(names[i])
 			self.layout.itemAtPosition(row, col).widget().KEY_CHAR = ord(names[i])
 			self.signalMapper.setMapping(self.layout.itemAtPosition(row, col).widget(), self.layout.itemAtPosition(row, col).widget().KEY_CHAR)
