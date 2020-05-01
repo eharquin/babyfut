@@ -285,7 +285,9 @@ class KeyboardWidget(QWidget):
 			txt = txt[:-1]
 		elif char_ord == Qt.Key_Home:
 			self.parent.ui.nameInput.setText(txt)
-			self.parent.ui.nameInput.setSelection(0,0)
+			self.parent.ui.nameInput.setFocusPolicy(Qt.NoFocus)
+			self.parent.setFocus()
+			self.parent.ui.enter.setDefault(True)
 			self.hide()
 			return
 		elif char_ord == Qt.Key_Shift:
@@ -297,4 +299,5 @@ class KeyboardWidget(QWidget):
 		else:
 			txt += chr(char_ord)
 
+		self.setFocus()
 		self.text_box.setText(txt)
