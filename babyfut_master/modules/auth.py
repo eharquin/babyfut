@@ -25,8 +25,6 @@ class AuthModuleBase(Module):
 		pass
 
 	def unload(self):
-		for team in self.teams.values():
-			team.insertDB()
 		self.createTeamList()
 		self.numPlayers = 0
 
@@ -68,5 +66,7 @@ class AuthModuleBase(Module):
 		self.switchModule(modules.MenuModule)
 
 	def handleDone(self):
+		for team in self.teams.values():
+			team.insertDB()
 		self.send(modules.GameModule, teams=self.teams)
 		self.switchModule(modules.GameModule)
