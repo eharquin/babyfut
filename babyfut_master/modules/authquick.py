@@ -285,7 +285,7 @@ class KeyboardWidget(QWidget):
 			txt = txt[:-1]
 		elif char_ord == Qt.Key_Home:
 			self.parent.ui.nameInput.setText(txt)
-			self.parent.ui.nameInput.deselect()
+			self.parent.ui.nameInput.setSelection(0,0)
 			self.hide()
 			return
 		elif char_ord == Qt.Key_Shift:
