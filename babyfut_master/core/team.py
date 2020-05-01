@@ -26,6 +26,8 @@ class Team(QObject):
         self.players=list()
         self.players.append(Player.playerGuest())
         self.name = None
+        
+        #ID null means Team not related to Database (Guest, waiting for player)
         self.id = None
 
     def setName(self, name):
@@ -49,17 +51,20 @@ class Team(QObject):
         db = Database.instance()
         if not self.exists():
             if len(self.players)==2:
-                db.insertTeam(self.name, self.players[0].login, self.players[1].login)
+                if not self.name:
+                    self.name='2 Players Team'
+                print(self.players[0].login)
+                print(self.name)
+                self.id = db.insertTeam(self.players[0].login, self.players[1].login, self.name)
             if len(self.players)==1:
-                db.insertTeam(self.name, self.players[0].login)
+                self.name=None
+                self.id = db.insertTeam(self.players[0].login)
 
     def exists(self):
         if not Player.playerGuest() in self.players:
             try:
-                if len(self.players)==2:
-                    result = Database.instance().checkTeam(self.players[0].login, self.players[1].login)
-                elif len(self.players)==1:
-                    result = Database.instance().checkTeam(self.players[0].login)
+                logins = [p.login for p in self.players]
+                result = Database.instance().checkTeam(*logins)
                 self.id=result[0]
                 self.name = result[1]
                 return True
@@ -68,12 +73,12 @@ class Team(QObject):
         else:
             return True
 
-    def isPlayer(self, player):
+    def hasPlayer(self, player):
         if any(p.login == player.login for p in self.players):
             return True
         else:
             return False
     
     def hasGuest(self):
-        return self.isPlayer(Player.playerGuest())
+        return self.hasPlayer(Player.playerGuest())
 

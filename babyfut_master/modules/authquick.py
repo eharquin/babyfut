@@ -68,13 +68,13 @@ class AuthQuickModule(AuthModuleBase):
 				if not self.teams[side].exists():
 					self.getTeamName = TeamName(self, self.teams[side])
 					self.getTeamName.exec()
-					self.changeTeamName(side)
-				elif self.teams[side.opposite()]==2:
+
+				if self.teams[side.opposite()]==2:
 					self.timerCount = 5
 					self.ui.lblStarting.setText('Starting in {}...'.format(self.timerCount))
 					self.ui.lblStarting.setVisible(True)
 					self.startingGameTimer.start(1000)
-		self.changeTeamName(side)
+			self.changeTeamName(side)
 		
 
 	def changeTeamName(self, side):
