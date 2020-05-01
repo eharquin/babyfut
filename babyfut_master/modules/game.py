@@ -182,5 +182,5 @@ class GameModule(Module):
 			start_timestamp = int(QDateTime(QDate.currentDate(), self.gameStartTime).toMSecsSinceEpoch()/1000)
 
 			self.send(modules.EndGameModule, teams=self.teams, winSide=winSide, scores=self.scores)
-			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self)
+			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self.gameoverType)
 			self.switchModule(modules.EndGameModule)

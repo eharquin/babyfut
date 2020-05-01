@@ -59,22 +59,33 @@ class Database():
 			raise DatabaseError('Query \"{}\" returned nothing with args {}'.format(query, args))
 		return res
 
-	# def select_guest_team(self):
-	# 	return self.select_one('SELECT id FROM Players WHERE fname LIKE "guest"')[0]
-
 	def insertPlayer(self, login, fname, lname, elo, private=0):
 		self._cursor.execute('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
 		self._connection.commit()
 		return self._selectOne('SELECT login FROM Players WHERE login=?',(login))
 
-	# Return select result
-	def checkTeam(self, login1, login2='NULL'):
-		args = (login1, login2, login2, login1)
-		return self._selectOne('SELECT * FROM Teams WHERE player1=? AND player2=? OR player1=? AND player2=?', *args )
+	def checkTeam(self, *logins):
+		if len(logins)==1:
+			args = [logins[0]]
+			query = 'SELECT * FROM Teams WHERE player1=? AND player2 IS NULL AND NAME IS NULL'
+		elif len(logins)==2:
+			query='SELECT * FROM Teams WHERE (player1=? AND player2=? OR player1=? AND player2=?) AND NAME IS NOT NULL'
+			args = (logins[0], logins[1], logins[1], login[0])
+		else:
+			raise DatabaseError('Argument must be a list of 1 or 2 logins')	
+		return self._selectOne(query, *args )
 
-	def insertTeam(self, name, login1, login2='NULL'):
-		self._cursor.execute('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', (name, login1, login2))
+	def insertTeam(self, login1, login2=None, name=None):
+		if not login2 and not name:
+			args = ('NULL', login1, 'NULL')
+		elif login2 and name and name != 'NULL':
+			args = (name, login1, login2)
+		else:
+			raise DatabaseError('Not a valid Team format')
+		
+		self._cursor.execute('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
 		self._connection.commit()
+		#Returns the new Team auto-incremented ID 
 		return self._cursor.execute('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
 	def insertMatch(self, start_time, duration, WTeam, scoreW, LTeam, scoreL):
@@ -85,13 +96,11 @@ class Database():
 	def selectAllPlayer(self):
 		return self._cursor.execute('SELECT login, fname, lname FROM Players WHERE private==0').fetchall()
 
-	# def deletePlayer(self, playerID):
-	# 	self._cursor.execute('DELETE FROM Players WHERE id==?', (playerID,))
-	# 	self._connection.commit()
-
-	# def deletePicture(self, playerID):
-	# 	self._cursor.execute('UPDATE Players SET login=null WHERE id==?', (playerID,))
-	# 	self._connection.commit()
+	def deletePlayer(self, login):
+		self._cursor.execute('UPDATE Teams SET player1=NULL WHERE player1==?',[login])
+		self._cursor.execute('UPDATE Teams SET player2=NULL WHERE player2==?',[login])
+		self._cursor.execute('DELETE FROM Players WHERE login==?', [login])
+		self._connection.commit()
 
 	def setPlayerPrivate(self, login):
 		self._cursor.execute("UPDATE Players SET private=1 WHERE login==?", [login])
@@ -114,9 +123,9 @@ class Database():
 				`timestamp`	INTEGER NOT NULL,
 				`babyfoot` NOT NULL REFERENCES Babyfoots(id),
 				`duration`	INTEGER NOT NULL,
-				`winningTeam`	INTEGER REFERENCES Teams(id),
+				`winningTeam`	INTEGER NOT NULL REFERENCES Teams(id),
 				`scoreWinner` INTEGER NOT NULL,
-				`losingTeam`	INTEGER REFERENCES Teams(id),
+				`losingTeam`	INTEGER NOT NULL REFERENCES Teams(id),
 				`scoreLoser` INTEGER NOT NULL,
 				CHECK (scoreWinner > scoreLoser)
 			)''')
@@ -132,7 +141,7 @@ class Database():
 			c.execute('''CREATE TABLE "Teams" (
 				`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 				`name` TEXT,
-				`player1`	TEXT NOT NULL REFERENCES Players(login),
+				`player1`	TEXT REFERENCES Players(login),
 				`player2`	TEXT REFERENCES Players(login)
 			)''')
 
@@ -146,6 +155,9 @@ class Database():
 			
 			conn.commit()
 			c.close()
+
+
+#------INSERT TESTING DATA
 
 # def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
 # 	t1 = db.insertTeam(WTeam)

@@ -82,10 +82,10 @@ class EndGameModule(Module):
 		return 1.0 / (1 + math.pow(10, (rating2 - rating1) / 400))
 
 	def newEloRating(self):
-		winners = self.teams[winSide].players
-		losers = self.teams[winSide.opposite()].players
-		ratingWinner = int(sum(p.eloRating for p in winners/self.teams[winSide].size()))
-		ratingLoser = int(sum(p.eloRating for p in losers/self.teams[winSide.opposite()].size()))
+		winners = self.teams[self.winSide].players
+		losers = self.teams[self.winSide.opposite()].players
+		ratingWinner = int(sum(p.eloRating for p in winners/self.teams[self.winSide].size()))
+		ratingLoser = int(sum(p.eloRating for p in losers/self.teams[self.winSide.opposite()].size()))
 		
 		for player in winners:
 			player.eloRating += 80*(1-self.eloProbability(ratingWinner, ratingLoser))
