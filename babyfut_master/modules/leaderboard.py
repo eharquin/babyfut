@@ -158,7 +158,7 @@ class LeaderboardModule(Module):
 			#data = Player._loadFromDB(player.login)
 			playerWidget = LeaderboardItemWidget(self.ui.listWidget, player)
 			#row = self.ui.listWidget.count()-1
-			playerWidget.ui.deleteButton.clicked.connect(lambda: self.deletePlayer())
+			playerWidget.ui.deleteButton.clicked.connect(lambda:self.deletePlayer(None))
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)
 			self.ui.listWidget.setItemWidget(item, playerWidget)
@@ -173,12 +173,12 @@ class LeaderboardModule(Module):
 			self.handleExit()
 
 		elif e.key() == Qt.Key_Up:
-			newRow = curRow-1 if curRow!=0 else self.ui.listWidget.count()-1
-			self.ui.listWidget.setCurrentRow(newRow, QItemSelectionModel.SelectCurrent)
+			if curRow!=0:
+				self.ui.listWidget.setCurrentRow(curRow-1, QItemSelectionModel.SelectCurrent)
 
 		elif e.key() == Qt.Key_Down:
-			newRow = curRow+1 if curRow!=self.ui.listWidget.count()-1 else 0
-			self.ui.listWidget.setCurrentRow(newRow, QItemSelectionModel.SelectCurrent)
+			if curRow!=self.ui.listWidget.count()-1:
+				self.ui.listWidget.setCurrentRow(curRow+1, QItemSelectionModel.SelectCurrent)
 
 		elif e.key() == Qt.Key_Left:
 			newSort = curSort-1 if curSort!=0 else len(self.sortMethodRB)-1
@@ -188,15 +188,15 @@ class LeaderboardModule(Module):
 			newSort = curSort+1 if curSort!=len(self.sortMethodRB)-1 else 0
 			self.sortMethodRB[newSort].animateClick()
 
-		elif e.key() == Qt.Key_A:
+		elif e.key() == Qt.Key_Delete:
 			self.deletePlayer(curRow)
 			
-	def deletePlayer(self):
-		# print((self.ui.listWidget.itemWidget(self.ui.listWidget.item(1))))
-		# print(self.sender().parent())
-		for num in range(0, self.ui.listWidget.count()):
-			if self.ui.listWidget.itemWidget(self.ui.listWidget.item(num))==self.sender().parent():
-				row = num
+	def deletePlayer(self, row=None):
+		if row==None:
+			for num in range(0, self.ui.listWidget.count()):
+				if self.ui.listWidget.itemWidget(self.ui.listWidget.item(num))==self.sender().parent():
+					row = num
+		self.ui.listWidget.setFocus()
 		self.deleteDialog = DeleteDialog(self, self.players[row])
 		self.deleteDialog.open()
 
