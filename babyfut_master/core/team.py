@@ -25,14 +25,21 @@ class Team(QObject):
     def __init__(self):
         self.players=list()
         self.players.append(Player.playerGuest())
-        self.name = None
+        self._name = None
         
         #ID null means Team not related to Database (Guest, waiting for player)
         self.id = None
 
     def setName(self, name):
         if self.size()==2:
-            self.name = name
+            self._name = name
+
+    @property
+    def name(self):
+        if self.size()==2:
+            return self._name
+        else:
+            return self.players[0].name
 
     def size(self):
         return len(self.players)
@@ -51,11 +58,11 @@ class Team(QObject):
         db = Database.instance()
         if not self.exists():
             if len(self.players)==2:
-                if not self.name:
-                    self.name='2 Players Team'
-                self.id = db.insertTeam(self.players[0].login, self.players[1].login, self.name)
+                if not self._name:
+                    self._name='2 Players Team'
+                self.id = db.insertTeam(self.players[0].login, self.players[1].login, self._name)
             if len(self.players)==1:
-                self.name=None
+                self._name=None
                 self.id = db.insertTeam(self.players[0].login)
 
     def exists(self):
@@ -65,7 +72,7 @@ class Team(QObject):
                 result = Database.instance().checkTeam(*logins)
                 if result:
                     self.id=result[0]
-                    self.name = result[1]
+                    self._name = result[1]
                     return True
             except DatabaseError as e:
                 logging.error('DatabaseError : {}'.format(e))

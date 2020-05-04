@@ -73,8 +73,11 @@ class EndGameModule(Module):
 			self.ui.lblP2.setText(players[1].name)
 			self.ui.widgetLayoutP2.setVisible(True)
 			spacer.changeSize(80, spacer.geometry().height(), QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+			self.ui.lblTeamName.setVisible(True)
+			self.ui.lblTeamName.setText(self.teams[self.winSide].name)
 		else:
 			self.ui.widgetLayoutP2.setVisible(False)
+			self.ui.lblTeamName.setVisible(False)
 			spacer.changeSize(0, spacer.geometry().height(), QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
 
 
@@ -84,13 +87,13 @@ class EndGameModule(Module):
 	def newEloRating(self):
 		winners = self.teams[self.winSide].players
 		losers = self.teams[self.winSide.opposite()].players
-		ratingWinner = int(sum(p.eloRating for p in winners/self.teams[self.winSide].size()))
-		ratingLoser = int(sum(p.eloRating for p in losers/self.teams[self.winSide.opposite()].size()))
+		ratingWinner = int(sum(p.eloRating for p in winners)/self.teams[self.winSide].size())
+		ratingLoser = int(sum(p.eloRating for p in losers)/self.teams[self.winSide.opposite()].size())
 		
 		for player in winners:
-			player.eloRating += 80*(1-self.eloProbability(ratingWinner, ratingLoser))
+			player.eloRating += int(80*(1-self.eloProbability(ratingWinner, ratingLoser)))
 		for player in losers:
-			player.eloRating -= 80*(self.eloProbability(ratingLoser, ratingWinner))
+			player.eloRating -= int(80*(self.eloProbability(ratingLoser, ratingWinner)))
 
 		for player in winners + losers:
 			Database.instance().setEloRating(player.login, player.eloRating)

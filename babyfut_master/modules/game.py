@@ -151,7 +151,6 @@ class GameModule(Module):
 			logging.error('Wrong goal side: {}'.format(side))
 		elif not self.video_player:
 			self.scores[side] += 1
-			print('goal ici')
 
 			if os.path.exists(self.replayPath) and Settings['replay.activated']:
 				self.video_player = ReplayPlayer(self)
