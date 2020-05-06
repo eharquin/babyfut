@@ -6,8 +6,8 @@
 
 import logging
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QRadioButton, QMessageBox
+from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtWidgets import QRadioButton, QMessageBox, QWidget, QListWidgetItem
 
 from ..core.player import Player
 from ..core.module import Module
@@ -15,15 +15,28 @@ from .. import modules
 from ..ui.edit_ui import Ui_Form as EditWidget
 from ..ui.teamlist_ui import Ui_Form as TeamListWidget
 from ..ui.gamelist_ui import Ui_Form as GameListWidget
+from ..core.database import Database, DatabaseError
+
+
+class TeamListItem(QWidget):
+    def __init__(self, parent, team, teamMate):
+        QWidget.__init__(self, parent)
+        self.ui = TeamListWidget()
+        self.ui.setupUi(self)
+        self.teamID = team[0]
+        self.setFixedWidth(parent.width()-parent.verticalScrollBar().width())
+
+        self.ui.teamName.setText(team[1])
+        self.ui.teamMate.setText(self.ui.teamMate.text().format(teamMate[1]+' '+teamMate[2]))
 
 
 class EditModule(Module):
     def __init__(self, parent):
         super().__init__(parent, EditWidget())
-        self.parent = parent
         self.ui.deleteAccount.clicked.connect(self.deleteAccount)
         self.ui.privateYes.clicked.connect(lambda: self.makePrivate(True))
         self.ui.privateNo.clicked.connect(lambda: self.makePrivate(False))
+        self.ui.editPhoto.clicked.connect(self.editPlayerPhoto)
         
 
     def load(self):
@@ -62,9 +75,42 @@ class EditModule(Module):
         else:
             self.ui.privateNo.setChecked(True)
 
+        self.loadTeams()
+        self.loadGames()
+    
+    
+    def loadTeams(self):
+        self.ui.teamList.clear()
+        teams = Database.instance().selectPlayerTeams(self.player.login)
+
+        for team in teams:
+            teamMate = Database.instance().selectPlayer(team[2])
+            item = QListWidgetItem()
+            teamWidget = TeamListItem(self.ui.teamList, team, teamMate)
+            item.setSizeHint(teamWidget.size())
+            teamWidget.ui.editButton.clicked.connect(self.editTeamName)
+            self.ui.teamList.addItem(item)
+            self.ui.teamList.setItemWidget(item, teamWidget)
+            self.ui.teamList.setStyleSheet("color: rgb(63, 63, 63)")
+
+
+    def loadGames(self):
+        pass
+
+    # Open a QDialog (same as authquick with team name and keyboard)
+    def editTeamName(self):
+        pass
 
     def makePrivate(self, option):
             self.player.makePrivate(option)
+
+    def editPlayerPhoto(self):
+        self.deleteWarning = QMessageBox(self)
+        self.deleteWarning.setStyleSheet("color: black")
+        self.deleteWarning.setWindowTitle('WIP')
+        self.deleteWarning.setText('Changing your picture will be available soon!')
+        self.deleteWarning.setStandardButtons(QMessageBox.Ok)
+        choice = self.deleteWarning.exec()
 
 
     def deleteAccount(self):
@@ -77,12 +123,15 @@ class EditModule(Module):
         choice = self.deleteWarning.exec()
         if choice==QMessageBox.Ok:
             self.player.deletePlayer()
+            self.handleBack()
         else:
             logging.debug("Cancel player deletion")
 
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape:
+            self.handleBack()
+        elif e.key() == Qt.Key_Return:
             self.handleBack()
 
 

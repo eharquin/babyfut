@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1270</width>
+    <width>600</width>
     <height>82</height>
    </rect>
   </property>
@@ -16,7 +16,7 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,0,3,0,0">
    <property name="topMargin">
     <number>8</number>
    </property>
@@ -24,32 +24,19 @@
     <number>9</number>
    </property>
    <item>
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="lblLName">
+      <widget class="QLabel" name="teamName">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>200</width>
          <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -73,18 +60,24 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
+       <width>20</width>
        <height>20</height>
       </size>
      </property>
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="lblVictories">
+    <widget class="QLabel" name="teamMate">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <pointsize>12</pointsize>
-       <italic>true</italic>
+       <italic>false</italic>
       </font>
      </property>
      <property name="text">
@@ -99,14 +92,14 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>150</width>
+       <width>20</width>
        <height>20</height>
       </size>
      </property>
     </spacer>
    </item>
    <item>
-    <widget class="QPushButton" name="deleteButton">
+    <widget class="QPushButton" name="editButton">
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
@@ -114,8 +107,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>img/icons/edit.png</normaloff>img/icons/edit.png</iconset>
+      <iconset resource="assets.qrc">
+       <normaloff>:/ui/img/icons/edit.png</normaloff>:/ui/img/icons/edit.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -124,19 +117,6 @@
       </size>
      </property>
     </widget>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
