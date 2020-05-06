@@ -18,7 +18,6 @@ class Ginger(object):
 
 	def __init__(self):
 		if not Ginger._instance:
-			print('coucou')
 			#self.api_key = Settings['ginger.key']
 			self.api_key  = 'fauxginger'
 			self.url = Ginger.URL
@@ -39,10 +38,3 @@ class Ginger(object):
 			raise GingerError("HTTP request returned code : {}".format(response.status_code))
 		else:
 			return json.loads(response.content)
-
-	
-# code = '01234567'
-# infos = Ginger.instance().getRFID(code)
-
-# print(infos)
-# print("c'est bon !")

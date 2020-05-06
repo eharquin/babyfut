@@ -25,7 +25,7 @@ class LeaderboardItemWidget(QWidget):
 		QWidget.__init__(self, parent)
 		self.ui = PlayerListWidget()
 		self.ui.setupUi(self)
-
+		self.setFixedWidth(parent.width()-20)
 		player.displayImg(self.ui.picHolder)
 		self.ui.lblFName.setText(player.fname)
 		self.ui.lblLName.setText(player.lname)
@@ -38,47 +38,12 @@ class LeaderboardItemWidget(QWidget):
 		self.ui.lblRatio.setText(self.ui.lblRatio.text().replace('{}', '{:.2f}').format(player.stats.ratioIndex))
 
 
-class DeleteDialog(QDialog):
-	class Actions(Enum):
-		DeleteAll     = 0
-		DeletePicture = 1
-		HideAccount   = 2
-
-	def __init__(self, parent, player):
-		QDialog.__init__(self, parent)
-		self.ui = PlayerDeleteDialog()
-		self.ui.setupUi(self)
-		self.player = player
-		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(player.name))
-		self.setWindowTitle('Data account manager')
-
-	def check(self, rfid):
-		return rfid == self.player.rfid
-
-	def action(self):
-		dict_actions = {
-			self.ui.rbDeleteAll:     DeleteDialog.Actions.DeleteAll,
-			self.ui.rbDeletePicture: DeleteDialog.Actions.DeletePicture,
-			self.ui.rbHideAccount:   DeleteDialog.Actions.HideAccount
-		}
-
-		for key, val in dict_actions.items():
-			if key.isChecked():
-				return val
-		return None
-
-	def keyPressEvent(self, e):
-		if e.key() == Qt.Key_Return:
-			# Debug
-			self.parent().send(modules.LeaderboardModule, rfid=self.player.rfid, source=Side.Right)
-		elif e.key() == Qt.Key_Escape:
-			self.reject()
-
 class LeaderboardModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, LeaderboardWidget())
 		self.players = []
 
+		#Connecting Radio Button for sorting method
 		self.ui.rbRatio.clicked.connect(lambda: self.changeSort(self.ui.rbRatio))
 		self.ui.rbElo.clicked.connect(lambda: self.changeSort(self.ui.rbElo))
 		self.ui.rbName.clicked.connect(lambda: self.changeSort(self.ui.rbName))
@@ -90,8 +55,6 @@ class LeaderboardModule(Module):
 		self.sortMethodRB = [self.ui.rbRatio, self.ui.rbElo, self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
 		self.sortMethodAttr = ['stats.ratioIndex','eloRating', 'lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
 
-		
-		self.deleteDialog = None
 
 	def load(self):
 		logging.debug('Loading LeaderboardModule')
@@ -110,27 +73,8 @@ class LeaderboardModule(Module):
 		logging.debug('Other LeaderboardModule')
 
 		for key, val in kwargs.items():
-			if key=='rfid' and self.deleteDialog and self.deleteDialog.check(val):
-				# Do something corresponding to the selected action
-				action = self.deleteDialog.action()
-				if action==DeleteDialog.Actions.DeleteAll:
-					#Database.instance().delete_player(self.deleteDialog.player.id)
-					print("Deleted")
-				elif action==DeleteDialog.Actions.DeletePicture:
-					self.deleteDialog.player.forgetPicture()
-				elif action==DeleteDialog.Actions.HideAccount:
-					self.deleteDialog.player.makePrivate()
-				else:
-					logging.error('Unknown action {}'.format(action))
-
-				# Reset the dialog and the player list
-				self.deleteDialog.close()
-				del self.deleteDialog
-				self.deleteDialog = None
-				self.players = []
-				self.ui.listWidget.clear()
-				self.loadList()
-			elif key=='rfid':
+			#Scrolling to the badger's line in QListView
+			if key=='rfid':
 				login = (Player.fromRFID(val)).login
 				row=0
 				for player in self.players:
@@ -156,12 +100,9 @@ class LeaderboardModule(Module):
 		for player in self.players:
 			item = QListWidgetItem()
 			playerWidget = LeaderboardItemWidget(self.ui.listWidget, player)
-			playerWidget.ui.deleteButton.clicked.connect(lambda:self.deletePlayer(None))
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)
 			self.ui.listWidget.setItemWidget(item, playerWidget)
-			self.ui.listWidget.setStyleSheet("color: rgb(63, 63, 63)")
-
 
 		self.ui.listWidget.setCurrentRow(0, QItemSelectionModel.Select)
 
@@ -188,17 +129,6 @@ class LeaderboardModule(Module):
 			newSort = curSort+1 if curSort!=len(self.sortMethodRB)-1 else 0
 			self.sortMethodRB[newSort].animateClick()
 
-		elif e.key() == Qt.Key_Delete:
-			self.deletePlayer(curRow)
-			
-	def deletePlayer(self, row=None):
-		if row==None:
-			for num in range(0, self.ui.listWidget.count()):
-				if self.ui.listWidget.itemWidget(self.ui.listWidget.item(num))==self.sender().parent():
-					row = num
-		self.ui.listWidget.setFocus()
-		self.deleteDialog = DeleteDialog(self, self.players[row])
-		self.deleteDialog.open()
 
 	def handleExit(self):
 		self.switchModule(modules.MenuModule)

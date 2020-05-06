@@ -13,6 +13,26 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QRadioButton {
+	border: 2px solid rgb(74, 74, 107);
+	border-radius: 10px;
+	border-color: rgb(74, 74, 107);
+	padding-left: -17px;
+	padding-right:8px;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+QRadioButton::checked {
+    background-color: rgba(44, 44, 63, 240);
+}
+
+QRadioButton::indicator {
+    background-color: transparent;
+    border: 0px solid transparent;
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label_3">
@@ -93,8 +113,14 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbRatio">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
-        <string>Ratio index</string>
+        <string>Ratio Index</string>
        </property>
       </widget>
      </item>
@@ -108,7 +134,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
@@ -116,6 +142,12 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbElo">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
         <string>ELO</string>
        </property>
@@ -131,7 +163,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
@@ -139,6 +171,12 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbName">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
         <string>Name</string>
        </property>
@@ -154,7 +192,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
@@ -162,6 +200,12 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbVictories">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
         <string>Victories</string>
        </property>
@@ -177,7 +221,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
@@ -185,8 +229,14 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbScore">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
-        <string>Score</string>
+        <string>Goals</string>
        </property>
       </widget>
      </item>
@@ -200,7 +250,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
@@ -208,6 +258,12 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbGamesPlayed">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
         <string>Games Played</string>
        </property>
@@ -223,7 +279,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
@@ -231,6 +287,12 @@
      </item>
      <item>
       <widget class="QRadioButton" name="rbTimePlayed">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
         <string>Time Played</string>
        </property>
@@ -252,31 +314,29 @@
     </layout>
    </item>
    <item>
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <property name="widgetResizable">
-      <bool>true</bool>
+     <property name="sizeType">
+      <enum>QSizePolicy::Preferred</enum>
      </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>1260</width>
-        <height>540</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QListWidget" name="listWidget"/>
-       </item>
-      </layout>
-     </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QListWidget" name="listWidget">
+     <property name="styleSheet">
+      <string notr="true">color: rgb(63, 63, 63)</string>
+     </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
     </widget>
    </item>
   </layout>
@@ -287,8 +347,6 @@
   <tabstop>rbScore</tabstop>
   <tabstop>rbGamesPlayed</tabstop>
   <tabstop>rbTimePlayed</tabstop>
-  <tabstop>listWidget</tabstop>
-  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections/>

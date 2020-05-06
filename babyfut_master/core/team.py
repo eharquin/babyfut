@@ -66,7 +66,9 @@ class Team(QObject):
                 self.id = db.insertTeam(self.players[0].login)
 
     def exists(self):
-        if not Player.playerGuest() in self.players:
+        if Player.playerGuest() in self.players:
+            return True
+        else:
             try:
                 logins = [p.login for p in self.players]
                 result = Database.instance().checkTeam(*logins)
@@ -74,11 +76,12 @@ class Team(QObject):
                     self.id=result[0]
                     self._name = result[1]
                     return True
+                else:
+                    return False
             except DatabaseError as e:
                 logging.error('DatabaseError : {}'.format(e))
                 return False
-        else:
-            return True
+
 
     def hasPlayer(self, player):
         if any(p.login == player.login for p in self.players):
