@@ -115,7 +115,13 @@ class Database():
 			self._exec("UPDATE Players SET private=0 WHERE login==?", (login,))
 		self._connection.commit()
 
-	
+	# Return all the teams with the given player
+	def selectPlayerTeams(self, login):
+		return self._exec('SELECT id, name, CASE WHEN player1==? THEN player2 ELSE player1 END AS teamMate FROM Teams WHERE (player1==? OR player2==?) AND name NOT LIKE "NULL"', (login, login, login,)).fetchall()
+
+	# Return games played by the given player 
+	def selectPlayerGames(self, login):
+		query = ""
 
 	def setEloRating(self, login, elo):
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
