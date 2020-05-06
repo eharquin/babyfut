@@ -191,7 +191,7 @@ class KeyboardWidget(QWidget):
 		self.namesMin =  ['é', 'è', 'à', 'ç', '(', ')', '[', ']', '_', '@',
 						'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
 						'q', 's', 'd','f', 'g', 'h', 'j', 'k', 'l', 'm',
-						'w', 'x', 'c', 'v', 'b', 'n',',',';',':','/']
+						'w', 'x', 'c', 'v', 'b', 'n',"'",';',':','/']
 
 		self.positions = [(i, j) for i in range(4) for j in range(10)]
 
@@ -283,6 +283,8 @@ class KeyboardWidget(QWidget):
 
 		if char_ord == Qt.Key_Backspace:
 			txt = txt[:-1]
+			if len(txt)==0 and not self.maj:
+				self.convertLetters()
 		elif char_ord == Qt.Key_Home:
 			self.parent.ui.nameInput.setText(txt)
 			self.parent.ui.nameInput.setFocusPolicy(Qt.NoFocus)
@@ -295,9 +297,16 @@ class KeyboardWidget(QWidget):
 		elif char_ord == Qt.Key_Space:
 			txt += ' '
 		elif char_ord == Qt.Key_Cancel:
+			self.parent.setFocus()
+			self.parent.ui.enter.setDefault(True)
 			self.hide()
 		else:
 			txt += chr(char_ord)
+			if len(txt) == 1 and self.maj:
+				self.convertLetters()
 
 		self.setFocus()
 		self.text_box.setText(txt)
+
+		# if len(self.text_box.text())==1:
+		# 	self.convertLetters()
