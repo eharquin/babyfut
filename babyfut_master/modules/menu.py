@@ -25,7 +25,7 @@ class MenuModule(Module):
 		self.ui.btnLeaderboard.clicked.connect(lambda: self.switchModule(modules.LeaderboardModule))
 		self.ui.btnOptions.clicked.connect    (lambda: self.switchModule(modules.OptionsModule))
 		self.ui.btnPrivacy.clicked.connect    (lambda: self.switchModule(modules.PrivacyModule))
-
+		self.ui.btnEdit.clicked.connect		  (lambda: self.switchModule(modules.EditModule))
 	def load(self):
 		logging.debug('Loading MenuModule')
 		self.ui.btnStartQuick.setFocus()

@@ -58,12 +58,13 @@ class Player(QObject):
 	_imgLocalPath         = os.path.join(IMG_PATH, '{}.png')
 	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
-	def __init__(self, login, fname, lname, stats, elo = 1500):
+	def __init__(self, login, fname, lname, stats, elo, private):
 		QObject.__init__(self)
 		self.login = login
 		self.fname = fname
 		self.lname = lname
 		self.eloRating = elo
+		self.private = private
 
 		if self.login=='guest':
 			#Set Guest Picture
@@ -111,14 +112,14 @@ class Player(QObject):
 		db = Database.instance()
 		try:
 			# Retrieve generic informations
-			login, fname, lname, elo = db.selectPlayer(login)
+			login, fname, lname, elo, private = db.selectPlayer(login)
 
 			# Retrieve stats
 
 			time_played, goals_scored, games_played, victories = db.selectStats(login)
 			stats = Player.Stat(time_played, goals_scored, games_played, victories)
 
-			return Player(login, fname, lname, stats, elo)
+			return Player(login, fname, lname, stats, elo, private)
 
 		except DatabaseError as e:
 			logging.warn('DB Error: {}'.format(e))
@@ -169,9 +170,12 @@ class Player(QObject):
 		self.pic_path = Player._placeholder_pic_path
 		Database.instance().delete_playerpic(self.login)
 
-	def makePrivate(self):
-		self.private = True
-		Database.instance().make_player_private(self.login)
+	def makePrivate(self, option):
+		self.private = option
+		Database.instance().setPlayerPrivate(self.login, option)
+
+	def deletePlayer(self):
+		Database.instance().deletePlayer(self.login)
 
 	@property
 	def name(self):
@@ -205,8 +209,8 @@ class Player(QObject):
 	@staticmethod
 	def playerGuest():
 		if not Player._playerGuest:
-			Player._playerGuest = Player('guest', 'Guest','', 1500)
+			Player._playerGuest = Player('guest', 'Guest','', None, 1500, 0)
 		return Player._playerGuest
 		
 # PlayerGuest = Player.fromRFID(-1)
-PlayerEmpty = Player('', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''})
+PlayerEmpty = Player('', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''}, 1500, 0)

@@ -48,7 +48,7 @@ class Database():
 		return bool(self._exec('SELECT login FROM Players WHERE login==?', (login,)).fetchone())
 
 	def selectPlayer(self, login):
-		query = 'SELECT login, fname, lname, elo FROM Players WHERE login==?'
+		query = 'SELECT login, fname, lname, elo, private FROM Players WHERE login==?'
 		return self._exec(query, (login,)).fetchone()
 
 	def selectStats(self, login):
@@ -108,9 +108,14 @@ class Database():
 		self._exec('DELETE FROM Players WHERE login==?', (login,))
 		self._connection.commit()
 
-	def setPlayerPrivate(self, login):
-		self._exec("UPDATE Players SET private=1 WHERE login==?", (login,))
+	def setPlayerPrivate(self, login, option):
+		if option == True:
+			self._exec("UPDATE Players SET private=1 WHERE login==?", (login,))
+		elif option == False:
+			self._exec("UPDATE Players SET private=0 WHERE login==?", (login,))
 		self._connection.commit()
+
+	
 
 	def setEloRating(self, login, elo):
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))

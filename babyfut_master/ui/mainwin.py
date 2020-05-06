@@ -46,7 +46,8 @@ class MainWin(QtWidgets.QMainWindow):
 			modules.EndGameModule(self),
 			modules.LeaderboardModule(self),
 			modules.OptionsModule(self),
-			modules.PrivacyModule(self)
+			modules.PrivacyModule(self),
+			modules.EditModule(self)
 		]
 
 		#Adding modules (Widgets) to the QStackedWidget panels

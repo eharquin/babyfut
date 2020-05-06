@@ -162,6 +162,8 @@ class LeaderboardModule(Module):
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)
 			self.ui.listWidget.setItemWidget(item, playerWidget)
+			self.ui.listWidget.setStyleSheet("color: rgb(63, 63, 63)")
+
 
 		self.ui.listWidget.setCurrentRow(0, QItemSelectionModel.Select)
 
