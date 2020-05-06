@@ -122,21 +122,8 @@ class Player(QObject):
 
 		except DatabaseError as e:
 			logging.warn('DB Error: {}'.format(e))
-			return PlayerGuest
+			return Player.playerGuest()
 
-	@staticmethod
-	def _loadFromAPI(rfid):
-		'''
-		Retrieves a player's informations from the Ginger API
-		'''
-		try:
-			infosPlayer = Ginger.instance().getRFID(rfid)
-			Database.instance().insertPlayer(rfid, infosPlayer['nom'], infosPlayer['prenom'])
-		except GingerError as e:
-			logging.warn('Ginger API Error : {}'.format(e))
-			return PlayerGuest
-
-		return Player._loadFromDB(rfid)
 
 	# def displayImg(self, container_widget):
 	# 	self.pic_container = container_widget

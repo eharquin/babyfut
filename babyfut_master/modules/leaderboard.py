@@ -87,16 +87,17 @@ class LeaderboardModule(Module):
 		self.ui.rbGamesPlayed.clicked.connect(lambda: self.changeSort(self.ui.rbGamesPlayed))
 		self.ui.rbTimePlayed.clicked.connect(lambda: self.changeSort(self.ui.rbTimePlayed))
 
-		self.selectedSort = 0
 		self.sortMethodRB = [self.ui.rbRatio, self.ui.rbElo, self.ui.rbName, self.ui.rbVictories, self.ui.rbScore, self.ui.rbGamesPlayed, self.ui.rbTimePlayed]
 		self.sortMethodAttr = ['stats.ratioIndex','eloRating', 'lname', 'stats.victories', 'stats.goals_scored', 'stats.games_played', 'stats.time_played']
 
-		self.sortMethodRB[self.selectedSort].setChecked(True)
+		
 		self.deleteDialog = None
 
 	def load(self):
 		logging.debug('Loading LeaderboardModule')
-		self.selectedSort = 0
+		self.players = Player.allStoredPlayers()
+		self.selectedSort=0
+		self.sortMethodRB[self.selectedSort].setChecked(True)
 		self.loadList()
 		self.setFocus()
 
@@ -143,21 +144,18 @@ class LeaderboardModule(Module):
 
 	def changeSort(self, rbSort):
 		self.selectedSort = self.sortMethodRB.index(rbSort)
+		if self.sortMethodAttr[self.selectedSort]!='lname':
+			self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort], 'stats.ratioIndex'), reverse=True)
+		else:
+			self.players.sort(key=attrgetter('lname', 'fname'))
 		self.loadList()
 
 	def loadList(self):
-		if self.players:
-			self.ui.listWidget.clear()
-		else:
-			self.players = Player.allStoredPlayers()
-
-		self.players.sort(key=attrgetter(self.sortMethodAttr[self.selectedSort]), reverse=(self.sortMethodAttr[self.selectedSort]!='lname'))
+		self.ui.listWidget.clear()
 
 		for player in self.players:
 			item = QListWidgetItem()
-			#data = Player._loadFromDB(player.login)
 			playerWidget = LeaderboardItemWidget(self.ui.listWidget, player)
-			#row = self.ui.listWidget.count()-1
 			playerWidget.ui.deleteButton.clicked.connect(lambda:self.deletePlayer(None))
 			item.setSizeHint(playerWidget.size())
 			self.ui.listWidget.addItem(item)

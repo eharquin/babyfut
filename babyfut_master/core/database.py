@@ -52,11 +52,11 @@ class Database():
 		return self._exec(query, (login,)).fetchone()
 
 	def selectStats(self, login):
-		query="SELECT SUM(Matchs.duration) AS timePlayed, \
-		SUM(CASE WHEN Teams.id=Matchs.winningteam THEN Matchs.scoreWinner ELSE Matchs.scoreLoser END ) AS goalsScored, \
+		query="SELECT SUM(M.duration) AS timePlayed, \
+		SUM(CASE WHEN Teams.id=M.team1 THEN M.score1 ELSE M.score2 END ) AS goalsScored, \
 		COUNT(*) AS gamesPlayed, \
-		COUNT (CASE WHEN Teams.id=Matchs.winningteam THEN '1' ELSE NULL END) AS victories\
-		FROM Teams INNER JOIN  Matchs ON (Teams.id==Matchs.winningTeam OR Teams.id==Matchs.losingTeam) \
+		COUNT (CASE WHEN Teams.id=M.winningteam THEN '1' ELSE NULL END) AS victories\
+		FROM Teams INNER JOIN  viewMatchs M ON (Teams.id==M.team1 OR Teams.id==M.team2) \
 		WHERE (Teams.player1==? OR player2==?)"
 		return self._exec(query, (login, login)).fetchone()
 
@@ -68,7 +68,7 @@ class Database():
 	def insertPlayer(self, login, fname, lname, elo, private=0):
 		self._exec('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
 		self._connection.commit()
-		return self._exec('SELECT login FROM Players WHERE login=?',(login,))[0]
+		return self._exec('SELECT login FROM Players WHERE login=?',(login,)).fetchone()[0]
 
 	def checkTeam(self, *logins):
 		if len(logins)==1:
@@ -94,9 +94,9 @@ class Database():
 		#Returns the new Team auto-incremented ID 
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
-	def insertMatch(self, start_time, duration, WTeam, scoreW, LTeam, scoreL):
-		args = (start_time, 1,  duration, WTeam, scoreW,LTeam, scoreL)
-		self._exec('INSERT INTO Matchs (timestamp, babyfoot, duration, winningTeam,scoreWinner, losingTeam, scoreLoser) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
+	def insertMatch(self, start_time, duration, team1, score1, team2, score2):
+		args = (start_time, 1,  duration, team1, score1, team2, score2)
+		self._exec('INSERT INTO Matchs (timestamp, babyfoot, duration, team1 ,score1, team2, score2) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
 		self._connection.commit()
 
 	def selectAllPlayer(self):
@@ -129,11 +129,10 @@ class Database():
 				`timestamp`	INTEGER NOT NULL,
 				`babyfoot` NOT NULL REFERENCES Babyfoots(id),
 				`duration`	INTEGER NOT NULL,
-				`winningTeam`	INTEGER NOT NULL REFERENCES Teams(id),
-				`scoreWinner` INTEGER NOT NULL,
-				`losingTeam`	INTEGER NOT NULL REFERENCES Teams(id),
-				`scoreLoser` INTEGER NOT NULL,
-				CHECK (scoreWinner > scoreLoser)
+				`team1`	INTEGER NOT NULL REFERENCES Teams(id),
+				`score1` INTEGER NOT NULL,
+				`team2`	INTEGER NOT NULL REFERENCES Teams(id),
+				`score2` INTEGER NOT NULL
 			)''')
 
 			c.execute('''CREATE TABLE "Players" (
@@ -157,6 +156,13 @@ class Database():
 			)
 			
 			''')
+
+			c.execute('''CREATE VIEW viewMatchs AS
+			SELECT *, CASE WHEN score1>score2 THEN team1 
+           	WHEN score1>score2 THEN team2 ELSE -1 END AS winningTeam
+			FROM Matchs
+			''')
+
 			c.execute("INSERT INTO Babyfoots (location) VALUES ('Fablab')")
 			
 			conn.commit()
