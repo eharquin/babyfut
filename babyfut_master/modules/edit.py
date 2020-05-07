@@ -21,20 +21,25 @@ from ..core.team import Team
 
 
 class TeamListItem(QWidget):
-    def __init__(self, parent, team):
+    def __init__(self, parent, currentPlayer, team):
         QWidget.__init__(self, parent)
         self.ui = TeamListWidget()
         self.ui.setupUi(self)
         self.team = team
+        self.parent = parent
         self.setFixedWidth(parent.width()-parent.verticalScrollBar().width())
 
         self.ui.teamName.setText(self.team.name)
-        if self.team.player[0].login == self.parent.player.login:
-            self.ui.teamMate.setText(self.ui.teamMate.text().format(self.team.player[1]))
-        elif self.team.player[1].login == self.parent.player.login:
-            self.ui.teamMate.setText(self.ui.teamMate.text().format(self.team.player[0]))
-            
-        self.ui.editButton.clicked.connect(team.getNameDialog(parent))
+        if self.team.players[0].login == currentPlayer:
+            self.ui.teamMate.setText(self.ui.teamMate.text().format(self.team.players[1].name))
+        elif self.team.players[1].login == currentPlayer:
+            self.ui.teamMate.setText(self.ui.teamMate.text().format(self.team.players[0].name))
+
+        self.ui.editButton.clicked.connect(self.changeTeamName)
+
+    def changeTeamName(self):
+        self.team.getNameDialog(self.parent)
+        self.ui.teamName.setText(self.team.name)
 
 class GameListItem(QWidget):
     def __init__(self, parent, game):
@@ -107,7 +112,9 @@ class EditModule(Module):
         for team in teams:
             #teamMate = Database.instance().selectPlayer(team[2])
             item = QListWidgetItem()
-            teamWidget = TeamListItem(self.ui.teamList, Team(teamTuple[0], teamTuple[1], [teamTuple[2], teamTuple[3]]))
+            player1 = Player.loadFromDB(team[2])
+            player2 = Player.loadFromDB(team[3])
+            teamWidget = TeamListItem(self.ui.teamList, self.player.login, Team(team[0], team[1], [player1, player2]))
             item.setSizeHint(teamWidget.size())
             self.ui.teamList.addItem(item)
             self.ui.teamList.setItemWidget(item, teamWidget)
@@ -123,11 +130,6 @@ class EditModule(Module):
             item.setSizeHint(gameWidget.size())
             self.ui.gameList.addItem(item)
             self.ui.gameList.setItemWidget(item, gameWidget)
-
-
-    # Open a QDialog (same as authquick with team name and keyboard)
-    def editTeamName(self):
-        pass
 
     def makePrivate(self, option):
             self.player.makePrivate(option)

@@ -118,7 +118,7 @@ class Database():
 
 	# Return all the teams with the given player
 	def selectPlayerTeams(self, login):
-		return self._exec('SELECT id, name, player1, player2 WHERE (player1==? OR player2==?) AND name NOT LIKE "NULL"', (login, login,)).fetchall()
+		return self._exec('SELECT id, name, player1, player2 FROM Teams WHERE (player1==? OR player2==?) AND name IS NOT NULL', (login, login,)).fetchall()
 
 	# Return games played by the given player 
 	def selectPlayerGames(self, login):
@@ -133,6 +133,8 @@ class Database():
 	def setTeamName(self, id, name):
 		query = '''UPDATE Teams SET name = ? WHERE id=?'''
 		self._exec(query, (name, id))
+		self._connection.commit()
+
 
 	def close(self):
 		self._connection.close()
