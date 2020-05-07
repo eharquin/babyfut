@@ -16,7 +16,7 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,0,3,0,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,0,4,0,0">
    <property name="topMargin">
     <number>8</number>
    </property>
@@ -81,7 +81,7 @@
       </font>
      </property>
      <property name="text">
-      <string comment="Form">TeamMate : {}</string>
+      <string comment="Form">Team Mate : {}</string>
      </property>
     </widget>
    </item>

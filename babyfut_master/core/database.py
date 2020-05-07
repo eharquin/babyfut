@@ -51,6 +51,10 @@ class Database():
 		query = 'SELECT login, fname, lname, elo, private FROM Players WHERE login==?'
 		return self._exec(query, (login,)).fetchone()
 
+	def selectTeam(self, id):
+		query = '''SELECT id, name, player1, player2 FROM Teams WHERE id==?'''
+		return self._exec(query, (id,)).fetchone()
+
 	def selectStats(self, login):
 		query="SELECT SUM(M.duration) AS timePlayed, \
 		SUM(CASE WHEN Teams.id=M.team1 THEN M.score1 ELSE M.score2 END ) AS goalsScored, \
@@ -123,7 +127,8 @@ class Database():
 	# Return games played by the given player 
 	def selectPlayerGames(self, login):
 		query = '''SELECT timestamp, team1, score1, team2, score2, winningTeam FROM viewMatchs JOIN teams 
-		ON viewMatchs.team1==teams.id OR viewMatchs.team2==teams.id WHERE player1==? OR player2==?'''
+		ON viewMatchs.team1==teams.id OR viewMatchs.team2==teams.id WHERE player1==? OR player2==?
+		ORDER BY timestamp DESC'''
 		return self._exec(query,(login, login)).fetchall()
 
 	def setEloRating(self, login, elo):
