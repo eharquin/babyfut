@@ -391,7 +391,11 @@ border: none</string>
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="teamList"/>
+         <widget class="QListWidget" name="teamList">
+          <property name="styleSheet">
+           <string notr="true">color: rgb(63, 63, 63);</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_3">
@@ -403,7 +407,7 @@ border: none</string>
            </font>
           </property>
           <property name="text">
-           <string>Your last games played</string>
+           <string>Your games played</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -411,7 +415,11 @@ border: none</string>
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="gameList"/>
+         <widget class="QListWidget" name="gameList">
+          <property name="styleSheet">
+           <string notr="true">color: rgb(63, 63, 63);</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

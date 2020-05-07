@@ -9,6 +9,9 @@
     <file>img/placeholder_head.jpg</file>
     <file>img/placeholder_default.jpg</file>
     <file>img/icons/edit.png</file>
+    <file>img/icons/won.jpg</file>
+    <file>img/icons/lost.png</file>
+    <file>img/icons/equal.png</file>
   </qresource>
   <qresource prefix="font">
     <file>KaushanScript-Regular.ttf</file>
