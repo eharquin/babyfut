@@ -56,7 +56,7 @@ class Player(QObject):
 	_default_pic_path = ':ui/img/placeholder_default.jpg'
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 	_imgLocalPath         = os.path.join(IMG_PATH, '{}.png')
-	_utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
+	# _utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
 	def __init__(self, login, fname, lname, stats, elo, private):
 		QObject.__init__(self)
@@ -105,17 +105,16 @@ class Player(QObject):
 				logging.info('Consent refused when retrieving a player, returning Guest')
 				return Player.playerGuest()
 
-		return Player._loadFromDB(infosPlayer['login'])
+		return Player.loadFromDB(infosPlayer['login'])
 
 	@staticmethod
-	def _loadFromDB(login):
+	def loadFromDB(login):
 		db = Database.instance()
 		try:
 			# Retrieve generic informations
 			login, fname, lname, elo, private = db.selectPlayer(login)
 
 			# Retrieve stats
-
 			time_played, goals_scored, games_played, victories = db.selectStats(login)
 			stats = Player.Stat(time_played, goals_scored, games_played, victories)
 
@@ -126,36 +125,11 @@ class Player(QObject):
 			return Player.playerGuest()
 
 
-	# def displayImg(self, container_widget):
-	# 	self.pic_container = container_widget
-
-	# 	if self.pic_path.startswith('http'):
-	# 		# Download from the internet but display a temporary image between
-	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
-	# 		Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
-	# 		Downloader.instance().finished.connect(self._downloader_callback)
-	# 	else:
-	# 		# Already downloaded and stored locally
-	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
-	# 		QApplication.processEvents()
+	
 	def displayImg(self, container_widget):
 		self.pic_container=container_widget
 		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
 		QApplication.processEvents()
-		
-	# @pyqtSlot(str)
-	# def _downloader_callback(self, path):
-	# 	# Take the callback if not already done and we are the targer
-	# 	if IMG_PATH in path and str(self.id) in path and IMG_PATH not in self.pic_path:
-	# 		self.pic_path = path
-	# 		Downloader.instance().finished.disconnect(self._downloader_callback)
-
-	# 		if self.pic_container!=None:
-	# 			self.displayImg(self.pic_container)
-
-	def forgetPicture(self):
-		self.pic_path = Player._placeholder_pic_path
-		Database.instance().delete_playerpic(self.login)
 
 	def makePrivate(self, option):
 		self.private = option
@@ -199,5 +173,25 @@ class Player(QObject):
 			Player._playerGuest = Player('guest', 'Guest','', None, 1500, 0)
 		return Player._playerGuest
 		
-# PlayerGuest = Player.fromRFID(-1)
-PlayerEmpty = Player('', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''}, 1500, 0)
+	# def displayImg(self, container_widget):
+	# 	self.pic_container = container_widget
+
+	# 	if self.pic_path.startswith('http'):
+	# 		# Download from the internet but display a temporary image between
+	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
+	# 		Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
+	# 		Downloader.instance().finished.connect(self._downloader_callback)
+	# 	else:
+	# 		# Already downloaded and stored locally
+	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
+	# 		QApplication.processEvents()	
+	# @pyqtSlot(str)
+	# def _downloader_callback(self, path):
+	# 	# Take the callback if not already done and we are the targer
+	# 	if IMG_PATH in path and str(self.id) in path and IMG_PATH not in self.pic_path:
+	# 		self.pic_path = path
+	# 		Downloader.instance().finished.disconnect(self._downloader_callback)
+
+	# 		if self.pic_container!=None:
+	# 			self.displayImg(self.pic_container)
+	# PlayerEmpty = Player('', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''}, 1500, 0)
