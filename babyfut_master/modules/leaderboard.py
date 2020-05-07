@@ -61,7 +61,7 @@ class LeaderboardModule(Module):
 		self.players = Player.allStoredPlayers()
 		self.selectedSort=0
 		self.sortMethodRB[self.selectedSort].setChecked(True)
-		self.loadList()
+		self.changeSort(self.sortMethodRB[self.selectedSort])
 		self.setFocus()
 
 	def unload(self):

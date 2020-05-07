@@ -165,7 +165,7 @@ class Player(QObject):
 
 	@staticmethod
 	def allStoredPlayers():
-		return [Player._loadFromDB(row[0]) for row in Database.instance().selectAllPlayer()]
+		return [Player.loadFromDB(row[0]) for row in Database.instance().selectAllPlayer()]
 
 	@staticmethod
 	def playerGuest():
