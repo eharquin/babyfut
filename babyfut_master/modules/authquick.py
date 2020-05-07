@@ -48,6 +48,7 @@ class AuthQuickModule(AuthModuleBase):
 		
 	def unload(self):
 		logging.debug('Unloading AuthQuickModule')
+		self.startingGameTimer.stop()
 		super().unload()
 
 	def createTeamList(self):

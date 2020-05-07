@@ -76,7 +76,20 @@ class EndGameModule(Module):
 		
 		baseFont = self.ui.lblTeamNameL.font()
 		
+		self.teams[Side.Left].players[0].displayImg(self.ui.imgP1L)
+		if self.teams[Side.Left].size()==2:
+			self.teams[Side.Left].players[0].displayImg(self.ui.imgP2L)
+			self.ui.imgP2L.setVisible(True)
+		else:
+			self.ui.imgP2L.setVisible(False)
 		
+		self.teams[Side.Right].players[0].displayImg(self.ui.imgP1R)
+		if self.teams[Side.Right].size()==2:
+			self.teams[Side.Right].players[0].displayImg(self.ui.imgP2R)
+			self.ui.imgP2R.setVisible(True)
+		else:
+			self.ui.imgP2R.setVisible(False)
+			
 
 		if self.winSide == Side.Undef:
 			#Tie Game - All item of same size
@@ -94,24 +107,8 @@ class EndGameModule(Module):
 			self.ui.imgP1R.setFixedSize(picSize['N'], picSize['N'])
 			self.ui.imgP2R.setFixedSize(picSize['N'], picSize['N'])
 			
-
 		else:
 			self.ui.lblTitle.setText("Congratulations!")		
-			self.teams[Side.Left].players[0].displayImg(self.ui.imgP1L)
-			if self.teams[Side.Left].size()==2:
-				self.teams[Side.Left].players[0].displayImg(self.ui.imgP2L)
-				self.ui.imgP2L.setVisible(True)
-			else:
-				self.ui.imgP2L.setVisible(False)
-			
-			self.teams[Side.Right].players[0].displayImg(self.ui.imgP1R)
-			if self.teams[Side.Right].size()==2:
-				self.teams[Side.Right].players[0].displayImg(self.ui.imgP2R)
-				self.ui.imgP2R.setVisible(True)
-			else:
-				self.ui.imgP2R.setVisible(False)
-			
-
 			#Updating FontSize of Team and Score labels
 			baseFont.setPointSize(teamFont[Side.Left])
 			self.ui.lblTeamNameL.setFont(baseFont)

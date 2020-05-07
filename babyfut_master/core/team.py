@@ -94,9 +94,9 @@ class Team(AbstractTeam):
             self._name = name
             Database.instance().setTeamName(self.id, self._name)
 
-    def getNameDialog(self, parentWidget, random=False):
+    def getNameDialog(self, parentWidget, welcome=False):
         if self.size()==2:
-            dialog = TeamName(parentWidget, self, random)
+            dialog = TeamName(parentWidget, self, welcome)
             dialog.exec()
 
 
@@ -115,7 +115,7 @@ class Team(AbstractTeam):
 
 
 class TeamName(QDialog):
-	def __init__(self, parent, team, needRandom):
+	def __init__(self, parent, team, welcome=False):
 		QDialog.__init__(self, parent)
 		self.parent = parent
 		self.team = team
@@ -123,11 +123,15 @@ class TeamName(QDialog):
 		self.ui.setupUi(self)
 		self.setWindowTitle('Set your team name')
 		self.ui.lblTitle.setText(self.ui.lblTitle.text().format(team.players[0].fname, team.players[1].fname))
-		name = self.setRandomName() if needRandom else team.name
+		name = self.setRandomName() if welcome else team.name
 		self.ui.nameInput.setText(name)
 		self.ui.nameInput.setReadOnly(True)
-		self.keyboard = KeyboardWidget(self)
-		self.keyboard.hide()
+		self.keyboard = KeyboardWidget(self, name, welcome)
+		if welcome:
+			self.keyboard.hide()
+		else:
+			self.keyboard.show()
+
 		self.ui.editName.clicked.connect(self.keyboard.show)
 		self.ui.enter.clicked.connect(self.finish)
 		self.ui.enter.setDefault(True)
@@ -166,9 +170,11 @@ class TeamName(QDialog):
 
 
 class KeyboardWidget(QWidget):
-	def __init__(self, parent=None):
+	def __init__(self, parent, name, welcome=False):
 		super(KeyboardWidget, self).__init__(parent)
 		self.parent = parent
+		self.oldName=name
+		self.welcome = welcome #If not welcome, Keyboard is autonomous and must close when done
 		self.signalMapper = QSignalMapper(self)
 		self.signalMapper.mapped[int].connect(self.buttonClicked)
 		self.setGeometry(0, 0, parent.width(), parent.height())
@@ -187,6 +193,8 @@ class KeyboardWidget(QWidget):
 		self.text_box.setReadOnly(True)
 		self.text_box.setMaxLength(30)
 		self.text_box.setFont(QFont('Arial', 20))
+		if not self.welcome:
+			self.text_box.setText(self.oldName)
 
 		self.verticalLayout.addWidget(self.text_box)
 
@@ -298,7 +306,10 @@ class KeyboardWidget(QWidget):
 			self.parent.ui.nameInput.setFocusPolicy(Qt.NoFocus)
 			self.parent.setFocus()
 			self.parent.ui.enter.setDefault(True)
-			self.hide()
+			if self.welcome:
+				self.hide()
+			else:
+				self.parent.finish()
 			return
 		elif char_ord == Qt.Key_Shift:
 			self.convertLetters()
@@ -307,7 +318,11 @@ class KeyboardWidget(QWidget):
 		elif char_ord == Qt.Key_Cancel:
 			self.parent.setFocus()
 			self.parent.ui.enter.setDefault(True)
-			self.hide()
+			if self.welcome:
+				self.hide()
+			else:
+				self.parent.finish()
+			return
 		else:
 			txt += chr(char_ord)
 			if len(txt) == 1 and self.maj:

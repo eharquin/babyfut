@@ -80,8 +80,8 @@ class GameModule(Module):
 		self.gameoverType = Settings['gameover.type']
 		self.gameoverValue = Settings['gameover.value']
 
-		if self.gameoverType=='time':
-			self.gameoverValue *= 60
+		# if self.gameoverType=='time':
+		# 	self.gameoverValue *= 60
 
 		self.scores = {Side.Left: 0, Side.Right: 0}
 		self.updateScores()
