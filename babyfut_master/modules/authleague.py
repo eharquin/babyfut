@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QAbstractItemView
 from .auth import AuthModuleBase
 from ..core.team import Team
 from ..ui.authleague_ui import Ui_Form as AuthLeagueWidget
-from ..core.player import PlayerEmpty
+# from ..core.player import PlayerEmpty
 from common.side import Side
 
 class AuthLeagueModule(AuthModuleBase):
