@@ -12,7 +12,7 @@ from .. import modules #tout le package modules
 from ..core.module import Module
 from ..core.player import Player
 from common.side import Side
-from ..core.team import Team
+from ..core.team import Team, ConstructTeam
 
 
 class AuthModuleBase(Module):
@@ -34,8 +34,10 @@ class AuthModuleBase(Module):
 				side = kwargs['source']
 				self.numPlayers += 1
 				newPlayer = Player.fromRFID(val)
-				if not any(team.hasPlayer(newPlayer) for team  in self.teams.values()):
-					self.addPlayer(side, newPlayer)
+
+				if isinstance(self.teams[side], ConstructTeam):
+					if all(not team.hasPlayer(newPlayer) for team  in self.teams.values()):
+						self.addPlayer(side, newPlayer)
 			
 
 	def keyPressEvent(self, e):
@@ -63,7 +65,8 @@ class AuthModuleBase(Module):
 		self.switchModule(modules.MenuModule)
 
 	def handleDone(self):
-		for team in self.teams.values():
-			team.insertDB()
+		for side in [Side.Left, Side.Right]:
+			if isinstance(self.teams[side], ConstructTeam):
+				self.teams[side] = self.teams[side].validateTeam()
 		self.send(modules.GameModule, teams=self.teams)
 		self.switchModule(modules.GameModule)

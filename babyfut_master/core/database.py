@@ -83,13 +83,14 @@ class Database():
 
 	def insertTeam(self, login1, login2=None, name=None):
 		if not login2 and not name:
-			args = ('NULL', login1, 'NULL')
+			self._exec('INSERT INTO Teams (player1) VALUES (?)', (login1,))
 		elif login2 and name and name != 'NULL':
 			args = (name, login1, login2)
+			self._exec('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
 		else:
 			raise DatabaseError('Not a valid Team format')
 		
-		self._exec('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
+		
 		self._connection.commit()
 		#Returns the new Team auto-incremented ID 
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
