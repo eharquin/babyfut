@@ -27,7 +27,7 @@ class TeamListItem(QWidget):
         self.ui.setupUi(self)
         self.team = team
         self.parent = parent
-        self.setFixedWidth(parent.width()-parent.verticalScrollBar().width())
+        self.setFixedWidth(parent.width()-20)
 
         self.ui.teamName.setText(self.team.name)
         if self.team.players[0].login == currentPlayer:
@@ -42,18 +42,37 @@ class TeamListItem(QWidget):
         self.ui.teamName.setText(self.team.name)
 
 class GameListItem(QWidget):
-    def __init__(self, parent, game):
+    def __init__(self, parent, currentPlayer, game):
         QWidget.__init__(self, parent)
         self.ui = GameListWidget()
         self.ui.setupUi(self)
-        self.setFixedWidth(parent.width()-parent.verticalScrollBar().width())
+        self.setFixedWidth(parent.width()-20)
 
-        self.ui.picture.setStyleSheet('border-image: url(:/ui/img/icons/equal.png)')
         self.ui.gameDate.setText(str(datetime.fromtimestamp(game[0]).strftime("%d/%m/%y")))
-        self.ui.winningTeam.setText("Gagnant")
-        self.ui.winningScore.setText("5")
-        self.ui.losingScore.setText("0")
-        self.ui.losingTeam.setText("Perdant")
+
+        # Game is like (matchID, team1, score1, team2, score2, winningTeamID)
+        team1 = Team.loadFromDB(game[1])
+        team2 = Team.loadFromDB(game[3])
+
+        self.ui.picture.setStyleSheet('border-image: url(:/ui/img/icons/lost.png)')
+        self.ui.leftTeam.setText(team1.name)
+        self.ui.leftScore.setText(str(game[2]))
+        self.ui.rightScore.setText(str(game[4]))
+        self.ui.rightTeam.setText(team2.name)
+
+        basefont = self.ui.leftTeam.font()
+        basefont.setBold(True)
+        if team1.hasPlayer(currentPlayer):
+            self.ui.leftTeam.setFont(basefont)
+            if team1.id==game[5]:
+                self.ui.picture.setStyleSheet('border-image: url(:/ui/img/icons/won.jpg)')
+        else:
+            self.ui.rightTeam.setFont(basefont)
+            if team2.id==game[5]:
+                self.ui.picture.setStyleSheet('border-image: url(:/ui/img/icons/won.jpg)')
+        # If equality between teams
+        if game[5]==-1:
+            self.ui.picture.setStyleSheet('border-image: url(:/ui/img/icons/equal.png)')
 
 
 class EditModule(Module):
@@ -110,7 +129,6 @@ class EditModule(Module):
         teams = Database.instance().selectPlayerTeams(self.player.login)
 
         for team in teams:
-            #teamMate = Database.instance().selectPlayer(team[2])
             item = QListWidgetItem()
             player1 = Player.loadFromDB(team[2])
             player2 = Player.loadFromDB(team[3])
@@ -126,7 +144,7 @@ class EditModule(Module):
 
         for game in games:
             item = QListWidgetItem()
-            gameWidget = GameListItem(self.ui.gameList, game)
+            gameWidget = GameListItem(self.ui.gameList, self.player, game)
             item.setSizeHint(gameWidget.size())
             self.ui.gameList.addItem(item)
             self.ui.gameList.setItemWidget(item, gameWidget)
