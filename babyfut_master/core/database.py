@@ -118,15 +118,23 @@ class Database():
 
 	# Return all the teams with the given player
 	def selectPlayerTeams(self, login):
-		return self._exec('SELECT id, name, CASE WHEN player1==? THEN player2 ELSE player1 END AS teamMate FROM Teams WHERE (player1==? OR player2==?) AND name NOT LIKE "NULL"', (login, login, login,)).fetchall()
+		return self._exec('SELECT id, name, player1, player2 FROM Teams WHERE (player1==? OR player2==?) AND name IS NOT NULL', (login, login,)).fetchall()
 
 	# Return games played by the given player 
 	def selectPlayerGames(self, login):
-		query = ""
+		query = '''SELECT timestamp, team1, score1, team2, score2, winningTeam FROM viewMatchs JOIN teams 
+		ON viewMatchs.team1==teams.id OR viewMatchs.team2==teams.id WHERE player1==? OR player2==?'''
+		return self._exec(query,(login, login)).fetchall()
 
 	def setEloRating(self, login, elo):
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
 		self._connection.commit()
+
+	def setTeamName(self, id, name):
+		query = '''UPDATE Teams SET name = ? WHERE id=?'''
+		self._exec(query, (name, id))
+		self._connection.commit()
+
 
 	def close(self):
 		self._connection.close()
@@ -171,7 +179,7 @@ class Database():
 
 			c.execute('''CREATE VIEW viewMatchs AS
 			SELECT *, CASE WHEN score1>score2 THEN team1 
-           	WHEN score1>score2 THEN team2 ELSE -1 END AS winningTeam
+           	WHEN score1<score2 THEN team2 ELSE -1 END AS winningTeam
 			FROM Matchs
 			''')
 

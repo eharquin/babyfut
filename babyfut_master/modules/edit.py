@@ -4,7 +4,8 @@
 @author: Thibaud Le Graverend
 """
 
-import logging
+import logging, time
+from datetime import datetime
 
 from PyQt5.QtCore import Qt, QItemSelectionModel
 from PyQt5.QtWidgets import QRadioButton, QMessageBox, QWidget, QListWidgetItem
@@ -16,18 +17,43 @@ from ..ui.edit_ui import Ui_Form as EditWidget
 from ..ui.teamlist_ui import Ui_Form as TeamListWidget
 from ..ui.gamelist_ui import Ui_Form as GameListWidget
 from ..core.database import Database, DatabaseError
+from ..core.team import Team
 
 
 class TeamListItem(QWidget):
-    def __init__(self, parent, team, teamMate):
+    def __init__(self, parent, currentPlayer, team):
         QWidget.__init__(self, parent)
         self.ui = TeamListWidget()
         self.ui.setupUi(self)
-        self.teamID = team[0]
+        self.team = team
+        self.parent = parent
         self.setFixedWidth(parent.width()-parent.verticalScrollBar().width())
 
-        self.ui.teamName.setText(team[1])
-        self.ui.teamMate.setText(self.ui.teamMate.text().format(teamMate[1]+' '+teamMate[2]))
+        self.ui.teamName.setText(self.team.name)
+        if self.team.players[0].login == currentPlayer:
+            self.ui.teamMate.setText(self.ui.teamMate.text().format(self.team.players[1].name))
+        elif self.team.players[1].login == currentPlayer:
+            self.ui.teamMate.setText(self.ui.teamMate.text().format(self.team.players[0].name))
+
+        self.ui.editButton.clicked.connect(self.changeTeamName)
+
+    def changeTeamName(self):
+        self.team.getNameDialog(self.parent)
+        self.ui.teamName.setText(self.team.name)
+
+class GameListItem(QWidget):
+    def __init__(self, parent, game):
+        QWidget.__init__(self, parent)
+        self.ui = GameListWidget()
+        self.ui.setupUi(self)
+        self.setFixedWidth(parent.width()-parent.verticalScrollBar().width())
+
+        self.ui.picture.setStyleSheet('border-image: url(:/ui/img/icons/equal.png)')
+        self.ui.gameDate.setText(str(datetime.fromtimestamp(game[0]).strftime("%d/%m/%y")))
+        self.ui.winningTeam.setText("Gagnant")
+        self.ui.winningScore.setText("5")
+        self.ui.losingScore.setText("0")
+        self.ui.losingTeam.setText("Perdant")
 
 
 class EditModule(Module):
@@ -84,22 +110,26 @@ class EditModule(Module):
         teams = Database.instance().selectPlayerTeams(self.player.login)
 
         for team in teams:
-            teamMate = Database.instance().selectPlayer(team[2])
+            #teamMate = Database.instance().selectPlayer(team[2])
             item = QListWidgetItem()
-            teamWidget = TeamListItem(self.ui.teamList, team, teamMate)
+            player1 = Player.loadFromDB(team[2])
+            player2 = Player.loadFromDB(team[3])
+            teamWidget = TeamListItem(self.ui.teamList, self.player.login, Team(team[0], team[1], [player1, player2]))
             item.setSizeHint(teamWidget.size())
-            teamWidget.ui.editButton.clicked.connect(self.editTeamName)
             self.ui.teamList.addItem(item)
             self.ui.teamList.setItemWidget(item, teamWidget)
-            self.ui.teamList.setStyleSheet("color: rgb(63, 63, 63)")
 
 
     def loadGames(self):
-        pass
+        self.ui.gameList.clear()
+        games = Database.instance().selectPlayerGames(self.player.login)
 
-    # Open a QDialog (same as authquick with team name and keyboard)
-    def editTeamName(self):
-        pass
+        for game in games:
+            item = QListWidgetItem()
+            gameWidget = GameListItem(self.ui.gameList, game)
+            item.setSizeHint(gameWidget.size())
+            self.ui.gameList.addItem(item)
+            self.ui.gameList.setItemWidget(item, gameWidget)
 
     def makePrivate(self, option):
             self.player.makePrivate(option)
