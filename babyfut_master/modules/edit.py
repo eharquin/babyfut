@@ -101,27 +101,29 @@ class EditModule(Module):
         for key, val in kwargs.items():
             if key=='rfid':
                 self.loadPlayer(val)
-                self.ui.mainLayout.setVisible(True)
-                self.ui.subtitle.setVisible(False)
 
 
     def loadPlayer(self, rfid):
         # Get player
         self.player = Player.fromRFID(rfid)
-        
-        # Set all widget with player info
-        self.player.displayImg(self.ui.playerPhoto)
-        self.ui.fname.setText(self.player.fname)
-        self.ui.lname.setText(self.player.lname)
-        
-        # Set radioButton to the current position
-        if self.player.private:
-            self.ui.privateYes.setChecked(True)
-        else:
-            self.ui.privateNo.setChecked(True)
+        if self.player != Player.playerGuest():
+            self.ui.mainLayout.setVisible(True)
+            self.ui.subtitle.setVisible(False)
+            # Set all widget with player info
+            self.player.displayImg(self.ui.playerPhoto)
+            self.ui.fname.setText(self.player.fname)
+            self.ui.lname.setText(self.player.lname)
+            
+            # Set radioButton to the current position
+            if self.player.private:
+                self.ui.privateYes.setChecked(True)
+            else:
+                self.ui.privateNo.setChecked(True)
 
-        self.loadTeams()
-        self.loadGames()
+            self.loadTeams()
+            self.loadGames()
+        else:
+            logging.debug("Unknown player")
     
     
     def loadTeams(self):
