@@ -23,7 +23,7 @@ Si on fonctionne en mode 'poules', le système oblige à jouer tous les matches 
 
 À la fin de la phase de poules (ou directement si la phase de poules n'est pas activée), le système répartit les équipes dans le premier tour des matches à élimination directe (entièrement ou partiellement. Si le nombre d'équipes n'est pas une puissance de 2, alors certaines équipes rentreront plus tard).
 
-Dans le cas de phases de poules préalables, seul les $2^n$ équipes les mieux classées passent dans la phase d'élimination directe à $n$ tours.
+Dans le cas de phases de poules préalables, seul les $`2^n`$ équipes les mieux classées passent dans la phase d'élimination directe à $`n`$ tours.
 
 Comme la structure des matchs à élimination directe est créée entièrement au départ, une fois les équipes allouées aux matchs du premier round, il n'y a plus besoin de s'occuper des équipes.
 
@@ -93,4 +93,3 @@ On peut une table de relation entre les deux :
 > Contestant(**team_id**, **match_id**, score)
 
 L'intérêt est de pouvoir avoir tous les scores d'une équipe dans avoir besoin de se préoccuper de savoir si c'est l'équipe 1 ou 2 de ses matchs, ce qui rendra le calcul de statistiques plus simple au travers de requêtes SQL.
-
