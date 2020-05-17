@@ -1,5 +1,7 @@
 # Gestion Mode tournoi
 
+[[_TOC_]]
+
 ## Principe
 
 Un utilisateur crée un tournoi, choisit le type (élimination directe, double élimination, avec ou sans poules), des gens s'inscrivent et on clos l'inscription.
@@ -10,10 +12,10 @@ Un utilisateur crée un tournoi, choisit le type (élimination directe, double �
 2. [Tournoi à double élimination](https://fr.wikipedia.org/wiki/Tournoi_%C3%A0_double_%C3%A9limination)
 3. Avec ou sans phases de qualification
 
-Si on se réfère aux informations de la FFFT, les tournois sont en général 
+Si on se réfère aux informations de la FFFT, les tournois sont en général
 organisés selon ces modes (voir [ici](https://www.ffft.fr/feuilles-de-gestion-manuelle)).
 
-En fonction du nombre d'équipes inscrites le système décide du nombre de tours de poules (chaque équipe joue deux matchs par tour au plus) si nécessaire et du nombre de tours à élimination directe. Tous les matchs correspondants sont générés en base de données à la validation du tournoi.
+En fonction du nombre d'équipes inscrites le système décide du nombre de tours de poules (chaque équipe joue deux match par tour au plus, en général un seul) si nécessaire et du nombre de tours à élimination directe. Tous les matchs correspondants sont générés en base de données à la validation du tournoi.
 
 Le système propose alors de jouer le prochain match disponible : les membres de l'équipe s'authentifient et le match démarre.
 
