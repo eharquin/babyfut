@@ -41,7 +41,6 @@ Pour gérer un tournoi, le modèle de donnée proposé est le suivant :
 
 ### Les tournois
 
-
 Un tournoi (*Tournament*) a un type (en fonction de l'existence de la phase de poule et du type de phase à élimination directe). Tous les matchs à prévoir (matchs de poule *QualificationMatch* et matchs à élimination directe *KnockoutMatch*) doivent être créés dans une phase d'initialisation du tournoi. Si on supprime un tournoi initialisé, tous les matchs prévus disparaissent.
 
 > Note : une fois qu'un match a été joué, le match doit continuer à exister même si on supprime le tournoi, mais ne plus apparaître ni dans les matchs de qualification, ni dans les matchs à élimination directe.
@@ -52,15 +51,15 @@ Les attributs de nombre de tours de qualification et de tours d'élimination son
 
 ### Les matchs
 
-Les match représente une rencontre entre deux équipes. Il peuvent être passés, présents, à venir (attribut `status`).
+Les match représentent une rencontre entre deux équipes. Il peuvent être passés, présents, à venir (attribut `status`).
 
 La participation d'une équipe à un match est matérialisée par la classe `Contestant` qui contient le score réalisé dans un match par une équipe. Chaque match a exactement deux concurrents, mais représenter cette relation à part permet de faciliter certains calculs comme les goal average par exemple.
 
-### Les matchs de groupe
+### Les matchs de qualification
 
-Les matchs de groupe sont des matchs. Ils sont créés afin que chaque équipe joue un seul match par tour (si le nombre d'équipes est impair, il se peut qu'il faille qu'une équipe joue deux matchs un tour sur deux). Le nombre de tours est forcément pair (au moins 2 tours).
+Les matchs de qualification sont des matchs. Ils sont créés afin que chaque équipe joue un seul match par tour (si le nombre d'équipes est impair, il se peut qu'il faille qu'une équipe joue deux matchs un tour sur deux). Le nombre de tours est forcément pair (au moins 2 tours).
 
-Tous les matches de qualification sont créés dès le départ avec les équipes qui leurs sont associées.
+Tous les matchs de qualification sont créés dès le départ avec les équipes qui leurs sont associées.
 
 ### Les matchs d'élimination
 
