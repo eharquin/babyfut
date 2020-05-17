@@ -1,0 +1,76 @@
+@startuml
+enum Status {
+  PAST
+  RUNNING
+  FUTURE
+  CANCELLED
+}
+
+enum TournamentType {
+  SIMPLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  SIMPLE_ELIMINATION_WITH_QUALIFICATIONS
+  DOUBLE_ELIMINATION_WITH_QUALIFICATIONS
+  QUALIFICATION_ONLY
+}
+
+enum KnockoutMatchType {
+  WINNER
+  LOSER
+} 
+
+class Player {
+  player_id : PK
+  name
+}
+
+class Team {
+  team_id : PK
+  name
+}
+
+class Match {
+  match_id :PK
+  date
+  status :Status
+}
+
+class KnockoutMatch {
+  round_number
+  type :KnockoutMatchType
+}
+
+class QualificationMatch {
+  round_number
+}
+
+
+class Tournament {
+  tournament_id : PK
+  type :TournamentType
+  status :Status
+  number_of_group_rounds
+  number_of_knockout_rounds
+}
+
+class Contestant {
+  score
+}
+
+Match <|-- KnockoutMatch
+Match <|-- QualificationMatch
+KnockoutMatch o-- "2" KnockoutMatch : descends_from
+
+Player "0..2" - "*" Team : member_of
+
+Match "*" -- "2" Team : participates_in
+(Team, Match) .. Contestant 
+
+Team -o Tournament : participates_in
+
+QualificationMatch --* Tournament
+
+Tournament *- KnockoutMatch
+
+hide empty members
+@enduml
