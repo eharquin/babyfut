@@ -1,5 +1,5 @@
 from .authquick   import AuthQuickModule
-from .authleague  import AuthLeagueModule
+from .tournament  import TournamentModule
 from .game        import GameModule
 from .endgame     import EndGameModule
 from .menu        import MenuModule

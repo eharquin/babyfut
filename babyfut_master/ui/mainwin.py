@@ -41,7 +41,7 @@ class MainWin(QtWidgets.QMainWindow):
 		self.modules = [
 			modules.MenuModule(self),
 			modules.AuthQuickModule(self),
-			modules.AuthLeagueModule(self),
+			modules.TournamentModule(self),
 			modules.GameModule(self),
 			modules.EndGameModule(self),
 			modules.LeaderboardModule(self),

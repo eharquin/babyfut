@@ -28,6 +28,7 @@ case "$1" in
 		pyuic5 --import-from=. ui/team_name_dialog.ui -o ui/team_name_dialog_ui.py
 		pyuic5 --import-from=. ui/gamelist.ui     -o ui/gamelist_ui.py
 		pyuic5 --import-from=. ui/teamlist.ui     -o ui/teamlist_ui.py
+		pyuic5 --import-from=. ui/create_tournament_dialog.ui     -o ui/create_tournament_dialog_ui.py
 		
 
 		echo "	Resources"

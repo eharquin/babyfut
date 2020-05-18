@@ -155,13 +155,13 @@ class Database():
 #---------------------------Tournaments----------------------------------------------
 
 	#Create a tournament open for register and returns its id
-	def createTn(name, t):	
+	def createTn(self, name, t):	
 		query = "INSERT INTO Tournaments (name, status, type) VALUES (?,0,?)"
-		self._exec(query, (name,Database.typesTn.index(t)))
+		self._exec(query, (name,t))
 		self._connection.commit()
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Tournaments"').fetchone()[0]
 	
-	def selectTn(id):
+	def selectTn(self, id):
 		result= self._exec("SELECT id, name, status, type FROM Tournament WHERE id==?",(id,)).fetchone()
 		if result:
 			result[2] = Database.statusTn[int(result[2])]
@@ -169,7 +169,7 @@ class Database():
 		return result
 
 	#Returns all tournaments from a status, all of them if None
-	def selectAllTn(status=None):
+	def selectAllTn(self, status=None):
 		if status in  Database.statusTn:
 			result=self._exec('SELECT id, name, status, type FROM Tournaments \
 			WHERE status==?',(Database.statusTn[status],)).fetchall()
@@ -181,14 +181,14 @@ class Database():
 		return result
 	
 	#Changes the tournament status
-	def setStatusTn(id, status):
+	def setStatusTn(self, id, status):
 		if status in Database.statusTn:
 			self._exec("UPDATE Tournament SET status=? WHERE id==?", (Database.statusTn.index(status), id))
 			self._connection.commit()
 
 
 	#Register a team to a future tournament
-	def registerTeamTn(team, tournament):
+	def registerTeamTn(self, team, tournament):
 		checkStatus=self.selectTn(tournament)
 		if (not checkStatus or checkStatus[3]!= "Future"):
 	 		raise DatabaseError("Tournament not existing or not in status Future")
@@ -196,13 +196,13 @@ class Database():
 		self._connection.commit()
 
 	#Returns all Teams registered to a tournament
-	def selectTeamsTn(id):
+	def selectTeamsTn(self, id):
 		query= '''SELECT T.id, name, player1, player2 FROM Teams T INNER JOIN Participate
 		ON  T.id==Participate.team WHERE tournament==?'''
 		return self._exec(query, (id,)).fetchall()
 	
 	#Returns all Matchs of a tournament
-	def selectMatchsTn(id):
+	def selectMatchsTn(self, id):
 		query='''SELECT M.*, T.round, Tr.KOType, Tr.parent1, Tr.parent2
 		FROM Matchs M INNER JOIN TournamentMatchs T ON T.id==M.id
 		LEFT JOIN TreeMatchs Tr ON T.id==Tr.id
