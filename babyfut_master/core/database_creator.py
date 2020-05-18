@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+@author: Yoann MALOT, Thibaud LE GRAVEREND
+"""
+
 import sqlite3
 import logging
 
@@ -7,13 +13,13 @@ def createDatabase(db_path):
 
     c.execute('''CREATE TABLE "Matchs" (
         `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-        `timestamp`	INTEGER NOT NULL,
-        `babyfoot` NOT NULL REFERENCES Babyfoots(id),
-        `duration`	INTEGER NOT NULL,
-        `team1`	INTEGER NOT NULL REFERENCES Teams(id),
-        `score1` INTEGER NOT NULL,
-        `team2`	INTEGER NOT NULL REFERENCES Teams(id),
-        `score2` INTEGER NOT NULL
+        `timestamp`	INTEGER,
+        `babyfoot` REFERENCES Babyfoots(id),
+        `duration`	INTEGER,
+        `team1`	INTEGER REFERENCES Teams(id),
+        `score1` INTEGER,
+        `team2`	INTEGER REFERENCES Teams(id),
+        `score2` INTEGER
     )''')
 
     c.execute('''CREATE TABLE "Players" (
@@ -40,6 +46,7 @@ def createDatabase(db_path):
 
     c.execute('''CREATE TABLE "Tournaments" (
         `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+        `name` VARCHAR(30) NOT NULL,
         `status` INTEGER NOT NULL CHECK (status>=0 AND status<4),
         `type` INTEGER NOT NULL CHECK (type>=0 AND  type<5)
 

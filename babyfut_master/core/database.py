@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+@author: Yoann MALOT, Thibaud LE GRAVEREND
 """
 
 import sqlite3
@@ -16,6 +16,8 @@ class DatabaseError(Exception):
 
 class Database():
 	__db = None
+	typesTn = ["Elimination", "Double", "EliminationQualif", "DoubleQualif", "Qualif"]
+	statusTn = ["Future", "Running", "Past", "Cancelled"]
 
 	def __init__(self):
 		if not Database.__db:
@@ -44,6 +46,15 @@ class Database():
 		except sqlite3.Error as err:
 			logging.error('sqlite3 error : {}'.format(err))
 			raise DatabaseError() from err
+	
+	def close(self):
+		self._connection.close()
+
+	@staticmethod
+	def createDatabase(db_path):
+		createDatabase(db_path)
+
+#-----------------------PLAYERS--------------------------------
 
 	def loginExists(self, login):
 		return bool(self._exec('SELECT login FROM Players WHERE login==?', (login,)).fetchone())
@@ -52,9 +63,10 @@ class Database():
 		query = 'SELECT login, fname, lname, elo, private FROM Players WHERE login==?'
 		return self._exec(query, (login,)).fetchone()
 
-	def selectTeam(self, id):
-		query = '''SELECT id, name, player1, player2 FROM Teams WHERE id==?'''
-		return self._exec(query, (id,)).fetchone()
+	def insertPlayer(self, login, fname, lname, elo, private=0):
+		self._exec('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
+		self._connection.commit()
+		return self._exec('SELECT login FROM Players WHERE login=?',(login,)).fetchone()[0]
 
 	def selectStats(self, login):
 		query="SELECT SUM(M.duration) AS timePlayed, \
@@ -64,46 +76,6 @@ class Database():
 		FROM Teams INNER JOIN  viewMatchs M ON (Teams.id==M.team1 OR Teams.id==M.team2) \
 		WHERE (Teams.player1==? OR player2==?)"
 		return self._exec(query, (login, login)).fetchone()
-
-
-	# def _selectOne(self, query, *args):
-	# 	#Base query function
-	# 	return self._cursor.execute(query, args).fetchone()
-
-	def insertPlayer(self, login, fname, lname, elo, private=0):
-		self._exec('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
-		self._connection.commit()
-		return self._exec('SELECT login FROM Players WHERE login=?',(login,)).fetchone()[0]
-
-	def checkTeam(self, *logins):
-		if len(logins)==1:
-			args = (logins[0],)
-			query = "SELECT * FROM Teams WHERE player1=? AND player2 IS NULL AND NAME IS NULL"
-		elif len(logins)==2:
-			query="SELECT * FROM Teams WHERE (player1=? AND player2=? OR player1=? AND player2=?) AND NAME IS NOT NULL"
-			args = (logins[0], logins[1], logins[1], logins[0])
-		else:
-			raise DatabaseError('Argument must be a list of 1 or 2 logins')	
-		return self._exec(query, args).fetchone()
-
-	def insertTeam(self, login1, login2=None, name=None):
-		if not login2 and not name:
-			self._exec('INSERT INTO Teams (player1) VALUES (?)', (login1,))
-		elif login2 and name and name != 'NULL':
-			args = (name, login1, login2)
-			self._exec('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
-		else:
-			raise DatabaseError('Not a valid Team format')
-		
-		
-		self._connection.commit()
-		#Returns the new Team auto-incremented ID 
-		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
-
-	def insertMatch(self, start_time, duration, team1, score1, team2, score2):
-		args = (start_time, 1,  duration, team1, score1, team2, score2)
-		self._exec('INSERT INTO Matchs (timestamp, babyfoot, duration, team1 ,score1, team2, score2) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
-		self._connection.commit()
 
 	def selectAllPlayer(self):
 		return self._exec('SELECT login, fname, lname FROM Players WHERE private==0').fetchall()
@@ -136,42 +108,106 @@ class Database():
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
 		self._connection.commit()
 
+
+#----------------------TEAMS-------------------------------------
+
+
+	def selectTeam(self, id):
+		query = '''SELECT id, name, player1, player2 FROM Teams WHERE id==?'''
+		return self._exec(query, (id,)).fetchone()
+
+	def checkTeam(self, *logins):
+		if len(logins)==1:
+			args = (logins[0],)
+			query = "SELECT * FROM Teams WHERE player1=? AND player2 IS NULL AND NAME IS NULL"
+		elif len(logins)==2:
+			query="SELECT * FROM Teams WHERE (player1=? AND player2=? OR player1=? AND player2=?) AND NAME IS NOT NULL"
+			args = (logins[0], logins[1], logins[1], logins[0])
+		else:
+			raise DatabaseError('Argument must be a list of 1 or 2 logins')	
+		return self._exec(query, args).fetchone()
+
+	def insertTeam(self, login1, login2=None, name=None):
+		if not login2 and not name:
+			self._exec('INSERT INTO Teams (player1) VALUES (?)', (login1,))
+		elif login2 and name and name != 'NULL':
+			args = (name, login1, login2)
+			self._exec('INSERT INTO Teams (name, player1, player2) VALUES (?, ?, ?)', args)
+		else:
+			raise DatabaseError('Not a valid Team format')
+			
+		self._connection.commit()
+		#Returns the new Team auto-incremented ID 
+		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
+
 	def setTeamName(self, id, name):
 		query = '''UPDATE Teams SET name = ? WHERE id=?'''
 		self._exec(query, (name, id))
 		self._connection.commit()
 
+#------------------------------Matchs------------------------------------------
 
-	def close(self):
-		self._connection.close()
+	def insertMatch(self, start_time, duration, team1, score1, team2, score2):
+		args = (start_time, 1,  duration, team1, score1, team2, score2)
+		self._exec('INSERT INTO Matchs (timestamp, babyfoot, duration, team1 ,score1, team2, score2) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
+		self._connection.commit()
 
-	@staticmethod
-	def createDatabase(db_path):
-		createDatabase(db_path)
+#---------------------------Tournaments----------------------------------------------
 
-	#Create a tournament open for register
-	def createTn():
-		pass
+	#Create a tournament open for register and returns its id
+	def createTn(name, t):	
+		query = "INSERT INTO Tournaments (name, status, type) VALUES (?,0,?)"
+		self._exec(query, (name,Database.typesTn.index(t)))
+		self._connection.commit()
+		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Tournaments"').fetchone()[0]
 	
+	def selectTn(id):
+		result= self._exec("SELECT id, name, status, type FROM Tournament WHERE id==?",(id,)).fetchone()
+		if result:
+			result[2] = Database.statusTn[int(result[2])]
+			result[3] = Database.typesTn[int(result[3])]
+		return result
+
 	#Returns all tournaments from a status, all of them if None
 	def selectAllTn(status=None):
-		pass
+		if status in  Database.statusTn:
+			result=self._exec('SELECT id, name, status, type FROM Tournaments \
+			WHERE status==?',(Database.statusTn[status],)).fetchall()
+		else:
+			result=self._exec('SELECT id, name, status, type FROM Tournaments').fetchall()
+		for ligne in result:
+			ligne[2] = Database.statusTn[int(ligne[2])]
+			ligne[3] = Database.typesTn[int(ligne[3])]
+		return result
 	
-	#Closes registration, creates all games and set status running
-	def validateTn():
-		pass
+	#Changes the tournament status
+	def setStatusTn(id, status):
+		if status in Database.statusTn:
+			self._exec("UPDATE Tournament SET status=? WHERE id==?", (Database.statusTn.index(status), id))
+			self._connection.commit()
+
 
 	#Register a team to a future tournament
-	def registerTeamTn():
-		pass
+	def registerTeamTn(team, tournament):
+		checkStatus=self.selectTn(tournament)
+		if (not checkStatus or checkStatus[3]!= "Future"):
+	 		raise DatabaseError("Tournament not existing or not in status Future")
+		self._exec("INSERT INTO Participate (team,  tournament) VALUES (?,?)", (team, tournament))
+		self._connection.commit()
 
 	#Returns all Teams registered to a tournament
-	def selectTeamsTn():
-		pass
+	def selectTeamsTn(id):
+		query= '''SELECT T.id, name, player1, player2 FROM Teams T INNER JOIN Participate
+		ON  T.id==Participate.team WHERE tournament==?'''
+		return self._exec(query, (id,)).fetchall()
 	
 	#Returns all Matchs of a tournament
-	def selectMatchsTn():
-		pass
+	def selectMatchsTn(id):
+		query='''SELECT M.*, T.round, Tr.KOType, Tr.parent1, Tr.parent2
+		FROM Matchs M INNER JOIN TournamentMatchs T ON T.id==M.id
+		LEFT JOIN TreeMatchs Tr ON T.id==Tr.id
+		WHERE T.tournament==?'''
+		return self._exec(query, (id,)).fetchall()
 	
 	#Insert scores of a tournament Match which has just been played
 	def insertMatchTn():
