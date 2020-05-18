@@ -8,7 +8,14 @@ from PyQt5.QtCore import QObject
 
 from .database import Database, DatabaseError
 from .team import Team
+from enum import enum
 
+class TournamentType(Enum):
+    Elimination = 0
+	Double = 1 
+	EliminationQualif = 2
+	DoubleQualif = 3
+	Qualif = 4
 
 class Tournament(QObject):
 
