@@ -55,7 +55,7 @@ class CreateDialog(QDialog):
 		self.ui.enter.clicked.connect(lambda : self.createTournament(self.ui.nameInput.text(), self.ui.typeTn.currentIndex()))
 
 
-	# May handle other option sin the future
+	# May handle other options in the future
 	def createTournament(self, name, typeTn):
 		db = Database.instance()
 		db.createTn(name, typeTn)
@@ -192,6 +192,8 @@ class KeyboardWidget(QWidget):
 				self.convertLetters()
 		elif char_ord == Qt.Key_Home:
 			self.parent.setFocus()
+			self.parent.ui.nameInput.setText(txt)
+			self.hide()
 			return
 		elif char_ord == Qt.Key_Shift:
 			self.convertLetters()
@@ -207,3 +209,4 @@ class KeyboardWidget(QWidget):
 				self.convertLetters()
 
 		self.setFocus()
+		self.text_box.setText(txt)
