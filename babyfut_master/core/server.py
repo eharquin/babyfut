@@ -5,7 +5,7 @@
 @author: Thibaud Le Graverend, Yoann Malot
 """
 
-import socket, pickle, time, select
+import socket, pickle, time, select, logging
 
 from threading import Thread
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -36,7 +36,7 @@ class Server(QObject):
         # Wait for connection with 1st slave
         self.connexion.listen(5)
         self.conn_client1, self.info_client1 = self.connexion.accept()
-        print("Connexion établi avec client1 " + str(self.conn_client1))
+        logging.info("Slave {} connected".format(self.info_client1))
 
         self.slave1 = ClientThread(self, self.conn_client1, self.info_client1)
         self.slave1.start()
@@ -44,7 +44,7 @@ class Server(QObject):
         # Wait for 2nd slave
         self.connexion.listen(5)
         self.conn_client2, self.info_client2 = self.connexion.accept()
-        print("Connexion établi avec client2 " + str(self.conn_client2))
+        logging.info("Slave {} connected".format(self.info_client2))
         
         self.slave2 = ClientThread(self, self.conn_client2, self.info_client2)
         self.slave2.start()
@@ -60,7 +60,7 @@ class Server(QObject):
         self.conn_client1.close()
         self.conn_client2.close()
         self.connexion.close()
-        print("Server closed properly")
+        logging.debug("Server closed properly")
         
     
 
@@ -113,11 +113,12 @@ class ClientThread(Thread):
 
     def keepAlive(self):
         if(time.time() - self.lastKeepAliveTime > 5):
+            logging.warning("Slave {} disconnected".format(self.info_client))
             self.parent.clientLostSignal.emit("display", "Having connection troubles with client " + str(self.info_client) + 
             ". The window will automatically disapear once the client would have reconnected.")
             self.parent.connexion.listen(5)
             self.conn_client, self.info_client = self.parent.connexion.accept()
-            print("Client reconnected " + str(self.conn_client))
+            logging.info("Slave {} reconnected".format(self.info_client))
             self.parent.clientLostSignal.emit("close", None)
 
 

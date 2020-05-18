@@ -87,6 +87,7 @@ class MainWin(QtWidgets.QMainWindow):
 	
 	def networkWarning(self, action, msg=None):
 		if action=='display':
+			self.networkMessage.setWindowTitle("Warning")
 			self.networkMessage.setText(msg)
 			self.networkMessage.addButton(QMessageBox.Ok)
 			self.networkMessage.removeButton(self.networkMessage.button(QMessageBox.Ok))
@@ -99,7 +100,7 @@ class MainWin(QtWidgets.QMainWindow):
 			self.showFullScreen()
 			QApplication.setOverrideCursor(Qt.BlankCursor)
 		else:
-			self.showNormal()
+			self.showMaximized()
 			QApplication.setOverrideCursor(Qt.ArrowCursor)
 
 		self._retranslateUI()

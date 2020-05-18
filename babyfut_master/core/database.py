@@ -8,6 +8,7 @@ import sqlite3
 import logging
 from os.path import exists
 from ..babyfut_master import getContent
+from .database_creator import createDatabase
 
 class DatabaseError(Exception):
 	pass
@@ -146,52 +147,43 @@ class Database():
 
 	@staticmethod
 	def createDatabase(db_path):
-			conn = sqlite3.connect(db_path)
-			c = conn.cursor()
+		createDatabase(db_path)
 
-			c.execute('''CREATE TABLE "Matchs" (
-				`id` INTEGER PRIMARY KEY AUTOINCREMENT,
-				`timestamp`	INTEGER NOT NULL,
-				`babyfoot` NOT NULL REFERENCES Babyfoots(id),
-				`duration`	INTEGER NOT NULL,
-				`team1`	INTEGER NOT NULL REFERENCES Teams(id),
-				`score1` INTEGER NOT NULL,
-				`team2`	INTEGER NOT NULL REFERENCES Teams(id),
-				`score2` INTEGER NOT NULL
-			)''')
+	#Create a tournament open for register
+	def createTn():
+		pass
+	
+	#Returns all tournaments from a status, all of them if None
+	def selectAllTn(status=None):
+		pass
+	
+	#Closes registration, creates all games and set status running
+	def validateTn():
+		pass
 
-			c.execute('''CREATE TABLE "Players" (
-				`login` TEXT PRIMARY KEY,
-				`fname`	TEXT NOT NULL,
-				`lname`	TEXT NOT NULL,
-				`elo` INTEGER,
-				`private`	INTEGER NOT NULL CHECK(private == 0 or private == 1)
-			)''')
+	#Register a team to a future tournament
+	def registerTeamTn():
+		pass
 
-			c.execute('''CREATE TABLE "Teams" (
-				`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-				`name` TEXT,
-				`player1`	TEXT REFERENCES Players(login),
-				`player2`	TEXT REFERENCES Players(login)
-			)''')
+	#Returns all Teams registered to a tournament
+	def selectTeamsTn():
+		pass
+	
+	#Returns all Matchs of a tournament
+	def selectMatchsTn():
+		pass
+	
+	#Insert scores of a tournament Match which has just been played
+	def insertMatchTn():
+		pass
 
-			c.execute('''CREATE TABLE "Babyfoots" (
-				`id` INTEGER PRIMARY KEY AUTOINCREMENT,
-				`location` TEXT
-			)
-			
-			''')
+	#Update the teams of the Tree Matchs when they are known
+	def updateTreeMatchsTn():
+		pass
 
-			c.execute('''CREATE VIEW viewMatchs AS
-			SELECT *, CASE WHEN score1>score2 THEN team1 
-           	WHEN score1<score2 THEN team2 ELSE -1 END AS winningTeam
-			FROM Matchs
-			''')
 
-			c.execute("INSERT INTO Babyfoots (location) VALUES ('Fablab')")
-			
-			conn.commit()
-			c.close()
+
+
 
 
 #------INSERT TESTING DATA
