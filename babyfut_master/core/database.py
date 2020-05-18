@@ -17,7 +17,7 @@ class DatabaseError(Exception):
 class Database():
 	__db = None
 	typesTn = ["Elimination", "Double", "EliminationQualif", "DoubleQualif", "Qualif"]
-	statusTn = ["Future", "Running", "Past", "Cancelled"]
+	statusTn = ['Future', 'Running', 'Past', 'Cancelled']
 
 	def __init__(self):
 		if not Database.__db:
@@ -176,6 +176,7 @@ class Database():
 		else:
 			result=self._exec('SELECT id, name, status, type FROM Tournaments').fetchall()
 		for ligne in result:
+			ligne = list(ligne)
 			ligne[2] = Database.statusTn[int(ligne[2])]
 			ligne[3] = Database.typesTn[int(ligne[3])]
 		return result

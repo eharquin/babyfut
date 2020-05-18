@@ -90,7 +90,11 @@
         </spacer>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget"/>
+        <widget class="QListWidget" name="tournamentList">
+         <property name="styleSheet">
+          <string notr="true">color: rgb(63, 63, 63);</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_2">

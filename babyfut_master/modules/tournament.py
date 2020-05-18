@@ -14,9 +14,24 @@ from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent, QSigna
 from PyQt5.QtGui import QFont
 
 from ..core.database import Database
+from ..core.tournament import Tournament
 
+from .. import modules
 from ..ui.authleague_ui import Ui_Form as TournamentWidget
 from ..ui.create_tournament_dialog_ui import Ui_Dialog as CreateTournamentDialog
+from ..ui.tournamentlist_ui import Ui_Form as TournamentListWidget
+
+
+
+class TournamentListItem(QWidget):
+	def __init__(self, parent, tournament):
+		QWidget.__init__(self, parent)
+		self.parent=parent
+		self.ui = TournamentListWidget()
+		self.ui.setupUi(self)
+		self.ui.tnName.setText(tournament.name)
+		self.ui.tnStatus.setText(self.ui.tnStatus.text().format(tournament.status.name))
+		self.ui.tnType.setText(self.ui.tnType.text().format(tournament.type.name))
 
 
 class TournamentModule(Module):
@@ -28,6 +43,8 @@ class TournamentModule(Module):
 	def load(self):
 		logging.debug('Loading TournamentModule')
 		super().load()
+		self.loadTournaments()
+
 
 	def unload(self):
 		logging.debug('Loading TournamentModule')
@@ -37,9 +54,23 @@ class TournamentModule(Module):
 		if e.key() == Qt.Key_Escape:
 			self.handleBack()
 
+	def handleBack(self):
+		self.switchModule(modules.MenuModule)
+
 	def createTournament(self):
 		dialog = CreateDialog(self.parent)
 		dialog.exec()
+
+	def loadTournaments(self):
+		self.ui.tournamentList.clear()
+		tournaments = Tournament.selectAll()
+		for tournament in tournaments:
+			item = QListWidgetItem()
+			tnWidget = TournamentListItem(self.ui.tournamentList,tournament)
+			item.setSizeHint(tnWidget.size())
+			self.ui.tournamentList.addItem(item)
+			self.ui.tournamentList.setItemWidget(item, tnWidget)
+			
 
 class CreateDialog(QDialog):
 	def __init__(self, parent):
@@ -201,7 +232,7 @@ class KeyboardWidget(QWidget):
 			txt += ' '
 		elif char_ord == Qt.Key_Cancel:
 			self.parent.setFocus()
-			self.parent.finish()
+			self.hide()
 			return
 		else:
 			txt += chr(char_ord)
