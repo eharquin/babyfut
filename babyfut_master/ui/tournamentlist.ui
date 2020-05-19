@@ -16,7 +16,7 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,0,2,0,2,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,0,2,0,2,0,0">
    <property name="topMargin">
     <number>8</number>
    </property>
@@ -129,6 +129,26 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnDelete">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="assets.qrc">
+       <normaloff>:/ui/img/icons/red-cross.png</normaloff>:/ui/img/icons/red-cross.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

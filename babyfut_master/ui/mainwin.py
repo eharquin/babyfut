@@ -47,7 +47,8 @@ class MainWin(QtWidgets.QMainWindow):
 			modules.LeaderboardModule(self),
 			modules.OptionsModule(self),
 			modules.PrivacyModule(self),
-			modules.EditModule(self)
+			modules.EditModule(self),
+			modules.TournamentParticipantModule(self)
 		]
 
 		#Adding modules (Widgets) to the QStackedWidget panels

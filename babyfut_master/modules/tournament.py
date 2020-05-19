@@ -14,24 +14,30 @@ from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent, QSigna
 from PyQt5.QtGui import QFont
 
 from ..core.database import Database
-from ..core.tournament import Tournament
+from ..core.tournament import Tournament, TournamentStatus
 
 from .. import modules
 from ..ui.authleague_ui import Ui_Form as TournamentWidget
 from ..ui.create_tournament_dialog_ui import Ui_Dialog as CreateTournamentDialog
 from ..ui.tournamentlist_ui import Ui_Form as TournamentListWidget
+from ..ui.tournamentparticipant_ui import Ui_Form as TournamentParticipantWidget
 
 
 
 class TournamentListItem(QWidget):
 	def __init__(self, parent, tournament):
 		QWidget.__init__(self, parent)
-		self.parent=parent
+		self.tournament = tournament
 		self.ui = TournamentListWidget()
 		self.ui.setupUi(self)
 		self.ui.tnName.setText(tournament.name)
 		self.ui.tnStatus.setText(self.ui.tnStatus.text().format(tournament.status.name))
 		self.ui.tnType.setText(self.ui.tnType.text().format(tournament.type.name))
+		self.ui.btnDelete.clicked.connect(self.deleteTn)
+
+	def deleteTn(self):
+		# Need to print a QDialog and then delete
+		pass
 
 
 class TournamentModule(Module):
@@ -39,16 +45,15 @@ class TournamentModule(Module):
 		super().__init__(parent, TournamentWidget())
 		self.parent = parent
 		self.ui.btnCreate.clicked.connect(self.createTournament)
+		self.ui.btnGo.clicked.connect(self.selectTn)
 
 	def load(self):
 		logging.debug('Loading TournamentModule')
-		super().load()
 		self.loadTournaments()
 
 
 	def unload(self):
 		logging.debug('Loading TournamentModule')
-		super().unload()
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
@@ -70,7 +75,43 @@ class TournamentModule(Module):
 			item.setSizeHint(tnWidget.size())
 			self.ui.tournamentList.addItem(item)
 			self.ui.tournamentList.setItemWidget(item, tnWidget)
-			
+
+	def selectTn(self):
+		tn = self.ui.tournamentList.itemWidget(self.ui.tournamentList.currentItem()).tournament
+		if tn.status==TournamentStatus.Future:
+			# Display player list
+			self.switchModule(modules.TournamentParticipantModule)
+			pass
+		if tn.status==TournamentStatus.Running:
+			# Display tournament
+			pass
+		if tn.status==TournamentStatus.Passed:
+			# Display tournament table and results
+			pass
+
+	def unloadTournaments():
+		pass
+
+class TournamentParticipantModule(Module):
+	def __init__(self, parent):
+		super().__init__(parent, TournamentParticipantWidget())
+		self.parent = parent
+
+
+	def load(self):
+		logging.debug('Loading TournamentModule')
+		#self.loadTournaments()
+
+
+	def unload(self):
+		logging.debug('Loading TournamentModule')
+
+	def keyPressEvent(self, e):
+		if e.key() == Qt.Key_Escape:
+			self.handleBack()
+
+	def handleBack(self):
+		self.switchModule(modules.MenuModule)
 
 class CreateDialog(QDialog):
 	def __init__(self, parent):
