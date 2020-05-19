@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Thibaud Le Graverend
+@author: Thibaud Le Graverend, Yoann Malot
 """
 
 import logging
@@ -51,7 +51,6 @@ class TournamentModule(Module):
 		logging.debug('Loading TournamentModule')
 		self.loadTournaments()
 
-
 	def unload(self):
 		logging.debug('Loading TournamentModule')
 
@@ -63,7 +62,7 @@ class TournamentModule(Module):
 		self.switchModule(modules.MenuModule)
 
 	def createTournament(self):
-		dialog = CreateDialog(self.parent)
+		dialog = CreateDialog(self)
 		dialog.exec()
 
 	def loadTournaments(self):
@@ -80,6 +79,7 @@ class TournamentModule(Module):
 		tn = self.ui.tournamentList.itemWidget(self.ui.tournamentList.currentItem()).tournament
 		if tn.status==TournamentStatus.Future:
 			# Display player list
+			self.send(modules.TournamentParticipantModule, tournament = tn)
 			self.switchModule(modules.TournamentParticipantModule)
 			pass
 		if tn.status==TournamentStatus.Running:
@@ -89,29 +89,34 @@ class TournamentModule(Module):
 			# Display tournament table and results
 			pass
 
-	def unloadTournaments():
-		pass
-
 class TournamentParticipantModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, TournamentParticipantWidget())
 		self.parent = parent
 
-
 	def load(self):
-		logging.debug('Loading TournamentModule')
-		#self.loadTournaments()
-
+		logging.debug('Loading TournamentParticipantodule')
+		self.loadTeams()
 
 	def unload(self):
-		logging.debug('Loading TournamentModule')
+		logging.debug('Loading TournamentParticipantModule')
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
 			self.handleBack()
 
 	def handleBack(self):
-		self.switchModule(modules.MenuModule)
+		self.switchModule(modules.TournamentModule)
+
+	def other(self, **kwargs):
+		logging.debug('Other EndGameModule')
+
+		for key, val in kwargs.items():
+			if key=='tournament':
+				self.tournament = val
+
+	def loadTeams(self):
+		pass
 
 class CreateDialog(QDialog):
 	def __init__(self, parent):
@@ -131,6 +136,10 @@ class CreateDialog(QDialog):
 	def createTournament(self, name, typeTn):
 		db = Database.instance()
 		db.createTn(name, typeTn)
+		# Fonction qui renvoie un tournois et l'insèe => on peut passer via send() le tournois directement à TournamentParticipantModule
+		#self.parent.send(modules.TournamentParticipantModule, )
+		self.parent.switchModule(modules.TournamentParticipantModule)
+		self.finish()
 
 	def finish(self):
 		self.done(1)
