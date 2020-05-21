@@ -38,7 +38,7 @@ class TeamListItem(QWidget):
         self.ui.editButton.clicked.connect(self.changeTeamName)
 
     def changeTeamName(self):
-        self.team.getNameDialog(self.parent)
+        self.team.getNameDialog(self.parent.parent())
         self.ui.teamName.setText(self.team.name)
 
 class GameListItem(QWidget):
