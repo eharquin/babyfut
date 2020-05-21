@@ -50,7 +50,7 @@ class ConstructTeam(AbstractTeam):
 
 	def addPlayer(self, player):
 		if player==Player.playerGuest():
-			return
+			return self
 
 		if Player.playerGuest() in self.players:
 			self.players.remove(Player.playerGuest())

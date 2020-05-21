@@ -60,6 +60,9 @@ class TournamentModule(Module):
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
 			self.handleBack()
+		if e.key() == Qt.Key_Return:
+			self.selectTn()
+
 
 	def handleBack(self):
 		self.switchModule(modules.MenuModule)
@@ -77,6 +80,7 @@ class TournamentModule(Module):
 			item.setSizeHint(tnWidget.size())
 			self.ui.tournamentList.addItem(item)
 			self.ui.tournamentList.setItemWidget(item, tnWidget)
+		self.ui.tournamentList.setCurrentRow(0)
 
 	def selectTn(self):
 		tn = self.ui.tournamentList.itemWidget(self.ui.tournamentList.currentItem()).tournament
@@ -92,16 +96,23 @@ class TournamentModule(Module):
 			# Display tournament table and results
 			pass
 
+'''
+This class allows to show the tournament details. It can be launched only for tournaments with
+status 'Future'. Teams can be added to the tournament, using the RFID readers.
+Delete button and QListWidgetItem are to handle properly.
+'''
 class TournamentParticipantModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, TournamentParticipantWidget())
 		self.parent = parent
 		self.ui.btnAddTeam.clicked.connect(self.registerTeam)
+		self.ui.btnStartTn.clicked.connect(self.startTournament)
 
 	def load(self):
 		logging.debug('Loading TournamentParticipantodule')
 		self.ui.tnName.setText(self.tournament.name)
 		self.ui.tnType.setText(self.ui.tnType.text().format(self.tournament.type.name))
+		# Disable widget to add team unless rfid is received
 		self.ui.teamName.setVisible(False)
 		self.ui.photo1.setVisible(False)
 		self.ui.photo2.setVisible(False)
@@ -112,7 +123,7 @@ class TournamentParticipantModule(Module):
 		self.displayTeams()
 
 	def unload(self):
-		logging.debug('Loading TournamentParticipantModule')
+		logging.debug('Unloading TournamentParticipantModule')
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape:
@@ -132,6 +143,8 @@ class TournamentParticipantModule(Module):
 				self.addPlayer(val)
 
 	def displayTeams(self):
+		self.ui.teamList.clear()
+		self.ui.teamList.setStyleSheet("color: rgb(64, 63, 63);font: bold 20px;border-width: 20px;")
 		for team in self.tournament.teams:
 			item = QListWidgetItem(team.name)
 			self.ui.teamList.addItem(item)
@@ -139,26 +152,40 @@ class TournamentParticipantModule(Module):
 
 	def addPlayer(self, rfid):
 		player = Player.fromRFID(rfid)
-		self.team = self.team.addPlayer(player)
-		if self.team.size()==1:
-			self.ui.btnAddTeam.setVisible(True)
-			player.displayImg(self.ui.photo1)
-			self.ui.photo1.setVisible(True)
-			self.ui.fname1.setText(player.name)
-			self.ui.fname1.setVisible(True)
-		else:
-			player.displayImg(self.ui.photo2)
-			self.ui.photo2.setVisible(True)
-			self.ui.fname2.setText(player.name)
-			self.ui.fname2.setVisible(True)
-			self.ui.teamName.setText(self.team.name)
-			self.ui.teamName.setVisible(True)
+		if isinstance(self.team, ConstructTeam):
+			if all(not team.hasPlayer(player) for team  in self.tournament.teams) and not self.team.hasPlayer(player):
+				self.team = self.team.addPlayer(player)
+				if self.team.size()==1:
+					self.ui.btnAddTeam.setVisible(True)
+					player.displayImg(self.ui.photo1)
+					self.ui.photo1.setVisible(True)
+					self.ui.fname1.setText(player.name)
+					self.ui.fname1.setVisible(True)
+				else:
+					player.displayImg(self.ui.photo2)
+					self.ui.photo2.setVisible(True)
+					self.ui.fname2.setText(player.name)
+					self.ui.fname2.setVisible(True)
+					self.ui.teamName.setText(self.team.name)
+					self.ui.teamName.setVisible(True)
+
 
 	def registerTeam(self):
 		if isinstance(self.team, ConstructTeam):
 			self.team = self.team.validateTeam()
 		self.tournament.registerTeam(self.team)
+		self.displayTeams()
+		# Disable all team identification widgets
+		self.ui.teamName.setVisible(False)
+		self.ui.photo1.setVisible(False)
+		self.ui.photo2.setVisible(False)
+		self.ui.fname1.setVisible(False)
+		self.ui.fname2.setVisible(False)
+		self.ui.btnAddTeam.setVisible(False)
+		self.team = ConstructTeam(self)
 
+	def startTournament(self):
+		pass
 
 
 class CreateDialog(QDialog):
