@@ -58,11 +58,61 @@
         <source>GO !</source>
         <translation>GO !</translation>
     </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="134"/>
+        <source>Creating a tournament !</source>
+        <translation>Création de tournoi !</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="135"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;How should we name it ?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="136"/>
+        <source>Choose a name...</source>
+        <translation>Choisis un nom...</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="137"/>
+        <source>Small final</source>
+        <translation>Petite finale</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="139"/>
+        <source>Elimination</source>
+        <translation>Elimination</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="140"/>
+        <source>Double Elimination</source>
+        <translation>Double Elimination</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="141"/>
+        <source>Elimination with qualification</source>
+        <translation>Elimination avec qualification</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="142"/>
+        <source>Double elimination with qualification</source>
+        <translation>Double élimination avec qualification</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="143"/>
+        <source>Qualification only</source>
+        <translation>Qualification seule</translation>
+    </message>
+    <message>
+        <location filename="../ui/create_tournament_dialog_ui.py" line="144"/>
+        <source>LET&apos;S GO !</source>
+        <translation>C&apos;est parti !</translation>
+    </message>
 </context>
 <context>
     <name>Form</name>
     <message>
-        <location filename="../ui/teamlist_ui.py" line="71"/>
+        <location filename="../ui/tournamentparticipant_ui.py" line="211"/>
         <source>Form</source>
         <translation>Form</translation>
     </message>
@@ -72,7 +122,7 @@
         <translation>Identifiez vous ! </translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="217"/>
+        <location filename="../ui/edit_ui.py" line="224"/>
         <source>Use the table&apos;s RFID reader with your card.</source>
         <translation>Utilisez les lecteurs RFID de la table avec votre carte étu.</translation>
     </message>
@@ -84,7 +134,7 @@
     <message>
         <location filename="../ui/authleague_ui.py" line="140"/>
         <source>Stat</source>
-        <translation>Stat</translation>
+        <translation type="obsolete">Stat</translation>
     </message>
     <message>
         <location filename="../ui/authquick_ui.py" line="240"/>
@@ -174,7 +224,7 @@
     <message>
         <location filename="../ui/options_ui.py" line="221"/>
         <source>Options</source>
-        <translation>Options</translation>
+        <translation type="unfinished">Options</translation>
     </message>
     <message>
         <location filename="../ui/options_ui.py" line="222"/>
@@ -276,7 +326,7 @@
         <translation type="obsolete">Français</translation>
     </message>
     <message>
-        <location filename="../ui/game_ui.py" line="103"/>
+        <location filename="../ui/tournamentparticipant_ui.py" line="217"/>
         <source>Team name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -291,42 +341,42 @@
         <translation>Editer mon profil</translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="218"/>
+        <location filename="../ui/edit_ui.py" line="225"/>
         <source>Player</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="219"/>
+        <location filename="../ui/edit_ui.py" line="226"/>
         <source>NAME</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="220"/>
+        <location filename="../ui/edit_ui.py" line="227"/>
         <source>Account private?</source>
         <translation>Compte privé ?</translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="221"/>
+        <location filename="../ui/edit_ui.py" line="228"/>
         <source>Yes</source>
         <translation>Oui</translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="222"/>
+        <location filename="../ui/edit_ui.py" line="229"/>
         <source>No</source>
         <translation>Non</translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="223"/>
+        <location filename="../ui/edit_ui.py" line="230"/>
         <source>Delete my account</source>
         <translation>Supprimer mon compte</translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="224"/>
+        <location filename="../ui/edit_ui.py" line="231"/>
         <source>Your teams</source>
         <translation>Tes équipes</translation>
     </message>
     <message>
-        <location filename="../ui/edit_ui.py" line="225"/>
+        <location filename="../ui/edit_ui.py" line="232"/>
         <source>Your games played</source>
         <translation>Tes matchs joués</translation>
     </message>
@@ -387,6 +437,88 @@
         <source>Team Mate : {}</source>
         <comment>Form</comment>
         <translation type="unfinished">Coéquipier : {}</translation>
+    </message>
+    <message>
+        <location filename="../ui/authleague_ui.py" line="95"/>
+        <source>Tournament mode</source>
+        <translation>Mode de tournoi</translation>
+    </message>
+    <message>
+        <location filename="../ui/authleague_ui.py" line="96"/>
+        <source>Select a tournament or create one !</source>
+        <translation>Selectionne un tournoi ou crées-en un !</translation>
+    </message>
+    <message>
+        <location filename="../ui/authleague_ui.py" line="97"/>
+        <source>Create a tournament</source>
+        <translation>Créer un tournoi</translation>
+    </message>
+    <message>
+        <location filename="../ui/authleague_ui.py" line="98"/>
+        <source>Let&apos;s go !</source>
+        <translation>C&apos;est parti !</translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="212"/>
+        <source>Tournament</source>
+        <translation>Tounrnoi</translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentlist_ui.py" line="88"/>
+        <source>Status : {}</source>
+        <comment>Form</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentlist_ui.py" line="89"/>
+        <source>Type : {}</source>
+        <comment>Form</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="213"/>
+        <source>The tournament hasn&apos;t started yet, participants can be added using RFID readers !</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="214"/>
+        <source>Tournament Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="215"/>
+        <source>Tournament type : {}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="216"/>
+        <source>Delete tournament</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="218"/>
+        <source>Player 1 name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="219"/>
+        <source>Player 2 name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="220"/>
+        <source>Add Team</source>
+        <translation>Ajouter l&apos;équipe</translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="221"/>
+        <source>Tournament&apos;s teams</source>
+        <translation>Equipes inscrites</translation>
+    </message>
+    <message>
+        <location filename="../ui/tournamentparticipant_ui.py" line="222"/>
+        <source>Start Tournament</source>
+        <translation>Démarrer le tournoi</translation>
     </message>
 </context>
 <context>

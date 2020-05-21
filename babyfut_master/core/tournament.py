@@ -6,6 +6,7 @@
 
 from PyQt5.QtCore import QObject
 
+from ..core.player import Player
 from .database import Database, DatabaseError
 from .team import Team
 from enum import Enum
@@ -33,8 +34,13 @@ class Tournament(QObject):
 		self.name = name
 		self.status = status
 		self.type = _type
-		self.teams = [Team(t[0], t[1], [t[2], t[3]]) for t in Database.instance().selectTeamsTn(self.id)]
-        self.matchs = list()
+		self.teams = list()
+		for t in Database.instance().selectTeamsTn(self.id):
+			players = [Player.loadFromDB(t[2])]
+			if t[3]:
+				players.append(Player.loadFromDB(t[3]))
+			self.teams.append(Team(t[0], t[1], players))
+        # self.matchs = matchlist
 
 	def registerTeam(self, team):
 		if self.status == TournamentStatus.Future:

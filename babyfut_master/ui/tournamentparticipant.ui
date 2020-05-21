@@ -183,6 +183,9 @@ QRadioButton::indicator {
             <bold>true</bold>
            </font>
           </property>
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
           <property name="text">
            <string>Delete tournament</string>
           </property>
@@ -384,7 +387,7 @@ QRadioButton::indicator {
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="btnStartTn">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -397,6 +400,9 @@ QRadioButton::indicator {
             <weight>75</weight>
             <bold>true</bold>
            </font>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
           </property>
           <property name="text">
            <string>Start Tournament</string>
