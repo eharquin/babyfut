@@ -29,12 +29,17 @@ class Tournament(QObject):
 		QObject.__init__(self)
 		self.id = id
 		self.name = name
-		self.status = TournamentStatus(status)
-		self.type = TournamentType(_type)
+		self.status = status
+		self.type = _type
 		self.teams = [Team(t[0], t[1], [t[2], t[3]]) for t in Database.instance().selectTeamsTn(self.id)]
         # self.matchs = matchlist
 
 	
 	@staticmethod
 	def selectAll(status=None):
-		return [Tournament(*t) for t in Database.instance().selectAllTn(status)]
+		return [Tournament(int(t[0]), t[1], TournamentStatus(int(t[2])), TournamentType(int(t[3]))) for t in Database.instance().selectAllTn(status)]
+
+	@staticmethod
+	def create(name, _type):
+		id = Database.instance().createTn(name, _type.value)
+		return Tournament(id, name, TournamentStatus.Future, _type)

@@ -16,9 +16,6 @@ class DatabaseError(Exception):
 
 class Database():
 	__db = None
-	typesTn = ["Elimination", "Double", "EliminationQualif", "DoubleQualif", "Qualif"]
-	statusTn = ['Future', 'Running', 'Past', 'Cancelled']
-
 	def __init__(self):
 		if not Database.__db:
 			db_path = getContent('babyfut.sqlite')
@@ -162,11 +159,7 @@ class Database():
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Tournaments"').fetchone()[0]
 	
 	def selectTn(self, id):
-		result= self._exec("SELECT id, name, status, type FROM Tournament WHERE id==?",(id,)).fetchone()
-		if result:
-			result[2] = Database.statusTn[int(result[2])]
-			result[3] = Database.typesTn[int(result[3])]
-		return result
+		return self._exec("SELECT id, name, status, type FROM Tournament WHERE id==?",(id,)).fetchone()
 
 	#Returns all tournaments from a status, all of them if None
 	def selectAllTn(self, status=None):
@@ -175,10 +168,6 @@ class Database():
 			WHERE status==?',(Database.statusTn[status],)).fetchall()
 		else:
 			result=self._exec('SELECT id, name, status, type FROM Tournaments').fetchall()
-		for ligne in result:
-			ligne = list(ligne)
-			ligne[2] = Database.statusTn[int(ligne[2])]
-			ligne[3] = Database.typesTn[int(ligne[3])]
 		return result
 	
 	#Changes the tournament status
@@ -191,7 +180,7 @@ class Database():
 	#Register a team to a future tournament
 	def registerTeamTn(self, team, tournament):
 		checkStatus=self.selectTn(tournament)
-		if (not checkStatus or checkStatus[3]!= "Future"):
+		if (not checkStatus or checkStatus[3]!= 0):
 	 		raise DatabaseError("Tournament not existing or not in status Future")
 		self._exec("INSERT INTO Participate (team,  tournament) VALUES (?,?)", (team, tournament))
 		self._connection.commit()
