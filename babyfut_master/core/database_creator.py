@@ -57,15 +57,9 @@ def createDatabase(db_path):
         `id` INTEGER PRIMARY KEY REFERENCES Matchs(id),
         `tournament` INTEGER NOT NULL REFERENCES Tournaments(id),
         `round` INTEGER NOT NULL
-    )
-    
-    ''')
-
-    c.execute('''CREATE TABLE "TreeMatchs" (
-        `id` INTEGER PRIMARY KEY REFERENCES TournamentMatchs(id),
-        `KOType` CHAR(1) NOT NULL CHECK (KOType == 'W' OR KOType=='L'),
-        `parent1` INTEGER NOT NULL REFERENCES TreeMatchs(id),
-        `parent2` INTEGER NOT NULL REFERENCES TreeMatchs(id)
+        `KOType` CHAR(1) CHECK (KOType == 'W' OR KOType=='L'),
+        `parent1` INTEGER REFERENCES TreeMatchs(id),
+        `parent2` INTEGER REFERENCES TreeMatchs(id)
     )
     
     ''')
