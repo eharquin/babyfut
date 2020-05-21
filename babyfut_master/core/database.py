@@ -199,6 +199,14 @@ class Database():
 		WHERE T.tournament==?'''
 		return self._exec(query, (id,)).fetchall()
 	
+	#Insert Match in a tournament. KOtype is 'W' or 'L'
+	def createMatchTn(id, round, KOtype=None, p1=None, p2=None):
+		match = self.insertMatch(None, None, None, None, None, None, None)
+		self._exec("INSERT INTO TournamentMatch VALUES (?, ?, ?)", (match, id, round))
+		if KOtype and p1 and p2:
+			self._exec("INSERT INTO TreeMatch VALUES (?, ?, ? , ?)", (match, KOtype, p1, p2))
+
+
 	#Insert scores of a tournament Match which has just been played
 	def insertMatchTn():
 		pass

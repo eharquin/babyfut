@@ -18,6 +18,15 @@ from .database import Database, DatabaseError
 from ..ui.team_name_dialog_ui import Ui_Dialog as TeamNameDialog
 from ..ui.keyboard import KeyboardWidget, KeyboardDialog
 
+
+'''
+To generate Teams with either 1 or 2 players, create a ConstructTeam objet (parentWidget parameter is used for showing Dialogs).
+To add a Player, use : myTeam = myTeam.addPlayer(player)
+	If the ConstructTeam has 2 players, it's automatically validated and a Team Object is returned. 
+	The class handles DB insertion and TeamName Dialog if the Team is new.
+To create a Team Object with only 1 player, use : myTeam = myTeam.validateTeam()
+'''
+
 class AbstractTeam(QObject):
 	def __init__(self):
 		QObject.__init__(self)

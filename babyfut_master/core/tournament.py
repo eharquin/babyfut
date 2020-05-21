@@ -34,6 +34,10 @@ class Tournament(QObject):
 		self.teams = [Team(t[0], t[1], [t[2], t[3]]) for t in Database.instance().selectTeamsTn(self.id)]
         # self.matchs = matchlist
 
+	def registerTeam(self, team):
+		if self.status == TournamentStatus.Future:
+			self.teams.append(team)
+			Database.instance().registerTeamTn(team.id, self.id)
 	
 	@staticmethod
 	def selectAll(status=None):
