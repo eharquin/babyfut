@@ -155,8 +155,9 @@ class TournamentParticipantModule(Module):
 			self.ui.teamName.setVisible(True)
 
 	def registerTeam(self):
-		self.team.validateTeam()
-		
+		if isinstance(self.team, ConstructTeam):
+			self.team = self.team.validateTeam()
+		self.tournament.registerTeam(self.team)
 
 
 

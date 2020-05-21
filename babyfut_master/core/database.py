@@ -159,7 +159,7 @@ class Database():
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Tournaments"').fetchone()[0]
 	
 	def selectTn(self, id):
-		return self._exec("SELECT id, name, status, type FROM Tournament WHERE id==?",(id,)).fetchone()
+		return self._exec("SELECT id, name, status, type FROM Tournaments WHERE id==?",(id,)).fetchone()
 
 	#Returns all tournaments from a status, all of them if None
 	def selectAllTn(self, status=None):
@@ -173,7 +173,7 @@ class Database():
 	#Changes the tournament status
 	def setStatusTn(self, id, status):
 		if status in Database.statusTn:
-			self._exec("UPDATE Tournament SET status=? WHERE id==?", (Database.statusTn.index(status), id))
+			self._exec("UPDATE Tournaments SET status=? WHERE id==?", (Database.statusTn.index(status), id))
 			self._connection.commit()
 
 
@@ -181,7 +181,7 @@ class Database():
 	def registerTeamTn(self, team, tournament):
 		checkStatus=self.selectTn(tournament)
 		if (not checkStatus or checkStatus[3]!= 0):
-	 		raise DatabaseError("Tournament not existing or not in status Future")
+	 		raise DatabaseError("Tournaments not existing or not in status Future")
 		self._exec("INSERT INTO Participate (team,  tournament) VALUES (?,?)", (team, tournament))
 		self._connection.commit()
 
