@@ -14,7 +14,9 @@ from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent, QSigna
 from PyQt5.QtGui import QFont
 
 from ..core.database import Database
-from ..core.tournament import Tournament, TournamentStatus
+from ..core.tournament import Tournament, TournamentStatus, TournamentType
+from ..core.team import Team, ConstructTeam
+from ..core.player import Player
 
 from .. import modules
 from ..ui.authleague_ui import Ui_Form as TournamentWidget
@@ -94,10 +96,20 @@ class TournamentParticipantModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, TournamentParticipantWidget())
 		self.parent = parent
+		self.ui.btnAddTeam.clicked.connect(self.registerTeam)
 
 	def load(self):
 		logging.debug('Loading TournamentParticipantodule')
-		self.loadTeams()
+		self.ui.tnName.setText(self.tournament.name)
+		self.ui.tnType.setText(self.ui.tnType.text().format(self.tournament.type.name))
+		self.ui.teamName.setVisible(False)
+		self.ui.photo1.setVisible(False)
+		self.ui.photo2.setVisible(False)
+		self.ui.fname1.setVisible(False)
+		self.ui.fname2.setVisible(False)
+		self.ui.btnAddTeam.setVisible(False)
+		self.team = ConstructTeam(self)
+		self.displayTeams()
 
 	def unload(self):
 		logging.debug('Loading TournamentParticipantModule')
@@ -116,8 +128,37 @@ class TournamentParticipantModule(Module):
 			if key=='tournament':
 				self.tournament = val
 
-	def loadTeams(self):
-		pass
+			if key=='rfid':
+				self.addPlayer(val)
+
+	def displayTeams(self):
+		for team in self.tournament.teams:
+			item = QListWidgetItem(team.name)
+			self.ui.teamList.addItem(item)
+
+
+	def addPlayer(self, rfid):
+		player = Player.fromRFID(rfid)
+		self.team = self.team.addPlayer(player)
+		if self.team.size()==1:
+			self.ui.btnAddTeam.setVisible(True)
+			player.displayImg(self.ui.photo1)
+			self.ui.photo1.setVisible(True)
+			self.ui.fname1.setText(player.name)
+			self.ui.fname1.setVisible(True)
+		else:
+			player.displayImg(self.ui.photo2)
+			self.ui.photo2.setVisible(True)
+			self.ui.fname2.setText(player.name)
+			self.ui.fname2.setVisible(True)
+			self.ui.teamName.setText(self.team.name)
+			self.ui.teamName.setVisible(True)
+
+	def registerTeam(self):
+		self.team.validateTeam()
+		
+
+
 
 class CreateDialog(QDialog):
 	def __init__(self, parent):
@@ -138,10 +179,8 @@ class CreateDialog(QDialog):
 
 	# May handle other options in the future
 	def createTournament(self, name, typeTn):
-		db = Database.instance()
-		db.createTn(name, typeTn)
-		# Fonction qui renvoie un tournois et l'insèe => on peut passer via send() le tournois directement à TournamentParticipantModule
-		#self.parent.send(modules.TournamentParticipantModule, )
+		tn = Tournament.create(name, TournamentType(typeTn))
+		self.parent.send(modules.TournamentParticipantModule, tournament = tn)
 		self.parent.switchModule(modules.TournamentParticipantModule)
 		self.finish()
 

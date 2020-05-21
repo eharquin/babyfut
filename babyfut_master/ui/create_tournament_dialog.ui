@@ -249,26 +249,36 @@
         </font>
        </property>
        <property name="currentText">
-        <string>Type 1</string>
+        <string>Elimination</string>
        </property>
        <item>
         <property name="text">
-         <string>Type 1</string>
+         <string>Elimination</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Type 2</string>
+         <string>Double Elimination</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Type 3</string>
+         <string>Elimination with qualification</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Type 4</string>
+         <string>Double elimination with qualification</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Qualification only</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string/>
         </property>
        </item>
       </widget>

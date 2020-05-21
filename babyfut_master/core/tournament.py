@@ -37,6 +37,8 @@ class Tournament(QObject):
 	
 	@staticmethod
 	def selectAll(status=None):
+		if status:
+			status = status.value
 		return [Tournament(int(t[0]), t[1], TournamentStatus(int(t[2])), TournamentType(int(t[3]))) for t in Database.instance().selectAllTn(status)]
 
 	@staticmethod

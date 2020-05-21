@@ -163,7 +163,7 @@ class Database():
 
 	#Returns all tournaments from a status, all of them if None
 	def selectAllTn(self, status=None):
-		if status in  Database.statusTn:
+		if status:
 			result=self._exec('SELECT id, name, status, type FROM Tournaments \
 			WHERE status==?',(Database.statusTn[status],)).fetchall()
 		else:
