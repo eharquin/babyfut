@@ -40,12 +40,23 @@ class Tournament(QObject):
 			if t[3]:
 				players.append(Player.loadFromDB(t[3]))
 			self.teams.append(Team(t[0], t[1], players))
-        # self.matchs = matchlist
+		self.matchs = list()
 
 	def registerTeam(self, team):
 		if self.status == TournamentStatus.Future:
 			self.teams.append(team)
 			Database.instance().registerTeamTn(team.id, self.id)
+
+	@property
+	def rounds(self):
+		rounds = dict(list())
+		for m in self.matchs:
+			if m.roundName() in rounds.keys():
+				rounds[m.roundName()].append(m)
+			else:
+				rounds[m.roundName()] = [m]
+		return rounds
+
 	
 	@staticmethod
 	def selectAll(status=None):
@@ -61,39 +72,53 @@ class Tournament(QObject):
 	def validate(self):
 		if self.status == TournamentStatus.Future:
 			liste = self.teams
+			nextliste=list()
 			if self.type==TournamentType.Elimination:
 				nbteams = len(liste)
 				nbrounds = math.floor(math.log2(nbteams))
-				nbsupmatchs = nbteams-math.pow(2,nbrounds)
-				supmatchs = list()
+				nbsupmatchs = int(nbteams-math.pow(2,nbrounds))
 				for i in range(nbsupmatchs):
 					t1 = choice(liste)
 					liste.remove(t1)
 					t2 = choice(liste)
 					liste.remove(t2)
-					match = Match.create(self, nbrounds+1, t1, t2)
-					liste.append(match)
+					match = Tournament.Match.create(self, int(nbrounds+1), t1, t2)
+					nextliste.append(match)
 					self.matchs.append(match)
-
-				for round in range(0, nbrounds):
-					for j in range(0, pow(2, round-1)):
+				nextliste += liste
+				
+				for round in range(nbrounds, 0, -1):
+					liste=nextliste.copy()
+					nextliste.clear()				
+					for j in range(0, int(pow(2, round-1))):
 						t1=choice(liste)
 						liste.remove(t1)
 						t2=choice(liste)
 						liste.remove(t2)
-						self.matchs.append(Match.create(tour,round, t1, t2 ))
+						match=Tournament.Match.create(self,int(round), t1, t2 )
+						self.matchs.append(match)
+						nextliste.append(match)				
+					
+			self.status=TournamentStatus.Running
 						
 
 
 	class Match():
-		def __init__(tour, round, t1, t2, p1, p2, KOtype=None):
+		_roundnames = {1:'Final', 2:'Semi-finals', 3:'Quarter-finals'}
+		def __init__(self,tour, round, t1, t2, p1, p2, KOtype=None):
 			self.tournament=tour
-			self.round=round
+			self.round= round
 			self.team1 = t1
 			self.team2 = t2
 			self.parent1=p1
 			self.parent2=p2
-			
+
+		def roundName(self):
+			if self.round in Tournament.Match._roundnames.keys():
+				return Tournament.Match._roundnames[self.round]
+			else:
+				return "Round of "+str(int(math.pow(2, self.round)))
+
 		
 		@staticmethod
 		def create(tour, round, side1, side2, KOtype=None):
@@ -101,10 +126,7 @@ class Tournament(QObject):
 			p1 = side1 if not t1 else None
 			t2 = side2 if isinstance(side2, Team) else None
 			p2 = side2 if not t2 else None
-			return Match(tour, round, t1, t2, p1, p2, KOtype)
-
-
-
+			return Tournament.Match(tour, round, t1, t2, p1, p2, KOtype)
 
 		def setTeams():
 			pass

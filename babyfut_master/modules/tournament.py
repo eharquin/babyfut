@@ -186,6 +186,7 @@ class TournamentParticipantModule(Module):
 		self.team = ConstructTeam(self)
 
 	def startTournament(self):
+		self.tournament.validate()
 		self.send(modules.TournamentDisplayModule, tournament = self.tournament)
 		self.switchModule(modules.TournamentDisplayModule)
 
@@ -198,6 +199,7 @@ class TournamentDisplayModule(Module):
 		logging.debug('Loading TournamentDisplayModule')
 		self.ui.tnName.setText(self.tournament.name)
 		self.drawMatchTree()
+		self.loadMatchList()
 
 	def other(self, **kwargs):
 		logging.debug('Other EndGameModule')
@@ -219,6 +221,22 @@ class TournamentDisplayModule(Module):
 	def drawMatchTree(self):
 		self.tree = TreeMatch(self.tournament)
 		self.ui.paintArea.addWidget(self.tree)
+
+	def loadMatchList(self):
+		self.ui.matchList.clear()
+		for round, liste in self.tournament.rounds.items():
+			item=QListWidgetItem(str(round), self.ui.matchList)
+			item.setFont(QFont('Ubuntu', 18))
+			item.setTextAlignment(Qt.AlignCenter)
+			for match in liste:
+				text = match.team1.name if match.team1!=None else "???"	
+				text += "   -   "
+				text += match.team2.name if match.team2!=None else "???"
+				item=QListWidgetItem(text, self.ui.matchList)
+				item.setFont(QFont('Ubuntu', 14))
+				item.setTextAlignment(Qt.AlignCenter)
+
+
 
 '''
 Class that defines the TreeMatch view.

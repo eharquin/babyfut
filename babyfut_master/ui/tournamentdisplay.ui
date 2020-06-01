@@ -77,7 +77,14 @@ QRadioButton::indicator {
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+      <item>
+       <widget class="QListWidget" name="matchList">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(63, 63, 63);</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <layout class="QHBoxLayout" name="paintArea"/>
       </item>
