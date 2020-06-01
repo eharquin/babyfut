@@ -31,6 +31,7 @@ case "$1" in
 		pyuic5 --import-from=. ui/create_tournament_dialog.ui     -o ui/create_tournament_dialog_ui.py
 		pyuic5 --import-from=. ui/tournamentlist.ui     -o ui/tournamentlist_ui.py
 		pyuic5 --import-from=. ui/tournamentparticipant.ui     -o ui/tournamentparticipant_ui.py
+		pyuic5 --import-from=. ui/tournamentdisplay.ui     -o ui/tournamentdisplay_ui.py
 
 
 

@@ -10,8 +10,8 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import *
 
 from ..core.module import Module
-from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent, QSignalMapper
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent, QSignalMapper, QRect
+from PyQt5.QtGui import QFont, QPainter
 
 from ..core.database import Database
 from ..core.tournament import Tournament, TournamentStatus, TournamentType
@@ -23,6 +23,7 @@ from ..ui.authleague_ui import Ui_Form as TournamentWidget
 from ..ui.create_tournament_dialog_ui import Ui_Dialog as CreateTournamentDialog
 from ..ui.tournamentlist_ui import Ui_Form as TournamentListWidget
 from ..ui.tournamentparticipant_ui import Ui_Form as TournamentParticipantWidget
+from ..ui.tournamentdisplay_ui import Ui_Form as TournamentDisplayWidget
 from ..ui.keyboard import KeyboardWidget
 
 
@@ -185,8 +186,54 @@ class TournamentParticipantModule(Module):
 		self.team = ConstructTeam(self)
 
 	def startTournament(self):
-		pass
+		self.send(modules.TournamentDisplayModule, tournament = self.tournament)
+		self.switchModule(modules.TournamentDisplayModule)
 
+
+class TournamentDisplayModule(Module):
+	def __init__(self, parent):
+		super().__init__(parent, TournamentDisplayWidget())
+
+	def load(self):
+		logging.debug('Loading TournamentDisplayModule')
+		self.ui.tnName.setText(self.tournament.name)
+		self.drawMatchTree()
+
+	def other(self, **kwargs):
+		logging.debug('Other EndGameModule')
+
+		for key, val in kwargs.items():
+			if key=='tournament':
+				self.tournament = val
+
+	def unload(self):
+		logging.debug('Unloading TournamentDisplayModule')
+
+	def keyPressEvent(self, e):
+		if e.key() == Qt.Key_Escape:
+			self.handleBack()
+
+	def handleBack(self):
+		self.switchModule(modules.TournamentModule)
+
+	def drawMatchTree(self):
+		self.tree = TreeMatch(self.tournament)
+		self.ui.paintArea.addWidget(self.tree)
+
+'''
+Class that defines the TreeMatch view.
+It inharits from a QWidget and reimplement the paintEvent function that draws the tree.
+'''
+class TreeMatch(QWidget):
+	def __init__(self, tournament):
+		super().__init__()
+		self.tournament = tournament
+
+	def paintEvent(self, event):
+		#pen = Qpen()
+		#pen.setWidth(5)
+		painter = QPainter(self)
+		painter.drawRect(50,50,50,50)
 
 class CreateDialog(QDialog):
 	def __init__(self, parent):

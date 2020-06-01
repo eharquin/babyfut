@@ -71,7 +71,7 @@
         },
         "language": {
             "type": "combo",
-            "value": "fr",
+            "value": "en",
             "values": [
                 "en",
                 "fr"
