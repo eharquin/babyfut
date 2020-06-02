@@ -91,8 +91,9 @@ class TournamentModule(Module):
 			self.switchModule(modules.TournamentParticipantModule)
 			pass
 		if tn.status==TournamentStatus.Running:
-			# Display tournament
-			pass
+			self.send(modules.TournamentDisplayModule, tournament = tn)
+			self.switchModule(modules.TournamentDisplayModule)
+			
 		if tn.status==TournamentStatus.Passed:
 			# Display tournament table and results
 			pass
@@ -134,7 +135,7 @@ class TournamentParticipantModule(Module):
 		self.switchModule(modules.TournamentModule)
 
 	def other(self, **kwargs):
-		logging.debug('Other EndGameModule')
+		logging.debug('Other TournamentParticipantModule')
 
 		for key, val in kwargs.items():
 			if key=='tournament':
@@ -229,12 +230,30 @@ class TournamentDisplayModule(Module):
 			item.setFont(QFont('Ubuntu', 18))
 			item.setTextAlignment(Qt.AlignCenter)
 			for match in liste:
-				text = match.team1.name if match.team1!=None else "???"	
-				text += "   -   "
-				text += match.team2.name if match.team2!=None else "???"
-				item=QListWidgetItem(text, self.ui.matchList)
-				item.setFont(QFont('Ubuntu', 14))
-				item.setTextAlignment(Qt.AlignCenter)
+				widget = QWidget()
+				widget.setFixedHeight(40)
+				widget.setFont(QFont('Ubuntu', 14))
+				lay = QHBoxLayout(widget)
+				l = QLabel(str(match.id))
+				l.setFont(QFont('Ubuntu', 12, True))
+				l.setStyleSheet('color:rgb(200,0,0)')
+				lay.addWidget(l)
+				t1 = QLabel(match.team1.name if match.team1!=None else "Winner of "+str(match.parent1.id))
+				t1.setAlignment(Qt.AlignLeft)
+				lay.addWidget(t1)
+				lay.addWidget(QLabel('-'))
+				t2 = QLabel(match.team2.name if match.team2!=None else "Winner of "+str(match.parent2.id))
+				t2.setAlignment(Qt.AlignRight)
+				lay.addWidget(t2)
+				lay.setStretch(0,0)
+				lay.setStretch(1,1)
+				lay.setStretch(2,0)
+				lay.setStretch(3,1)
+				
+				item=QListWidgetItem(self.ui.matchList)
+				item.setSizeHint(widget.size())
+				self.ui.matchList.addItem(item)
+				self.ui.matchList.setItemWidget(item, widget)
 
 
 

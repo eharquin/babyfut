@@ -35,12 +35,28 @@ class Tournament(QObject):
 		self.status = status
 		self.type = _type
 		self.teams = list()
+		self.matchs = list()
+		teamdict= dict()
+		matchdict = dict()
 		for t in Database.instance().selectTeamsTn(self.id):
 			players = [Player.loadFromDB(t[2])]
 			if t[3]:
 				players.append(Player.loadFromDB(t[3]))
-			self.teams.append(Team(t[0], t[1], players))
-		self.matchs = list()
+			team = Team(t[0], t[1], players)
+			teamdict[t[0]] = team
+			self.teams.append(team)
+		
+		for m in Database.instance().selectMatchsTn(self.id):
+			t1 =teamdict[m[4]] if m[4] else None
+			t2 =teamdict[m[6]] if m[6] else None
+			self.matchs.append(Tournament.Match(m[0], self, m[8], t1,t2, m[10],m[11], m[9]))
+		
+		for m in self.matchs:
+			matchdict[m.id] = m
+
+		for m in self.matchs:
+			m.parent1 = matchdict[m.parent1] if m.parent1 else None
+			m.parent2 = matchdict[m.parent2] if m.parent2 else None
 
 	def registerTeam(self, team):
 		if self.status == TournamentStatus.Future:
@@ -100,12 +116,14 @@ class Tournament(QObject):
 						nextliste.append(match)				
 					
 			self.status=TournamentStatus.Running
+			Database.instance().setStatusTn(self.id, TournamentStatus.Running)
 						
 
 
 	class Match():
 		_roundnames = {1:'Final', 2:'Semi-finals', 3:'Quarter-finals'}
-		def __init__(self,tour, round, t1, t2, p1, p2, KOtype=None):
+		def __init__(self, id, tour, round, t1, t2, p1, p2, KOtype=None):
+			self.id = id
 			self.tournament=tour
 			self.round= round
 			self.team1 = t1
@@ -126,7 +144,14 @@ class Tournament(QObject):
 			p1 = side1 if not t1 else None
 			t2 = side2 if isinstance(side2, Team) else None
 			p2 = side2 if not t2 else None
-			return Tournament.Match(tour, round, t1, t2, p1, p2, KOtype)
+
+			IDt1 = t1.id if t1 else None
+			IDt2 = t2.id if t2 else None
+			IDp1 = p1.id if p1 else None
+			IDp2 = p2.id if p2 else None
+
+			id = Database.instance().createMatchTn(tour.id, round, IDt1, IDt2, IDp1, IDp2, KOtype)
+			return Tournament.Match(id, tour, round, t1, t2, p1, p2, KOtype)
 
 		def setTeams():
 			pass

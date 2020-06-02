@@ -14,7 +14,7 @@ def createDatabase(db_path):
     c.execute('''CREATE TABLE "Matchs" (
         `id` INTEGER PRIMARY KEY AUTOINCREMENT,
         `timestamp`	INTEGER,
-        `babyfoot` REFERENCES Babyfoots(id),
+        `babyfoot` INTEGER REFERENCES Babyfoots(id),
         `duration`	INTEGER,
         `team1`	INTEGER REFERENCES Teams(id),
         `score1` INTEGER,
@@ -56,7 +56,7 @@ def createDatabase(db_path):
     c.execute('''CREATE TABLE "TournamentMatchs" (
         `id` INTEGER PRIMARY KEY REFERENCES Matchs(id),
         `tournament` INTEGER NOT NULL REFERENCES Tournaments(id),
-        `round` INTEGER NOT NULL
+        `round` INTEGER NOT NULL,
         `KOType` CHAR(1) CHECK (KOType == 'W' OR KOType=='L'),
         `parent1` INTEGER REFERENCES TreeMatchs(id),
         `parent2` INTEGER REFERENCES TreeMatchs(id)

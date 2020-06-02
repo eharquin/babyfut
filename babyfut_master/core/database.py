@@ -23,6 +23,7 @@ class Database():
 				Database.createDatabase(db_path)
 
 			self._connection = sqlite3.connect(db_path)
+			self._connection.commit()
 
 	@staticmethod
 	def instance():
@@ -145,9 +146,10 @@ class Database():
 #------------------------------Matchs------------------------------------------
 
 	def insertMatch(self, start_time, duration, team1, score1, team2, score2):
-		args = (start_time, 1,  duration, team1, score1, team2, score2)
-		self._exec('INSERT INTO Matchs (timestamp, babyfoot, duration, team1 ,score1, team2, score2) VALUES (?, ?, ?, ?, ?, ?, ?)', args)
+		args = (start_time, duration, team1, score1, team2, score2)
+		self._exec('INSERT INTO Matchs (timestamp, duration, team1 ,score1, team2, score2) VALUES (?, ?, ?, ?, ?, ?)', args)
 		self._connection.commit()
+		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Matchs"').fetchone()[0]
 
 #---------------------------Tournaments----------------------------------------------
 
@@ -172,9 +174,8 @@ class Database():
 	
 	#Changes the tournament status
 	def setStatusTn(self, id, status):
-		if status in Database.statusTn:
-			self._exec("UPDATE Tournaments SET status=? WHERE id==?", (Database.statusTn.index(status), id))
-			self._connection.commit()
+		self._exec("UPDATE Tournaments SET status=? WHERE id==?", (status.value, id))
+		self._connection.commit()
 
 
 	#Register a team to a future tournament
@@ -191,27 +192,28 @@ class Database():
 		ON  T.id==Participate.team WHERE tournament==?'''
 		return self._exec(query, (id,)).fetchall()
 	
-	#Returns all Matchs of a tournament
+	#Returns all Matchs of a tournament 
+	#Returns the list : [id, timestamp, baby, duration, t1, s1,  t2, s2, round,  KO,  p1, p2]
 	def selectMatchsTn(self, id):
-		query='''SELECT M.*, T.round, Tr.KOType, Tr.parent1, Tr.parent2
+		query='''SELECT M.*, T.round, T.KOType, T.parent1, T.parent2
 		FROM Matchs M INNER JOIN TournamentMatchs T ON T.id==M.id
-		LEFT JOIN TreeMatchs Tr ON T.id==Tr.id
 		WHERE T.tournament==?'''
 		return self._exec(query, (id,)).fetchall()
 	
 	#Insert Match in a tournament. KOtype is 'W' or 'L'
-	def createMatchTn(id, round, t1, t2, p1, p2, KOtype=None):
+	def createMatchTn(self, idtour, round, t1, t2, p1, p2, KOtype=None):		
 		if bool(t1)!=bool(p1) and bool(p2)!=bool(t2):
-			match = self.insertMatch(None, None, None, t1, None, t2, None)
-			self._exec("INSERT INTO TournamentMatch VALUES (?, ?, ?, ?, ?, ?)", (match, id, round, KOType,  p1, p2))
+			match = self.insertMatch(None, None, t1, None, t2, None)
+			self._exec("INSERT INTO TournamentMatchs VALUES (?, ?, ?, ?, ?, ?)", (match, idtour, round, KOtype,  p1, p2))
+			return match
 
 
 	#Insert scores of a tournament Match which has just been played
-	def insertMatchTn():
+	def insertMatchTn(self):
 		pass
 
 	#Update the teams of the Tree Matchs when they are known
-	def updateTreeMatchsTn():
+	def updateTreeMatchsTn(self):
 		pass
 
 
