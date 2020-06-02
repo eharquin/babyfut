@@ -219,7 +219,7 @@ class TournamentDisplayModule(Module):
 		self.switchModule(modules.TournamentModule)
 
 	def drawMatchTree(self):
-		self.tree = TreeMatch(self.tournament)
+		self.tree = TreeMatch(self.tournament, self.ui.paintArea)
 		self.ui.paintArea.addWidget(self.tree)
 
 	def loadMatchList(self):
@@ -240,18 +240,31 @@ class TournamentDisplayModule(Module):
 
 '''
 Class that defines the TreeMatch view.
-It inharits from a QWidget and reimplement the paintEvent function that draws the tree.
+It inherits from a QWidget and reimplement the paintEvent function that draws the tree.
 '''
 class TreeMatch(QWidget):
-	def __init__(self, tournament):
+	def __init__(self, tournament, parent):
 		super().__init__()
 		self.tournament = tournament
+		self.parent = parent
 
 	def paintEvent(self, event):
-		#pen = Qpen()
-		#pen.setWidth(5)
+		#self.parent.clear()
 		painter = QPainter(self)
-		painter.drawRect(50,50,50,50)
+		j=1
+		for round, liste in self.tournament.rounds.items():
+			i=1
+			for match in liste:
+				painter.drawRect((self.width()/(len(liste)+1))*i,100*j,50,50)
+				i+=1
+				#text = match.team1.name if match.team1!=None else "???"	
+				#text += "   -   "
+				#text += match.team2.name if match.team2!=None else "???"
+				#item=QListWidgetItem(text, self.ui.matchList)
+				#item.setFont(QFont('Ubuntu', 14))
+				#tem.setTextAlignment(Qt.AlignCenter)
+			j+=1
+
 
 class CreateDialog(QDialog):
 	def __init__(self, parent):
