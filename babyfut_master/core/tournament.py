@@ -38,6 +38,8 @@ class Tournament(QObject):
 		self.matchs = list()
 		teamdict= dict()
 		matchdict = dict()
+		self.currentRound=None
+
 		for t in Database.instance().selectTeamsTn(self.id):
 			players = [Player.loadFromDB(t[2])]
 			if t[3]:
@@ -55,13 +57,32 @@ class Tournament(QObject):
 			matchdict[m.id] = m
 
 		for m in self.matchs:
-			m.parent1 = matchdict[m.parent1] if m.parent1 else None
-			m.parent2 = matchdict[m.parent2] if m.parent2 else None
+			m.parents[0] = matchdict[m.parents[0]] if m.parents[0] else None
+			m.parents[1] = matchdict[m.parents[1]] if m.parents[1] else None
 
 	def registerTeam(self, team):
 		if self.status == TournamentStatus.Future:
 			self.teams.append(team)
 			Database.instance().registerTeamTn(team.id, self.id)
+
+	def updateTree(self):
+		for match in self.matchs:
+			for i in [0,1]:
+				modified=False
+				if match.teams[i]=None and match.parents[i] and match.parents[i].played:
+					match.teams[i] = match.parents[i].teamResult(match.KOtype)
+					modified=True
+			if modified:
+				t1=match.teams[0].id if match.teams[0] else None
+				t2=match.teams[1].id if match.teams[1] else None
+				Database.instance().updateTreeMatchTn(match.id, t1, t2)
+
+		if all(m.played and m.playable for m in self.matchs):
+			self.currentRound+=1	
+
+				
+
+
 
 	@property
 	def rounds(self):
@@ -98,7 +119,7 @@ class Tournament(QObject):
 					liste.remove(t1)
 					t2 = choice(liste)
 					liste.remove(t2)
-					match = Tournament.Match.create(self, int(nbrounds+1), t1, t2)
+					match = Tournament.Match.create(self, int(nbrounds+1), t1, t2, 'W')
 					nextliste.append(match)
 					self.matchs.append(match)
 				nextliste += liste
@@ -111,12 +132,13 @@ class Tournament(QObject):
 						liste.remove(t1)
 						t2=choice(liste)
 						liste.remove(t2)
-						match=Tournament.Match.create(self,int(round), t1, t2 )
+						match=Tournament.Match.create(self,int(round), t1, t2, 'W' )
 						self.matchs.append(match)
 						nextliste.append(match)				
 					
 			self.status=TournamentStatus.Running
 			Database.instance().setStatusTn(self.id, TournamentStatus.Running)
+			self.currentRound=max([m.round for m in self.matchs])
 						
 
 
@@ -126,10 +148,11 @@ class Tournament(QObject):
 			self.id = id
 			self.tournament=tour
 			self.round= round
-			self.team1 = t1
-			self.team2 = t2
-			self.parent1=p1
-			self.parent2=p2
+			self.teams = [t1,t2]
+			self.parents= [p1, p2]
+			self.scores = list()
+			self.played=False
+			self.KOtype=KOtype
 
 		def roundName(self):
 			if self.round in Tournament.Match._roundnames.keys():
@@ -137,7 +160,18 @@ class Tournament(QObject):
 			else:
 				return "Round of "+str(int(math.pow(2, self.round)))
 
+		def playable(self):
+			return self.round==self.tournament.currentRound
+
+		#Returns winning team (Result='W') or losing Team (Result='L')
+		def teamResult(self, result)
+			if self.played:
+				if result=='W':
+					return self.teams[self.scores.index(self.scores.max())]
+				elif result=='L'
+					return self.teams[self.scores.index(self.scores.min())]
 		
+
 		@staticmethod
 		def create(tour, round, side1, side2, KOtype=None):
 			t1 = side1 if isinstance(side1, Team) else None
@@ -153,8 +187,9 @@ class Tournament(QObject):
 			id = Database.instance().createMatchTn(tour.id, round, IDt1, IDt2, IDp1, IDp2, KOtype)
 			return Tournament.Match(id, tour, round, t1, t2, p1, p2, KOtype)
 
-		def setTeams():
-			pass
 		
-		def setPlayed(timestamps, duration, score1,  score2):
-			pass
+		def setPlayed(start_time, duration, scores):
+			if self.playable:
+				self.scores=scores
+				self.played=True
+				Database.instance().insertMatchTn(self.id, scores[0], scores[1], start_time, duration)

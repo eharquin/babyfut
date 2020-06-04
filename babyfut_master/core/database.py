@@ -209,12 +209,16 @@ class Database():
 
 
 	#Insert scores of a tournament Match which has just been played
-	def insertMatchTn(self):
-		pass
+	def insertMatchTn(self,id, score1, score2, start_time, duration ):
+		query='UPDATE Matchs SET timestamp=?, duration=?, score1=?, score2=? WHERE id=?'
+		args=(start_time, duration, score1, score2, id)
+		self._exec(query, args)
+		self._connection.commit()
 
 	#Update the teams of the Tree Matchs when they are known
-	def updateTreeMatchsTn(self):
-		pass
+	def updateTreeMatchTn(self, idMatch, idT1, idT2):
+		query='UPDATE Matchs SET team1=?, team2=? WHERE id=?'
+		self._exec(query, (idT1, idT2, idMatch))
 
 
 
