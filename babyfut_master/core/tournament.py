@@ -69,7 +69,7 @@ class Tournament(QObject):
 		for match in self.matchs:
 			for i in [0,1]:
 				modified=False
-				if match.teams[i]=None and match.parents[i] and match.parents[i].played:
+				if match.teams[i]==None and match.parents[i] and match.parents[i].played:
 					match.teams[i] = match.parents[i].teamResult(match.KOtype)
 					modified=True
 			if modified:
@@ -164,11 +164,11 @@ class Tournament(QObject):
 			return self.round==self.tournament.currentRound
 
 		#Returns winning team (Result='W') or losing Team (Result='L')
-		def teamResult(self, result)
+		def teamResult(self, result):
 			if self.played:
 				if result=='W':
 					return self.teams[self.scores.index(self.scores.max())]
-				elif result=='L'
+				elif result=='L':
 					return self.teams[self.scores.index(self.scores.min())]
 		
 
@@ -188,8 +188,8 @@ class Tournament(QObject):
 			return Tournament.Match(id, tour, round, t1, t2, p1, p2, KOtype)
 
 		
-		def setPlayed(start_time, duration, scores):
-			if self.playable:
+		def setPlayed(self, start_time, duration, scores):
+			if self.playable and not self.played:
 				self.scores=scores
 				self.played=True
 				Database.instance().insertMatchTn(self.id, scores[0], scores[1], start_time, duration)
