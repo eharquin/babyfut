@@ -55,8 +55,8 @@ class Tournament(QObject):
 			matchdict[m.id] = m
 
 		for m in self.matchs:
-			m.parent1 = matchdict[m.parent1] if m.parent1 else None
-			m.parent2 = matchdict[m.parent2] if m.parent2 else None
+			m.parents[0] = matchdict[m.parents[0]] if m.parents[0] else None
+			m.parents[1] = matchdict[m.parents[1]] if m.parents[1] else None
 
 	def registerTeam(self, team):
 		if self.status == TournamentStatus.Future:
@@ -126,10 +126,8 @@ class Tournament(QObject):
 			self.id = id
 			self.tournament=tour
 			self.round= round
-			self.team1 = t1
-			self.team2 = t2
-			self.parent1=p1
-			self.parent2=p2
+			self.teams = [t1, t2]
+			self.parents = [p1, p2]
 
 		def roundName(self):
 			if self.round in Tournament.Match._roundnames.keys():
@@ -156,5 +154,5 @@ class Tournament(QObject):
 		def setTeams():
 			pass
 		
-		def setPlayed(timestamps, duration, score1,  score2):
+		def setPlayed(timestamps, duration, scores):
 			pass
