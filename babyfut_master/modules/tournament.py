@@ -195,11 +195,12 @@ class TournamentParticipantModule(Module):
 class TournamentDisplayModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, TournamentDisplayWidget())
+		self.ui.matchList.clicked.connect(self.launchMatch)
 
 	def load(self):
 		logging.debug('Loading TournamentDisplayModule')
 		self.ui.tnName.setText(self.tournament.name)
-		self.drawMatchTree()
+		#self.drawMatchTree()
 		self.loadMatchList()
 
 	def other(self, **kwargs):
@@ -231,18 +232,20 @@ class TournamentDisplayModule(Module):
 			item.setTextAlignment(Qt.AlignCenter)
 			for match in liste:
 				widget = QWidget()
+				widget.setProperty("match", match)
 				widget.setFixedHeight(40)
 				widget.setFont(QFont('Ubuntu', 14))
+				#widget.setText(match.id)
 				lay = QHBoxLayout(widget)
 				l = QLabel(str(match.id))
 				l.setFont(QFont('Ubuntu', 12, True))
 				l.setStyleSheet('color:rgb(200,0,0)')
 				lay.addWidget(l)
-				t1 = QLabel(match.team1.name if match.team1!=None else "Winner of "+str(match.parent1.id))
+				t1 = QLabel(match.teams[0].name if match.teams[0]!=None else "Winner of "+str(match.parents[0].id))
 				t1.setAlignment(Qt.AlignLeft)
 				lay.addWidget(t1)
 				lay.addWidget(QLabel('-'))
-				t2 = QLabel(match.team2.name if match.team2!=None else "Winner of "+str(match.parent2.id))
+				t2 = QLabel(match.teams[1].name if match.teams[1]!=None else "Winner of "+str(match.parents[1].id))
 				t2.setAlignment(Qt.AlignRight)
 				lay.addWidget(t2)
 				lay.setStretch(0,0)
@@ -255,11 +258,16 @@ class TournamentDisplayModule(Module):
 				self.ui.matchList.addItem(item)
 				self.ui.matchList.setItemWidget(item, widget)
 
+	def launchMatch(self):
+		match = self.ui.matchList.itemWidget(self.ui.matchList.currentItem()).property("match")
+		self.send(modules.GameModule, match=match)
+		self.switchModule(modules.GameModule)
 
 
 '''
 Class that defines the TreeMatch view.
 It inherits from a QWidget and reimplement the paintEvent function that draws the tree.
+Unfinished...
 '''
 class TreeMatch(QWidget):
 	def __init__(self, tournament, parent):
@@ -276,12 +284,6 @@ class TreeMatch(QWidget):
 			for match in liste:
 				painter.drawRect((self.width()/(len(liste)+1))*i,100*j,50,50)
 				i+=1
-				#text = match.team1.name if match.team1!=None else "???"	
-				#text += "   -   "
-				#text += match.team2.name if match.team2!=None else "???"
-				#item=QListWidgetItem(text, self.ui.matchList)
-				#item.setFont(QFont('Ubuntu', 14))
-				#tem.setTextAlignment(Qt.AlignCenter)
 			j+=1
 
 

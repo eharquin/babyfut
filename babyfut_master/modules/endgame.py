@@ -31,9 +31,14 @@ class EndGameModule(Module):
 			self.winSide = Side.Undef
 
 		self.displayPlayers()
-		if not any(team.hasGuest() for team in self.teams.values()):
-			db.insertMatch(int(self.start_time), int(self.duration), self.teams[Side.Left].id, self.scores[Side.Left], self.teams[Side.Right].id, self.scores[Side.Right])
-			self.newEloRating()
+		if self.match==None:
+			if not any(team.hasGuest() for team in self.teams.values()):
+				db.insertMatch(int(self.start_time), int(self.duration), self.teams[Side.Left].id, self.scores[Side.Left], self.teams[Side.Right].id, self.scores[Side.Right])
+		else:
+			scores = [self.scores[Side.Left], self.scores[Side.Left]]
+			self.match.setPlayed(self.start_time, self.duration, scores)
+		
+		self.newEloRating()
 	
 	def unload(self):
 		logging.debug('Unloading EndGameModule')
@@ -59,6 +64,8 @@ class EndGameModule(Module):
 				self.start_time = val
 			elif key=='duration':
 				self.duration = val
+			elif key=='match':
+				self.match = val
 
 	def keyPressEvent(self, e):
 		if e.key() == Qt.Key_Escape or e.key() == Qt.Key_Return:
@@ -147,4 +154,7 @@ class EndGameModule(Module):
 				Database.instance().setEloRating(player.login, player.eloRating)
 
 	def handleQuit(self):
-		self.switchModule(modules.MenuModule)
+		if self.match==None:
+			self.switchModule(modules.MenuModule)
+		else:
+			self.switchModule(modules.TournamentDisplayModule)

@@ -67,6 +67,7 @@ class GameModule(Module):
 		
 		self.video_player = None #Flag showing if a replay is being played
 		self.replayPath = getContent('replay_received.mp4')
+		self.match = None
 
 	def load(self):
 		logging.debug('Loading GameModule')
@@ -74,8 +75,12 @@ class GameModule(Module):
 		self.gameStartTime = QTime.currentTime()
 		self.timerUpdateChrono.start(1000)
 		self.ui.lcdChrono.display(QTime(0,0).toString("hh:mm:ss"))
-		self.ui.lblTeamLeft.setText(self.teams[Side.Left].name)
-		self.ui.lblTeamRight.setText(self.teams[Side.Right].name)
+		if self.match==None:
+			self.ui.lblTeamLeft.setText(self.teams[Side.Left].name)
+			self.ui.lblTeamRight.setText(self.teams[Side.Right].name)
+		else:
+			self.ui.lblTeamLeft.setText(self.match.teams[0].name)
+			self.ui.lblTeamRight.setText(self.match.teams[1].name)
 
 		self.gameoverType = Settings['gameover.type']
 		self.gameoverValue = Settings['gameover.value']
@@ -102,6 +107,10 @@ class GameModule(Module):
 
 			elif key=='teams':
 				self.teams = val
+
+			elif key=='match':
+				self.match = val
+				self.teams = {Side.Left : self.match.teams[0], Side.Right : self.match.teams[1]}
 
 
 	def resizeEvent(self, event):
@@ -176,7 +185,11 @@ class GameModule(Module):
 		or (self.gameoverType=='time' and self.getGameTime()>=self.gameoverValue):
 		
 			start_timestamp = int(QDateTime(QDate.currentDate(), self.gameStartTime).toMSecsSinceEpoch()/1000)
-
-			self.send(modules.EndGameModule, teams=self.teams, scores=self.scores)
-			self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self.gameoverType)
-			self.switchModule(modules.EndGameModule)
+			if self.match == None:
+				self.send(modules.EndGameModule, teams=self.teams, scores=self.scores)
+				self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self.gameoverType)
+				self.switchModule(modules.EndGameModule)
+			else:
+				self.send(modules.EndGameModule, teams=self.teams, scores=self.scores, match=self.match)
+				self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self.gameoverType)
+				self.switchModule(modules.EndGameModule)
