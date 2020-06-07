@@ -23,7 +23,7 @@ class TournamentType(Enum):
 class TournamentStatus(Enum):
 	Future = 0
 	Running = 1 
-	Passed = 2
+	Past = 2
 	Cancelled = 3
 
 class Tournament(QObject):
@@ -38,7 +38,7 @@ class Tournament(QObject):
 		self.matchs = list()
 		teamdict= dict()
 		matchdict = dict()
-		self.currentRound=None
+
 
 		for t in Database.instance().selectTeamsTn(self.id):
 			players = [Player.loadFromDB(t[2])]
@@ -51,7 +51,12 @@ class Tournament(QObject):
 		for m in Database.instance().selectMatchsTn(self.id):
 			t1 =teamdict[m[4]] if m[4] else None
 			t2 =teamdict[m[6]] if m[6] else None
-			self.matchs.append(Tournament.Match(m[0], self, m[8], t1,t2, m[10],m[11], m[9]))
+			match = Tournament.Match(m[0], self, m[8], t1,t2, m[10],m[11], m[9])
+			if m[5]!=None and m[7]!=None:
+				match.scores=[m[5], m[7]]
+				match.played=True
+			self.matchs.append(match)
+
 		
 		for m in self.matchs:
 			matchdict[m.id] = m
@@ -60,25 +65,32 @@ class Tournament(QObject):
 			m.parents[0] = matchdict[m.parents[0]] if m.parents[0] else None
 			m.parents[1] = matchdict[m.parents[1]] if m.parents[1] else None
 
+
+		self.currentRound=max([m.round for m in self.matchs if not m.played]) if self.status==TournamentStatus.Running else None
+		#self.updateTree()
+
 	def registerTeam(self, team):
 		if self.status == TournamentStatus.Future:
 			self.teams.append(team)
 			Database.instance().registerTeamTn(team.id, self.id)
 
 	def updateTree(self):
-		for match in self.matchs:
-			for i in [0,1]:
-				modified=False
-				if match.teams[i]==None and match.parents[i] and match.parents[i].played:
-					match.teams[i] = match.parents[i].teamResult(match.KOtype)
-					modified=True
-			if modified:
-				t1=match.teams[0].id if match.teams[0] else None
-				t2=match.teams[1].id if match.teams[1] else None
-				Database.instance().updateTreeMatchTn(match.id, t1, t2)
-
-		if all(m.played and m.playable for m in self.matchs):
-			self.currentRound+=1	
+		if self.status==TournamentStatus.Running:
+			for match in self.matchs:
+				for i in [0,1]:
+					modified=False
+					if match.teams[i]==None and match.parents[i] and match.parents[i].played:
+						match.teams[i] = match.parents[i].teamResult(match.KOtype)
+						modified=True
+				if modified:
+					t1=match.teams[0].id if match.teams[0] else None
+					t2=match.teams[1].id if match.teams[1] else None
+					Database.instance().updateTreeMatchTn(match.id, t1, t2)
+			if all(m.played for m in self.matchs if m.playable()):
+				self.currentRound -= 1	
+				if self.currentRound==0:
+					self.status=TournamentStatus.Past
+					Database.instance().setStatusTn(self.id, self.status)
 
 				
 
@@ -152,7 +164,7 @@ class Tournament(QObject):
 			self.parents= [p1, p2]
 			self.scores = list()
 			self.played=False
-			self.KOtype=KOtype
+			self.KOtype='W'
 
 		def roundName(self):
 			if self.round in Tournament.Match._roundnames.keys():
@@ -167,9 +179,9 @@ class Tournament(QObject):
 		def teamResult(self, result):
 			if self.played:
 				if result=='W':
-					return self.teams[self.scores.index(self.scores.max())]
+					return self.teams[self.scores.index(max(self.scores))]
 				elif result=='L':
-					return self.teams[self.scores.index(self.scores.min())]
+					return self.teams[self.scores.index(min(self.scores))]
 		
 
 		@staticmethod
@@ -193,3 +205,4 @@ class Tournament(QObject):
 				self.scores=scores
 				self.played=True
 				Database.instance().insertMatchTn(self.id, scores[0], scores[1], start_time, duration)
+				self.tournament.updateTree()

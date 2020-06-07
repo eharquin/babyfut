@@ -98,7 +98,7 @@ class Database():
 	# Return games played by the given player 
 	def selectPlayerGames(self, login):
 		query = '''SELECT timestamp, team1, score1, team2, score2, winningTeam FROM viewMatchs JOIN teams 
-		ON viewMatchs.team1==teams.id OR viewMatchs.team2==teams.id WHERE player1==? OR player2==?
+		ON viewMatchs.team1==teams.id OR viewMatchs.team2==teams.id WHERE (player1==? OR player2==?) AND (score1 IS NOT NULL AND score2 IS NOT NULL)
 		ORDER BY timestamp DESC'''
 		return self._exec(query,(login, login)).fetchall()
 

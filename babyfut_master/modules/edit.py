@@ -143,7 +143,7 @@ class EditModule(Module):
     def loadGames(self):
         self.ui.gameList.clear()
         games = Database.instance().selectPlayerGames(self.player.login)
-
+        print(games)
         for game in games:
             item = QListWidgetItem()
             gameWidget = GameListItem(self.ui.gameList, self.player, game)

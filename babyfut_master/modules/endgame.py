@@ -18,6 +18,8 @@ from ..ui.endgame_ui import Ui_Form as EndGameWidget
 class EndGameModule(Module):
 	def __init__(self, parent=None):
 		super().__init__(parent, EndGameWidget())
+		self.match=None
+
 
 	def load(self):
 		logging.debug('Loading EndGameModule')
@@ -35,7 +37,7 @@ class EndGameModule(Module):
 			if not any(team.hasGuest() for team in self.teams.values()):
 				db.insertMatch(int(self.start_time), int(self.duration), self.teams[Side.Left].id, self.scores[Side.Left], self.teams[Side.Right].id, self.scores[Side.Right])
 		else:
-			scores = [self.scores[Side.Left], self.scores[Side.Left]]
+			scores = [self.scores[Side.Left], self.scores[Side.Right]]
 			self.match.setPlayed(self.start_time, self.duration, scores)
 		
 		self.newEloRating()
@@ -49,6 +51,8 @@ class EndGameModule(Module):
 		del self.scores
 		del self.start_time
 		del self.duration
+		self.match=None
+
 
 	def other(self, **kwargs):
 		logging.debug('Other EndGameModule')

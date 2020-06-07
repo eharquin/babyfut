@@ -25,6 +25,7 @@ from ..ui.tournamentlist_ui import Ui_Form as TournamentListWidget
 from ..ui.tournamentparticipant_ui import Ui_Form as TournamentParticipantWidget
 from ..ui.tournamentdisplay_ui import Ui_Form as TournamentDisplayWidget
 from ..ui.keyboard import KeyboardWidget
+from ..ui.tournamentmatchlist_ui import Ui_Form as TournamentMatchWidget
 
 
 
@@ -94,7 +95,7 @@ class TournamentModule(Module):
 			self.send(modules.TournamentDisplayModule, tournament = tn)
 			self.switchModule(modules.TournamentDisplayModule)
 			
-		if tn.status==TournamentStatus.Passed:
+		if tn.status==TournamentStatus.Past:
 			# Display tournament table and results
 			pass
 
@@ -195,7 +196,7 @@ class TournamentParticipantModule(Module):
 class TournamentDisplayModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, TournamentDisplayWidget())
-		self.ui.matchList.clicked.connect(self.launchMatch)
+		self.ui.matchList.itemDoubleClicked.connect(self.launchMatch)
 
 	def load(self):
 		logging.debug('Loading TournamentDisplayModule')
@@ -226,50 +227,44 @@ class TournamentDisplayModule(Module):
 
 	def loadMatchList(self):
 		self.ui.matchList.clear()
+		print(self.tournament.currentRound)
 		for round, liste in self.tournament.rounds.items():
 			item=QListWidgetItem(str(round), self.ui.matchList)
 			item.setFont(QFont('Ubuntu', 18))
 			item.setTextAlignment(Qt.AlignCenter)
+			item.setFlags(Qt.NoItemFlags)
 			for match in liste:
 				widget = QWidget()
 				widget.setProperty("match", match)
-				widget.setFixedHeight(40)
-				widget.setFont(QFont('Ubuntu', 14))
-				if match.playable:
+				ui=TournamentMatchWidget()
+				ui.setupUi(widget)
+				t1 = match.teams[0].name if match.teams[0]!=None else "Winner of "+str(match.parents[0].id)
+				ui.leftTeam.setText(t1)
+				t2 = match.teams[1].name if match.teams[1]!=None else "Winner of "+str(match.parents[1].id)
+				ui.rightTeam.setText(t2)
+				ui.id.setText(str(match.id))
+				if match.played==True:
+					ui.leftScore.setText(str(match.scores[0]))
+					ui.rightScore.setText(str(match.scores[1]))
+				else:
+					ui.leftScore.setText("")
+					ui.rightScore.setText("")
+
+				if match.playable() == True:
 					widget.setStyleSheet('color : rgb(0,200,0)')
-				#widget.setText(match.id)
-				lay = QHBoxLayout(widget)
-				l = QLabel(str(match.id))
-				l.setFont(QFont('Ubuntu', 12, True))
-				l.setStyleSheet('color:rgb(200,0,0)')
-				lay.addWidget(l)
-				t1 = QLabel(match.teams[0].name if match.teams[0]!=None else "Winner of "+str(match.parents[0].id))
-				t1.setAlignment(Qt.AlignLeft)
-				lay.addWidget(t1)
-				if match.played:
-					lay.addWidget(QLabel(str(match.scores[0])))
-				lay.addWidget(QLabel('-'))
-				if match.played:
-					lay.addWidget(QLabel(str(match.scores[1])))
-				t2 = QLabel(match.teams[1].name if match.teams[1]!=None else "Winner of "+str(match.parents[1].id))
-				t2.setAlignment(Qt.AlignRight)
-				lay.addWidget(t2)
-				lay.setStretch(0,0) #ID
-				lay.setStretch(1,1) #Nom 1
-				lay.setStretch(2,0) #Score1
-				lay.setStretch(3,0) # Dash
-				lay.setStretch(4,0) #Score2
-				lay.setStretch(5,1) #Nom2
+				else:
+					widget.setStyleSheet('color : rgb(0,0,0)')
 
 				
 				item=QListWidgetItem(self.ui.matchList)
+				
 				item.setSizeHint(widget.size())
 				self.ui.matchList.addItem(item)
 				self.ui.matchList.setItemWidget(item, widget)
 
 	def launchMatch(self):
 		match = self.ui.matchList.itemWidget(self.ui.matchList.currentItem()).property("match")
-		if match.playable and not match.played:
+		if match.playable() and not match.played:
 			self.send(modules.GameModule, match=match)
 			self.switchModule(modules.GameModule)
 
