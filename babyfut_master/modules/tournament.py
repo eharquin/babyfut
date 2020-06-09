@@ -155,7 +155,7 @@ class TournamentParticipantModule(Module):
 
 	def addPlayer(self, rfid):
 		player = Player.fromRFID(rfid)
-		if isinstance(self.team, ConstructTeam):
+		if (player!=Player.playerGuest()) and isinstance(self.team, ConstructTeam):
 			if all(not team.hasPlayer(player) for team  in self.tournament.teams) and not self.team.hasPlayer(player):
 				self.team = self.team.addPlayer(player)
 				if self.team.size()==1:

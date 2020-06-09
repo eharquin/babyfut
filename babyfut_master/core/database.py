@@ -13,7 +13,8 @@ from .database_creator import createDatabase
 class DatabaseError(Exception):
 	pass
 
-
+'''Singleton class handling the babyfut.sqlite Database. 
+The file must be in content folder, or is created at initialisation'''
 class Database():
 	__db = None
 	def __init__(self):
@@ -25,11 +26,9 @@ class Database():
 			self._connection = sqlite3.connect(db_path)
 			self._connection.commit()
 
+	'''Returns the singleton instance'''
 	@staticmethod
 	def instance():
-		'''
-		Singleton
-		'''
 		if not Database.__db:
 			Database.__db = Database()
 		return Database.__db
@@ -38,6 +37,7 @@ class Database():
 	def _cursor(self):
 		return self._connection.cursor()
 		
+	'''Private use for executing query'''
 	def _exec(self, query, args=()):
 		try:
 			return self._cursor.execute(query, args)
@@ -54,18 +54,22 @@ class Database():
 
 #-----------------------PLAYERS--------------------------------
 
+	#Returns true if a login exists in DB
 	def loginExists(self, login):
 		return bool(self._exec('SELECT login FROM Players WHERE login==?', (login,)).fetchone())
 
+	#Returns main data about a player with its login
 	def selectPlayer(self, login):
 		query = 'SELECT login, fname, lname, elo, private FROM Players WHERE login==?'
 		return self._exec(query, (login,)).fetchone()
 
+	#Insert a new player
 	def insertPlayer(self, login, fname, lname, elo, private=0):
 		self._exec('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
 		self._connection.commit()
 		return self._exec('SELECT login FROM Players WHERE login=?',(login,)).fetchone()[0]
 
+	#Returns the time played, goals scored, games played, nb of wins of e player with its login
 	def selectStats(self, login):
 		query="SELECT SUM(M.duration) AS timePlayed, \
 		SUM(CASE WHEN Teams.id=M.team1 THEN M.score1 ELSE M.score2 END ) AS goalsScored, \
@@ -75,15 +79,18 @@ class Database():
 		WHERE (Teams.player1==? OR player2==?)"
 		return self._exec(query, (login, login)).fetchone()
 
+	#Returns a tuple of every player not Private in DB
 	def selectAllPlayer(self):
 		return self._exec('SELECT login, fname, lname FROM Players WHERE private==0').fetchall()
 
+	#Deletes a player from DB. Keeps its teams with a NULL player instead
 	def deletePlayer(self, login):
 		self._exec('UPDATE Teams SET player1=NULL WHERE player1==?',(login,))
 		self._exec('UPDATE Teams SET player2=NULL WHERE player2==?',(login,))
 		self._exec('DELETE FROM Players WHERE login==?', (login,))
 		self._connection.commit()
 
+	#Sets a player Private attribute with the boolean Option
 	def setPlayerPrivate(self, login, option):
 		if option == True:
 			self._exec("UPDATE Players SET private=1 WHERE login==?", (login,))
@@ -95,13 +102,14 @@ class Database():
 	def selectPlayerTeams(self, login):
 		return self._exec('SELECT id, name, player1, player2 FROM Teams WHERE (player1==? OR player2==?) AND name IS NOT NULL', (login, login,)).fetchall()
 
-	# Return games played by the given player 
+	# Return all games played by the given player
 	def selectPlayerGames(self, login):
 		query = '''SELECT timestamp, team1, score1, team2, score2, winningTeam FROM viewMatchs JOIN teams 
 		ON viewMatchs.team1==teams.id OR viewMatchs.team2==teams.id WHERE (player1==? OR player2==?) AND (score1 IS NOT NULL AND score2 IS NOT NULL)
 		ORDER BY timestamp DESC'''
 		return self._exec(query,(login, login)).fetchall()
 
+	#Sets a new Elo rating of a player
 	def setEloRating(self, login, elo):
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
 		self._connection.commit()
@@ -109,11 +117,12 @@ class Database():
 
 #----------------------TEAMS-------------------------------------
 
-
+	#Return a team tuple from an ID
 	def selectTeam(self, id):
 		query = '''SELECT id, name, player1, player2 FROM Teams WHERE id==?'''
 		return self._exec(query, (id,)).fetchone()
 
+	#Return a team tuple from a list of 1 or 2 logins, or empty tuple if not exists.
 	def checkTeam(self, *logins):
 		if len(logins)==1:
 			args = (logins[0],)
@@ -125,6 +134,7 @@ class Database():
 			raise DatabaseError('Argument must be a list of 1 or 2 logins')	
 		return self._exec(query, args).fetchone()
 
+	#Inserts a Team and returns its new auto-incremented ID
 	def insertTeam(self, login1, login2=None, name=None):
 		if not login2 and not name:
 			self._exec('INSERT INTO Teams (player1) VALUES (?)', (login1,))
@@ -138,6 +148,7 @@ class Database():
 		#Returns the new Team auto-incremented ID 
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Teams"').fetchone()[0]
 
+	#Udpates a team Name
 	def setTeamName(self, id, name):
 		query = '''UPDATE Teams SET name = ? WHERE id=?'''
 		self._exec(query, (name, id))
@@ -160,6 +171,7 @@ class Database():
 		self._connection.commit()
 		return self._exec('SELECT seq FROM sqlite_sequence WHERE name="Tournaments"').fetchone()[0]
 	
+	#Returns a tournament tuple from an ID
 	def selectTn(self, id):
 		return self._exec("SELECT id, name, status, type FROM Tournaments WHERE id==?",(id,)).fetchone()
 
@@ -219,30 +231,3 @@ class Database():
 	def updateTreeMatchTn(self, idMatch, idT1, idT2):
 		query='UPDATE Matchs SET team1=?, team2=? WHERE id=?'
 		self._exec(query, (idT1, idT2, idMatch))
-
-
-
-
-
-
-#------INSERT TESTING DATA
-
-# def ajoutMatch(start_time, duration, WTeam, scoreW, LTeam, scoreL):
-# 	t1 = db.insertTeam(WTeam)
-# 	t2 = db.insertTeam(LTeam)
-# 	db.insertMatch(start_time, duration, t1, scoreW, t2, scoreL)
-
-# db = Database.instance()
-# db.insertPlayer('malotyoa', 'Yoann', 'Malot', 1500)
-# db.insertPlayer('tlegrave', 'Thibaud', 'Le Graverend', 1500)
-# db.insertPlayer('bonnetst', 'Stéphane', 'Bonnet', 1500)
-# db.insertPlayer('sophsti', 'Sophie', 'Stické', 1500)
-# db.insertPlayer('toalthe', 'Théo', 'Toalet', 1500)
-# ajoutMatch(123, 12, ['malotyoa'], 5, ['tlegrave', 'bonnetst'], 2)
-# ajoutMatch(124, 12, ['sophsti'], 10, ['toalthe'], 9)
-# ajoutMatch(125, 78, ['toalthe'], 10, ['sophsti'], 3)
-# db.insertPlayer('jambon', 'James', 'Bond', 1500)
-# db.setPlayerPrivate('jambon')
-
-#print([row for row in db.selectAllPlayer()])
-#print(db.selectStats('malotyoa'))

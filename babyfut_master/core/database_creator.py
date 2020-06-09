@@ -7,6 +7,9 @@
 import sqlite3
 import logging
 
+
+'''Datebase Creation script. Out of class function'''
+
 def createDatabase(db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
