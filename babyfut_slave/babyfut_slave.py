@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, sys, signal
+import os, sys, signal, logging
 from os.path import dirname, abspath, join, exists
 
 from PyQt5 import QtCore
@@ -18,6 +18,9 @@ ON_RASP = os.uname()[1] == 'raspberrypi'
 
 
 if __name__=='__main__':
+
+    logging.basicConfig(level=logging.DEBUG)
+
     app = QApplication(sys.argv)
     __package__ = 'babyfut_slave'
     from .core.client import Client

@@ -5,13 +5,19 @@
 @author: Thibaud Le Graverend, Yoann Malot
 """
 
-import socket, pickle, time, select, os
+import socket, pickle, time, select, os, logging
 from PyQt5.QtCore import QObject
 from common.message import *
 from ..babyfut_slave import getContent, ON_RASP
 from threading import Event, Thread
 from .replay import Replay
 
+
+'''
+Client object. The client tries to reach the server to the IP address 
+and port number specified in the settings file.
+Tries every 3 seconds until server is reached.
+'''
 class Client(QObject):
     def __init__(self, host, port):
         QObject.__init__(self)
@@ -35,11 +41,11 @@ class Client(QObject):
             try:
                 self.connexion.connect((self.host, self.port))
                 connected = 1
-                print("Client connected")
+                logging.info('Client connected')
                 self.keepalive = KeepAlive(self)
                 self.keepalive.start()
             except ConnectionError:
-                print("Unreachable server, trying again in 2 seconds")
+                logging.info('Unreachable server, trying again in 3 seconds')
                 time.sleep(3)
 
 
@@ -85,7 +91,10 @@ class Client(QObject):
     def stop(self):
         self.connexion.close()
 
-
+'''
+Thread to check the connection with the server.
+If the connection gets lots, it automatically tries to reconnect.
+'''
 
 class KeepAlive(Thread):
     def __init__(self, parent):
@@ -101,7 +110,7 @@ class KeepAlive(Thread):
             try:
                 self.parent.connexion.send(pickle.dumps(MessageKeepAlive()))
             except OSError as error:
-                print(str(error))
+                logging.debug(str(error))
                 self.parent.connexion.close()
                 self.parent.connect()
                 self.stop()
