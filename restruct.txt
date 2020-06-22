@@ -1,25 +1,30 @@
 Babyfut (dossier git)
 	\
-	|-- babyfut_server (package)
+	|-- babyfut_master (package)
 	|		\
-	|		|-- core
-	|		|-- modules
-	|		|-- ui
-	|		|-- translation
+	|		|-- core\
+	|		|-- modules\
+	|		|-- ui\
+	|		|-- translation\
 	|		|-- __init__.py
-	|		|-- babyfut_server.py
+	|		|-- babyfut_master.py
 	|
-	|-- babyfut_client (package)
+	|-- babyfut_slave (package)
 	|		\
+	|		|-- core\
 	|		|-- __init__.py
-	|		|-- babyfut_client.py
-	|		|-- (+ modules du client)
+	|		|-- babyfut_slave.py
+
+	|-- common
+	|	\
+	|	|-- (modules partagés)
 	|
 	|-- content
 	|		\
 	|		|-- settings.json
 	|		|-- database.sqlite
-	|		|-- (+ codes partagés)
+	|		|-- (+ diverses données)
 	|
 	|-- devtools.sh
 	|-- README
+
