@@ -17,7 +17,6 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from .. import modules
 from ..core.player import Player
 from common.side import Side
-from ..core.replay import Replay
 from ..core.module import Module
 from common.settings import Settings
 from ..ui.game_ui import Ui_Form as GameWidget

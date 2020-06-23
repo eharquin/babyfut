@@ -20,7 +20,7 @@ if ON_RASP:
 	import pyautogui # PyPi library
 
 '''
-Server class. Initiates a server that waits for 2 client connections.
+Server class for communication with the slaves. Initiates a server that waits for 2 client connections.
 Closes connections when closing the app.
 '''
 class Server(QObject):

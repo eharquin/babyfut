@@ -20,22 +20,13 @@ if ON_RASP:
 	from pirc522 import RFID # PyPi library
 	import pyautogui # PyPi library
 
+'''
+Class in charge of the joystick and buttons. Gets GPIO signals and simulates Keyboard pressing.
+'''
 class Input(QObject):
-	'''
-	Defines pins. Uses BCM pin identifiers
-	'''
-	'''
-		_RFIDPins = {
-			'pin_rst': 25,
-			'pin_ce' :  8,
-			'pin_irq': 24
-		}
-
-		_GoalPins = {
-			'pin_trig':  3,
-			'pin_echo':  17
-		}
-	'''
+	
+	
+	'''Binds pins with corresponding keyboard key. Uses BCM pin identifiers'''
 	_keyButtonBindings = {
 		#26: 'up',
 		#22: 'left',
@@ -53,6 +44,7 @@ class Input(QObject):
 		19: 'escape'
 	}
 
+	'''Connects every input pin to  _handleButtonPress method'''
 	def __init__(self):
 		QObject.__init__(self)
 		self.last_input = time.time()
@@ -66,6 +58,9 @@ class Input(QObject):
 			self.side = Side.Left if Settings['app.side']=='left' else Side.Right
 			
 
+	'''Called when input signel is received on Raspberry. Simulates binding key pressing.
+		Checks that only one key pressing is done during all the time of input.
+	'''
 	def _handleButtonPress(self, button_pin):
 		arrival_time = time.time()
 		if button_pin not in Input._keyButtonBindings.keys():

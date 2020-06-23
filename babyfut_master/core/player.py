@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
-@modifications : Yoann MALOT, Thibaud LE GRAVEREND
+@modif : Yoann Malot, Thibaud Le Graverend
 """
 
 import os
@@ -15,13 +15,12 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QDialog, QApplication
 
 from ..babyfut_master import getMainWin, IMG_PATH
-from .downloader import Downloader
 from .ginger import Ginger, GingerError
 from .database import Database, DatabaseError
 from ..ui.consent_dialog_ui import Ui_Dialog as ConsentDialogUI
 
 
-
+'''QDialog asking for consent of every new player badging before register in DB'''
 class ConsentDialog(QDialog):
 	def __init__(self, parent):
 		QDialog.__init__(self, parent)
@@ -50,6 +49,11 @@ class ConsentDialog(QDialog):
 			self.reject()
 		
 
+'''
+Class handling Player objects. Owns every info of a player and its statistics
+Should be constructed with the statics methods fromRFID or loadFromDB.
+Guests player are handled with a pointer to a special Player Object, returned by playerGuest() static method.
+'''
 class Player(QObject):
 
 	_playerGuest = None #Pointer to a unique Guest Player Object
@@ -57,7 +61,6 @@ class Player(QObject):
 	_default_pic_path = ':ui/img/placeholder_default.jpg'
 	_placeholder_pic_path = ':ui/img/placeholder_head.jpg'
 	_imgLocalPath         = os.path.join(IMG_PATH, '{}.png')
-	# _utcPictureURL        = 'https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={}'
 
 	def __init__(self, login, fname, lname, stats, elo, private):
 		QObject.__init__(self)
@@ -74,9 +77,6 @@ class Player(QObject):
 		elif os.path.isfile(Player._imgLocalPath.format(self.login)):
 			#Set Player's personal picture
 			self.pic_path = Player._imgLocalPath.format(self.login)
-		# elif self.login:
-			#Set URL to downloda Player's picture
-		# 	self.pic_path = Player._utcPictureURL.format(self.login)
 		else:
 			#Set default picture for known players
 			self.pic_path = Player._default_pic_path
@@ -86,7 +86,9 @@ class Player(QObject):
 		else:
 			self.stats = stats
 
-
+	'''Returns a Player object from a RFID code. 
+	Makes a Ginger request, search in DB and creates the Player Object
+	Asks for consent and inserts it in DB if new '''
 	@staticmethod
 	def fromRFID(rfid):
 		try:
@@ -108,6 +110,8 @@ class Player(QObject):
 
 		return Player.loadFromDB(infosPlayer['login'])
 
+	'''Creates and returns a Player object from a login.
+		If not found in DB, returns the playerGuest.'''
 	@staticmethod
 	def loadFromDB(login):
 		db = Database.instance()
@@ -126,11 +130,12 @@ class Player(QObject):
 			return Player.playerGuest()
 
 
-	
+	'''Displays the player's picture in the given widget'''
 	def displayImg(self, container_widget):
 		self.pic_container=container_widget
 		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
 		QApplication.processEvents()
+
 
 	def makePrivate(self, option):
 		self.private = option
@@ -139,11 +144,12 @@ class Player(QObject):
 	def deletePlayer(self):
 		Database.instance().deletePlayer(self.login)
 
+	'''Concatenates both names for displaying. To be called like an attribute.'''
 	@property
 	def name(self):
 		return '{} {}'.format(self.fname, self.lname.upper())
 
-
+	'''Class handling different stats of a player. Acts more like a namespace.'''
 	class Stat:
 		def __init__(self, time_played=0, goals_scored=0, games_played=0, victories=0):
 			self.time_played = time_played if time_played else 0
@@ -163,36 +169,15 @@ class Player(QObject):
 				inf = (2*n*p+u*u-sqrt(u*u+4*n*p*(1-p)))/(2*n+2*u*u)
 				self.ratioIndex=(sup+inf)/2
 
-
+	'''Returns a list of all players in DB with are not private. Used by Leaderboard.'''
 	@staticmethod
 	def allStoredPlayers():
 		return [Player.loadFromDB(row[0]) for row in Database.instance().selectAllPlayer()]
 
+	'''Returns the instance of the Guest Player object.'''
 	@staticmethod
 	def playerGuest():
 		if not Player._playerGuest:
 			Player._playerGuest = Player('guest', 'Guest','', None, 1500, 0)
 		return Player._playerGuest
 		
-	# def displayImg(self, container_widget):
-	# 	self.pic_container = container_widget
-
-	# 	if self.pic_path.startswith('http'):
-	# 		# Download from the internet but display a temporary image between
-	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(Player._placeholder_pic_path))
-	# 		Downloader.instance().request(self.pic_path, os.path.join(IMG_PATH, '{}.jpg'.format(self.id)))
-	# 		Downloader.instance().finished.connect(self._downloader_callback)
-	# 	else:
-	# 		# Already downloaded and stored locally
-	# 		self.pic_container.setStyleSheet('border-image: url({});'.format(self.pic_path))
-	# 		QApplication.processEvents()	
-	# @pyqtSlot(str)
-	# def _downloader_callback(self, path):
-	# 	# Take the callback if not already done and we are the targer
-	# 	if IMG_PATH in path and str(self.id) in path and IMG_PATH not in self.pic_path:
-	# 		self.pic_path = path
-	# 		Downloader.instance().finished.disconnect(self._downloader_callback)
-
-	# 		if self.pic_container!=None:
-	# 			self.displayImg(self.pic_container)
-	# PlayerEmpty = Player('', '', Player._placeholder_pic_path, {'time_played':'', 'goals_scored':'', 'games_played':'', 'victories': ''}, 1500, 0)
