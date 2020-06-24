@@ -1,0 +1,20 @@
+
+Matchs(id, timestamp, babyfoot=>Babyfoots, duration, team1=>Teams, score1, team2=>Teams, score2)
+	id PRIMARY KEY
+
+Players(login, fname, lname, elo, private)
+	login PRIMARY KEY, fname et lname NOT NULL
+
+Teams(id, name, player1=>Players, player2=>Players)
+	id PRIMARY KEY
+
+Babyfoots(id, location)
+	id PRIMARY KEY
+
+Tournaments(id, name, status, type)
+	id PRIMARY KEY
+
+TournamentMatchs(id=>Matchs, tournament=>Tournaments, round, KOType, parent1=>TournamentMatchs,  parent2=>TournamentMatchs)
+	id PRIMARY KEY, tournament NOT NULL
+
+Participate(team=>Teams, tournament=>Tournament, group)
