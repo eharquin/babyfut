@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+@modifs : Yoann Malot, Thibaud Le Graverend
 """
 
 import json
@@ -15,6 +16,7 @@ class MyEncoder(json.JSONEncoder):
 		else:
 			return json.JSONEncoder.default(self, obj)
 
+'''Base class for different type of settings : string, boolean and combo'''
 class Setting(object):
 	TypeName = ''
 
@@ -22,18 +24,21 @@ class Setting(object):
 		self.type = type(self).TypeName
 		self.value = value
 
+'''A string Setting'''
 class SettingString(Setting):
 	TypeName = 'string'
 
 	def __init__(self, value):
 		Setting.__init__(self, value)
 
+'''A boolean Setting'''
 class SettingBoolean(Setting):
 	TypeName = 'boolean'
 
 	def __init__(self, value):
 		Setting.__init__(self, value)
 
+'''A Combo Setting, with many values'''
 class SettingCombo(Setting):
 	TypeName = 'combo'
 
@@ -44,6 +49,7 @@ class SettingCombo(Setting):
 		if self.value not in values:
 			raise ValueError('Setting value {} not in list of possible values {}'.format(self.value, self.values))
 
+'''A Range Setting, with 2 numeric values'''
 class SettingRange(Setting):
 	TypeName = 'range'
 
@@ -54,6 +60,7 @@ class SettingRange(Setting):
 		if self.value<self.range[0] or self.value>self.range[1]:
 			raise ValueError('Setting value {} not in range {}'.format(self.value, (self.lower_limit, self.upper_limit)))
 
+'''Class handling all the settings parsed from the settings file.'''
 class SettingsHolder(object):
 	def __init__(self, settingsPath):
 		self.settingsPath = settingsPath
@@ -126,4 +133,6 @@ class SettingsHolder(object):
 		self.settingsPath = settingsPath
 
 from babyfut_master.babyfut_master import getContent
+
+'''Global instance of SettingsHolder. To be transformed to Singleton.'''
 Settings = SettingsHolder(getContent('settings.json'))

@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+@author: Thibaud Le Graverend, Yoann Malot
+"""
 
 from common.side import Side
 from common.settings import Settings
 
+'''Common class used for serialisation of messages between server and client. 
+Base Class herited by different types of messages '''
 class Message:
     def __init__(self):
         self.side = Side.Left if Settings['app.side']=='left' else Side.Right

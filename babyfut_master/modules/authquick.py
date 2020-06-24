@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
-@modifications : Yoann Malot, Thibaud Le Graverend
+@modifs : Yoann Malot, Thibaud Le Graverend
 """
 
 import logging, csv, random
 from PyQt5.QtCore import Qt, QTimer
 
 from PyQt5.QtWidgets import QSizePolicy, QDialog
-
-from .auth import AuthModuleBase
+from .. import modules
 from ..core.player import Player
+from ..core.module import Module
 from ..core.team import Team, TeamName, KeyboardWidget, ConstructTeam
 from common.side import Side
 from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import *
 
 
 
-class AuthQuickModule(AuthModuleBase):
+class AuthQuickModule(Module):
 	def __init__(self, parent):
 		super().__init__(parent, AuthQuickWidget())
 		#Timer to start automatically the game when 4 players
@@ -40,7 +40,7 @@ class AuthQuickModule(AuthModuleBase):
 
 	def load(self):
 		logging.debug('Loading AuthQuickModule')
-		super().load()
+		self.createTeamList()
 		self.updateSides(Side.Left)
 		self.updateSides(Side.Right)
 		
@@ -49,7 +49,6 @@ class AuthQuickModule(AuthModuleBase):
 	def unload(self):
 		logging.debug('Unloading AuthQuickModule')
 		self.startingGameTimer.stop()
-		super().unload()
 
 	def createTeamList(self):
 		self.teams = {Side.Left: ConstructTeam(self), Side.Right: ConstructTeam(self)}
@@ -101,3 +100,42 @@ class AuthQuickModule(AuthModuleBase):
 			labelPlayerBottom[side].setVisible(True)
 			lblTeamName[side].setVisible(True)
 			self.changeTeamName(side)
+
+	def other(self, **kwargs):
+		for key, val in kwargs.items():
+			if key=='rfid' and 'source' in kwargs:
+				side = kwargs['source']
+				newPlayer = Player.fromRFID(val)
+
+				if isinstance(self.teams[side], ConstructTeam):
+					if all(not team.hasPlayer(newPlayer) for team  in self.teams.values()):
+						self.addPlayer(side, newPlayer)
+			
+
+	def keyPressEvent(self, e):
+		#Simulating RFIDs in DB with keyboard
+		dictKeysLeft = {Qt.Key_A :'123456AB', Qt.Key_Z :'ABCDABCD', Qt.Key_E :'01234567', Qt.Key_R :'TLG',Qt.Key_T :'SB',\
+		Qt.Key_Y :'YM', Qt.Key_U :'TT', Qt.Key_I :'SS', Qt.Key_O:'JB'}
+		dictKeysRight = {Qt.Key_Q :'123456AB', Qt.Key_S :'ABCDABCD', Qt.Key_D :'01234567', Qt.Key_F:'TLG',Qt.Key_G :'SB',\
+		Qt.Key_H :'YM', Qt.Key_J :'TT', Qt.Key_K :'SS', Qt.Key_L:'JB'}
+		
+		if e.key() == Qt.Key_Escape:
+			self.handleCancel()
+
+		elif e.key() == Qt.Key_Return:
+			self.handleDone()
+
+		elif e.key() in dictKeysLeft.keys():
+			self.other(rfid=dictKeysLeft[e.key()],  source =Side.Left)
+		elif e.key() in dictKeysRight.keys():
+			self.other(rfid=dictKeysRight[e.key()],  source =Side.Right)
+
+	def handleCancel(self):
+		self.switchModule(modules.MenuModule)
+
+	def handleDone(self):
+		for side in [Side.Left, Side.Right]:
+			if isinstance(self.teams[side], ConstructTeam):
+				self.teams[side] = self.teams[side].validateTeam()
+		self.send(modules.GameModule, teams=self.teams)
+		self.switchModule(modules.GameModule)

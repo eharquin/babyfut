@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+@author: Thibaud Le Graverend, Yoann Malot
+"""
 
 import os, sys, signal, logging
 from os.path import dirname, abspath, join, exists

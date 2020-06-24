@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Thibaud Le Graverend
+@author: Thibaud Le Graverend, Yoann Malot
 """
 
 import logging, time
