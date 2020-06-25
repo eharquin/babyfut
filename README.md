@@ -15,7 +15,7 @@ The UI is done with PyQt5.
 *You may find in some `readme` files that dependency problems may occure. In order not to use a virtual machine for that, we will set a Python virtual environment.*
 ```bash
 cd pr_babyfut
-# the command below creates a virualenv
+# the command below creates a virtualenv
 virtualenv -p python3 venv
 # we activate the virtualenv (this should be done
 # before each time you will work on the projet)
@@ -47,6 +47,18 @@ The UI is mostly created using Qt-Designer:
 * Compile the .ui in a python file: `./devtool.sh ui`
 * Done!
 
+## Ginger API
+A request to the API is sent every time a RFID badging is catched. 
+For testing, a similar version of Ginger with fake data, called *faux-ginger* is available on Gitlab.
+You need to run an Apache Server on your computer, install PHP on it and host *faux-ginger*
+* https://openclassrooms.com/fr/courses/1733551-gerez-votre-serveur-linux-et-ses-services/5236051-installez-le-serveur-web-le-plus-utilise-au-monde-apache
+* https://openclassrooms.com/fr/courses/1733551-gerez-votre-serveur-linux-et-ses-services/5236061-installez-php-sur-votre-serveur-web
+
+Then, udpate the URL in the file babyfut_master/core/ginger.py with your local *faux-ginger* path, such as :
+```
+URL = 'http://localhost/faux-ginger/index.php/v1/'
+```
+
 
 ## Sofware Organisation
 ### UI
@@ -75,7 +87,7 @@ To get from one to the other, the current module is unloaded current, then the n
 Each module can overload the load/unload/other method in order to have a specific behavior.
 
 
-### Settings
+### Settings
 Settings are stored in a JSON file located in the parent's `content` directory.
 
 That JSON file is parsed and can be accessed by doing:
@@ -92,7 +104,6 @@ Those are provided by the PI camera module, thanks to another thread that record
 ## DB
 The database is currently in SQLite. See the doc folder for further information.
 
-## API Ginger
 
 
 ## Todo
