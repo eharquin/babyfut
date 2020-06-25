@@ -226,7 +226,6 @@ class TournamentDisplayModule(Module):
 
 	def loadMatchList(self):
 		self.ui.matchList.clear()
-		print(self.tournament.currentRound)
 		for round, liste in self.tournament.rounds.items():
 			item=QListWidgetItem(str(round), self.ui.matchList)
 			item.setFont(QFont('Ubuntu', 18))
@@ -249,7 +248,7 @@ class TournamentDisplayModule(Module):
 					ui.leftScore.setText("")
 					ui.rightScore.setText("")
 
-				if match.playable() == True:
+				if match.playable() == True and not match.played:
 					widget.setStyleSheet('color : rgb(0,200,0)')
 				else:
 					widget.setStyleSheet('color : rgb(0,0,0)')
