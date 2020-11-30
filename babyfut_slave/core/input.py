@@ -19,6 +19,7 @@ if ON_RASP:
 	import RPi.GPIO as GPIO
 	from pirc522 import RFID # PyPi library
 	import pyautogui # PyPi library
+	print("On RASP")
 
 class Input(QObject):
 	'''
@@ -33,7 +34,7 @@ class Input(QObject):
 
 	_GoalPins = {
 		'pin_trig':  3,
-		'pin_echo':  17
+		'pin_echo':  4,
 	}
 
 	#Defining Qt Signals
@@ -152,6 +153,8 @@ class GoalThread(GPIOThread):
 		try:
 			# Waiting for sensor to settle
 			time.sleep(2)
+			pulse_start_time = 0;
+			pulse_end_time = 0;
 
 			while self.running():
 				# Trigger a scan with a 10us pulse
@@ -163,6 +166,8 @@ class GoalThread(GPIOThread):
 
 				# Read the echo
 				while self.running() and GPIO.input(self.pin_echo)==0:
+
+					#print("echo = 0")
 					pulse_start_time = time.time()
 					# Prevent infinite loops, add timeout.
 					if (time.time() - start_read) > 0.06:
@@ -170,6 +175,7 @@ class GoalThread(GPIOThread):
 						break
 
 				while self.running() and GPIO.input(self.pin_echo)==1:
+					#print("echo = 1")
 					pulse_end_time = time.time()
 					# Prevent infinite loops, add timeout.
 					if (time.time() - start_read) > 0.06:
@@ -185,7 +191,7 @@ class GoalThread(GPIOThread):
 			self.clean()
 
 	def _handle_dist(self, dist):
-		#print('Distance: {}cm'.format(dist))
+		print('Distance: {}cm'.format(dist))
 		if dist<10:
 			if (time.time()-self.last_goal)>1:
 				print('goal')

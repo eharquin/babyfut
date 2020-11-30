@@ -28,20 +28,14 @@ class Input(QObject):
 	
 	'''Binds pins with corresponding keyboard key. Uses BCM pin identifiers'''
 	_keyButtonBindings = {
-		#26: 'up',
-		#22: 'left',
-		#27: 'right',
-		#23: 'down',
-		#17: 'return',
-		#18: 'escape'
-
-		16: 'up',
-		 6: 'left',
-		12: 'right',
-		13: 'down',
-		26: 'return',
-		20: 'del',
-		19: 'escape'
+		15: 'escape',
+		14: 'del',
+		17: 'right',
+		18: 'return',
+		22: 'down',
+		23: 'up',
+		27: 'left'
+		
 	}
 
 	'''Connects every input pin to  _handleButtonPress method'''
@@ -63,6 +57,7 @@ class Input(QObject):
 	'''
 	def _handleButtonPress(self, button_pin):
 		arrival_time = time.time()
+		print("Button pressed : {}".format(button_pin));
 		if button_pin not in Input._keyButtonBindings.keys():
 			logging.warn('Unknown button pin: {}'.format(button_pin))
 		elif arrival_time-self.last_input>0.5:
