@@ -29,7 +29,7 @@ def getMainWin():
 			return widget
 	return None
 
-ON_RASP = os.uname()[1] == 'raspberrypi'
+ON_RASP = (os.uname()[1] == 'master')
 IMG_PATH = getContent('img')
 
 
