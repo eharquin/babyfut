@@ -1,0 +1,59 @@
+
+@startuml
+
+title Babyfut - Modèle Conceptuel
+
+class Matchs {
+    id : Int
+    timestamp : int
+    duration : int
+    score1 : int
+    score2 : int
+}
+ 
+class Players{
+    login : text
+    fname : text
+    lname : text
+    elo : int
+    private : bool
+}
+
+
+class Teams{
+    id : int
+    name : text
+}
+ 
+class Babyfoots{
+    id : int
+    location : text
+}
+
+class Tournaments{
+    id : int
+    nom : Text
+    status : int
+    type : int
+    
+}
+class TournamentMatchs{
+    round : int
+    KOType : int
+}
+
+class Participate{
+    group : int
+}
+
+Matchs <|-- TournamentMatchs
+Matchs "*" - "1" Babyfoots : "   Est joué sur   "
+Teams "2" - "*" Matchs : "   Joue   "
+Players "0..2" -- "*" Teams
+Teams "*" -- "*" Tournaments
+Participate . (Teams, Tournaments)
+TournamentMatchs "0..2" - "0..1" TournamentMatchs  : "Est parent de"
+
+
+Tournaments "1" o- "*"  TournamentMatchs
+@enduml

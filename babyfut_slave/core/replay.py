@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+@modifs: Yoann Malot, Thibaud Le Graverend
 """
 import subprocess
 from threading import Thread, Event
@@ -15,6 +16,9 @@ if ON_RASP:
 	import picamera
 
 class Replay(Thread,QObject):
+	
+	readyToSend = pyqtSignal()
+	
 	def __init__(self):
 		Thread.__init__(self)
 		QObject.__init__(self)
@@ -22,7 +26,6 @@ class Replay(Thread,QObject):
 		self.replayPath = getContent('replay.mp4')
 		self.shutdown = False
 
-		readyToSend = pyqtsignal()
 
 		if ON_RASP:
 			self.camera_detected = Replay.detectCam()

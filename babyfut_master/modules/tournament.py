@@ -90,14 +90,13 @@ class TournamentModule(Module):
 			# Display player list
 			self.send(modules.TournamentParticipantModule, tournament = tn)
 			self.switchModule(modules.TournamentParticipantModule)
-			pass
 		if tn.status==TournamentStatus.Running:
 			self.send(modules.TournamentDisplayModule, tournament = tn)
 			self.switchModule(modules.TournamentDisplayModule)
 			
 		if tn.status==TournamentStatus.Past:
-			# Display tournament table and results
-			pass
+			self.send(modules.TournamentDisplayModule, tournament = tn)
+			self.switchModule(modules.TournamentDisplayModule)
 
 '''
 This class allows to show the tournament details. It can be launched only for tournaments with
@@ -227,7 +226,6 @@ class TournamentDisplayModule(Module):
 
 	def loadMatchList(self):
 		self.ui.matchList.clear()
-		print(self.tournament.currentRound)
 		for round, liste in self.tournament.rounds.items():
 			item=QListWidgetItem(str(round), self.ui.matchList)
 			item.setFont(QFont('Ubuntu', 18))
@@ -250,7 +248,7 @@ class TournamentDisplayModule(Module):
 					ui.leftScore.setText("")
 					ui.rightScore.setText("")
 
-				if match.playable() == True:
+				if match.playable() == True and not match.played:
 					widget.setStyleSheet('color : rgb(0,200,0)')
 				else:
 					widget.setStyleSheet('color : rgb(0,0,0)')

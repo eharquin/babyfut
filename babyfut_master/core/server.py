@@ -19,7 +19,10 @@ if ON_RASP:
 	from pirc522 import RFID # PyPi library
 	import pyautogui # PyPi library
 
-
+'''
+Server class for communication with the slaves. Initiates a server that waits for 2 client connections.
+Closes connections when closing the app.
+'''
 class Server(QObject):
 
     # Signals for goal and rfid detection
@@ -63,7 +66,11 @@ class Server(QObject):
         logging.debug("Server closed properly")
         
     
-
+'''
+This thread is launched everytime a client connects to the server.
+It handles both classic signals (goal, rfid) and keepalives. If one client disconnects,
+a QDialog is shown on the UI, that automatically closes once the client reconnects.
+'''
 class ClientThread(Thread):
     def __init__(self, parent, conn_client, info_client):
         Thread.__init__(self)

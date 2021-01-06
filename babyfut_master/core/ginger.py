@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+@modif : Yoann Malot, Thibaud Le Graverend
 """
 import json
 import logging
@@ -11,14 +12,22 @@ from http import HTTPStatus
 class GingerError(Exception):
 	pass
 
+'''
+Singleton class in charge of the communication with the Ginger API. 
+'''
 class Ginger(object):
 	#URL = 'https://assos.utc.fr/ginger/v1/'
+	
+	#faux-ginger URL, in local
 	URL = 'http://localhost/faux-ginger/index.php/v1/'
 	_instance = None
 
 	def __init__(self):
 		if not Ginger._instance:
+			#Real API key to be found in Settings
 			#self.api_key = Settings['ginger.key']
+
+			#faux-ginger key
 			self.api_key  = 'fauxginger'
 			self.url = Ginger.URL
 
@@ -28,6 +37,7 @@ class Ginger(object):
 			Ginger._instance = Ginger()
 		return Ginger._instance
 
+	'''Returns dictionnary of personal infos from a RFID code'''
 	def getRFID(self, rfid):
 		# Add the API key to the parameter list
 		params= {'key':self.api_key}

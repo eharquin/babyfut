@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+@modifs: Yoann Malot, Thibaud Le Graverend
 """
 
 import logging
@@ -17,7 +18,7 @@ from common.settings import Settings
 if ON_RASP:
 	import RPi.GPIO as GPIO
 	from pirc522 import RFID # PyPi library
-	import pyautogui # PyPi library
+	print("On RASP")
 
 class Input(QObject):
 	'''
@@ -32,7 +33,7 @@ class Input(QObject):
 
 	_GoalPins = {
 		'pin_trig':  3,
-		'pin_echo':  17
+		'pin_echo':  4,
 	}
 
 	#Defining Qt Signals
@@ -58,6 +59,7 @@ class Input(QObject):
 
 	def start(self):
 		if ON_RASP:
+			print("input started")
 			self.rfidThread.start()
 			self.goalThread.start()
 		else:
@@ -120,7 +122,7 @@ class RFIDThread(GPIOThread):
 				receivedRFID = ':'.join([str(x) for x in id])
 				#self.input.emit(self.parent.side, receivedRFID)
 				self.parent.rfidReceived.emit(receivedRFID)
-				logging.debug('Received RFID: {}'.format(receivedRFID))
+				logging.info('Received RFID: {}'.format(receivedRFID))
 			else:
 				self.lastRFIDReception = now
 
@@ -138,59 +140,27 @@ class GoalThread(GPIOThread):
 	def __init__(self, parent, pin_trig, pin_echo):
 		GPIOThread.__init__(self)
 		self.parent = parent
-		self.pin_trig = pin_trig
 		self.pin_echo = pin_echo
-		self.last_goal = time.time()
+		self.state = 1
 
 		GPIO.setmode(GPIO.BCM)
-		GPIO.setup (self.pin_echo, GPIO.IN)
-		GPIO.setup (self.pin_trig, GPIO.OUT)
-		GPIO.output(self.pin_trig, GPIO.LOW)
+		GPIO.setup(self.pin_echo, GPIO.IN)
+
 
 	def run(self):
 		try:
-			# Waiting for sensor to settle
-			time.sleep(2)
+			print("Goal thread")
 
 			while self.running():
-				# Trigger a scan with a 10us pulse
-				GPIO.output(self.pin_trig, GPIO.HIGH)
-				time.sleep(0.00001)
-				GPIO.output(self.pin_trig, GPIO.LOW)
-				timeout = False
-				start_read = time.time()
+				if GPIO.input(self.pin_echo) == 1:
+					self.state = 1
 
-				# Read the echo
-				while self.running() and GPIO.input(self.pin_echo)==0:
-					pulse_start_time = time.time()
-					# Prevent infinite loops, add timeout.
-					if (time.time() - start_read) > 0.06:
-						timeout = True
-						break
-
-				while self.running() and GPIO.input(self.pin_echo)==1:
-					pulse_end_time = time.time()
-					# Prevent infinite loops, add timeout.
-					if (time.time() - start_read) > 0.06:
-						timeout = True
-						break
-
-				if self.running() and not timeout:
-					pulse_duration = pulse_end_time - pulse_start_time
-					distance = round(pulse_duration * 17150, 2)
-					self._handle_dist(distance)
-
+				if GPIO.input(self.pin_echo) == 0 and self.state == 1:
+					self.state = 0
+					print("Goal!")
+					self.parent.goalDetected.emit()
 		finally:
 			self.clean()
-
-	def _handle_dist(self, dist):
-		#print('Distance: {}cm'.format(dist))
-		if dist<10:
-			if (time.time()-self.last_goal)>1:
-				print('goal')
-				self.parent.goalDetected.emit()
-
-			self.last_goal = time.time()
 
 #Testing Thread started only on computer
 class InputSimulation(GPIOThread):

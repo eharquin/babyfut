@@ -20,6 +20,7 @@ from ..ui.keyboard import KeyboardWidget, KeyboardDialog
 
 
 '''
+USE OF THE CLASS TEAMS
 To generate Teams with either 1 or 2 players, create a ConstructTeam objet (parentWidget parameter is used for showing Dialogs).
 To add a Player, use : myTeam = myTeam.addPlayer(player)
 	If the ConstructTeam has 2 players, it's automatically validated and a Team Object is returned. 
@@ -27,6 +28,7 @@ To add a Player, use : myTeam = myTeam.addPlayer(player)
 To create a Team Object with only 1 player, use : myTeam = myTeam.validateTeam()
 '''
 
+'''Abstract class for factoring methods'''
 class AbstractTeam(QObject):
 	def __init__(self):
 		QObject.__init__(self)
@@ -41,6 +43,7 @@ class AbstractTeam(QObject):
 	def hasGuest(self):
 		return self.hasPlayer(Player.playerGuest())
 
+'''Class for building teams. A ConstructTeam is not linked to a DB team, and should not play games'''
 class ConstructTeam(AbstractTeam):
 
 	def __init__(self, parentWidget):
@@ -63,6 +66,7 @@ class ConstructTeam(AbstractTeam):
 		else:
 			return self
 
+	'''Returns a Team object from itself. If team is new, asks for name, and inserts it in DB'''
 	def validateTeam(self):
 		if Player.playerGuest() in self.players:
 			return Team.teamGuest()
@@ -78,7 +82,7 @@ class ConstructTeam(AbstractTeam):
 				validatedTeam.getNameDialog(self.parent, True)
 				return validatedTeam
 
-
+	'''Private method, delegates insertion in DB.'''
 	def _insertDB(self, name):
 		db = Database.instance()
 		if len(self.players)==2:
@@ -88,7 +92,11 @@ class ConstructTeam(AbstractTeam):
 			id= db.insertTeam(self.players[0].login)
 		return id
 
+'''Class for handling Teams objects. Every Team has a corresponding team in DB.
+Can be constructed step by step with ConstructTeam, or load from DB with its ID with the static method 
+Guest Teams are handled with a pointer to a special Team Object, returned by teamGuest() static method.
 
+'''
 class Team(AbstractTeam):
 	_teamGuest = None
 	def __init__(self, id, name, players):
@@ -97,12 +105,14 @@ class Team(AbstractTeam):
 			self.players=players
 			self._name = name
 			self.id = id
-
+	
+	'''Changes the teams name. Use privatly by the Name Dialog'''
 	def setName(self, name):
 		if self.size()==2:
 			self._name = name
 			Database.instance().setTeamName(self.id, self._name)
 
+	'''Shows either a welcome TeamNameDialog, or a normal change name dialog in the parent widget to ask the user for a new name'''
 	def getNameDialog(self, parentWidget, welcome=False):
 		if self.size()==2:
 			if welcome:
@@ -115,6 +125,7 @@ class Team(AbstractTeam):
 				if result:
 					self.setName(result)
 
+	'''Creates and returns a Team  object from DB with an ID '''
 	@staticmethod
 	def loadFromDB(id):
 		players = list()
@@ -124,6 +135,7 @@ class Team(AbstractTeam):
 			players.append(Player.loadFromDB(team[3]))
 		return Team(team[0], team[1], players)
 
+	'''Returns either the 2 player's team name, or the single player name. Use like an attribute.'''
 	@property
 	def name(self):
 		if self.size()==2:
@@ -131,13 +143,16 @@ class Team(AbstractTeam):
 		else:
 			return self.players[0].name
 
+	'''Returns the instance of the Guest Team object.'''
 	@staticmethod
 	def teamGuest():
 		if not Team._teamGuest:
 			Team._teamGuest = Team(0, None, [Player.playerGuest()])
 		return Team._teamGuest
 
-
+'''
+QDialog for asking the user to write a new name for a Team. Uses virtual Keyboard.
+'''
 class TeamName(QDialog):
 	def __init__(self, parent, team):
 		QDialog.__init__(self, parent)

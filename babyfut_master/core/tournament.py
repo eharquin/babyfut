@@ -87,8 +87,8 @@ class Tournament(QObject):
 	def updateTree(self):
 		if self.status==TournamentStatus.Running:
 			for match in self.matchs:
-				for i in [0,1]:
-					modified=False
+				modified=False
+				for i in [0,1]:		
 					if match.teams[i]==None and match.parents[i] and match.parents[i].played:
 						match.teams[i] = match.parents[i].teamResult(match.KOtype)
 						modified=True

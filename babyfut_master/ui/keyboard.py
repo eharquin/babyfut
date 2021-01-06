@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Yoann MALOT, Thibaud LE GRAVEREND
+@author: Yoann Malot, Thibaud Le Graverend
 """
 from PyQt5.QtCore import Qt, QObject, QSignalMapper
 from PyQt5.QtWidgets import *

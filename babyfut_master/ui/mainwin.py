@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
+@modifs : Yoann Malot, Thibaud Le Graverend
 """
 
 import os
