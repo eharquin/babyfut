@@ -16,6 +16,9 @@ if ON_RASP:
 	import picamera
 
 class Replay(Thread,QObject):
+	
+	readyToSend = pyqtSignal()
+	
 	def __init__(self):
 		Thread.__init__(self)
 		QObject.__init__(self)
@@ -23,7 +26,6 @@ class Replay(Thread,QObject):
 		self.replayPath = getContent('replay.mp4')
 		self.shutdown = False
 
-		readyToSend = pyqtsignal()
 
 		if ON_RASP:
 			self.camera_detected = Replay.detectCam()
