@@ -159,10 +159,8 @@ class GoalThread(GPIOThread):
 					self.state = 0
 					print("Goal!")
 					self.parent.goalDetected.emit()
-
 		finally:
 			self.clean()
-
 
 #Testing Thread started only on computer
 class InputSimulation(GPIOThread):
