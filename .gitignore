@@ -6,3 +6,4 @@
 */translations/*.qm
 /venv
 **/*.pyc
+.vscode
