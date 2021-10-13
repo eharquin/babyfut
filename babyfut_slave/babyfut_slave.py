@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Thibaud Le Graverend, Yoann Malot
+@author: Thibaud Le Graverend, Yoann Malot, Leon Do Castelo
 """
 
 import os, sys, signal, logging
