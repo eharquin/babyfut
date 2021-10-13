@@ -9,45 +9,58 @@ case "$1" in
 		echo "Building UI..."
 
 		echo "	Modules"
-		pyuic5 --import-from=Babyfut.ui ui/main.ui        -o ui/main_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/menu.ui        -o ui/menu_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/game.ui        -o ui/game_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/endgame.ui     -o ui/endgame_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/options.ui     -o ui/options_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/authquick.ui   -o ui/authquick_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/authleague.ui  -o ui/authleague_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/leaderboard.ui -o ui/leaderboard_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/privacy.ui     -o ui/privacy_ui.py
+		cd ./babyfut_master
+		pyuic5 --import-from=. ui/main.ui        -o ui/main_ui.py
+		pyuic5 --import-from=. ui/menu.ui        -o ui/menu_ui.py
+		pyuic5 --import-from=. ui/game.ui        -o ui/game_ui.py
+		pyuic5 --import-from=. ui/endgame.ui     -o ui/endgame_ui.py
+		pyuic5 --import-from=. ui/options.ui     -o ui/options_ui.py
+		pyuic5 --import-from=. ui/authquick.ui   -o ui/authquick_ui.py
+		pyuic5 --import-from=. ui/authleague.ui  -o ui/authleague_ui.py
+		pyuic5 --import-from=. ui/leaderboard.ui -o ui/leaderboard_ui.py
+		pyuic5 --import-from=. ui/privacy.ui     -o ui/privacy_ui.py
+		pyuic5 --import-from=. ui/edit.ui     	 -o ui/edit_ui.py
 
 		echo "	Custom Widgets"
-		pyuic5 --import-from=Babyfut.ui ui/playerlist.ui     -o ui/playerlist_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
-		pyuic5 --import-from=Babyfut.ui ui/consent_dialog.ui -o ui/consent_dialog_ui.py
+		pyuic5 --import-from=. ui/playerlist.ui     -o ui/playerlist_ui.py
+		pyuic5 --import-from=. ui/delete_dialog.ui  -o ui/delete_dialog_ui.py
+		pyuic5 --import-from=. ui/consent_dialog.ui -o ui/consent_dialog_ui.py
+		pyuic5 --import-from=. ui/team_name_dialog.ui -o ui/team_name_dialog_ui.py
+		pyuic5 --import-from=. ui/gamelist.ui     -o ui/gamelist_ui.py
+		pyuic5 --import-from=. ui/teamlist.ui     -o ui/teamlist_ui.py
+		pyuic5 --import-from=. ui/create_tournament_dialog.ui     -o ui/create_tournament_dialog_ui.py
+		pyuic5 --import-from=. ui/tournamentlist.ui     -o ui/tournamentlist_ui.py
+		pyuic5 --import-from=. ui/tournamentparticipant.ui     -o ui/tournamentparticipant_ui.py
+		pyuic5 --import-from=. ui/tournamentdisplay.ui     -o ui/tournamentdisplay_ui.py
+		pyuic5 --import-from=. ui/tournamentmatchlist.ui     -o ui/tournamentmatchlist_ui.py
+
+
 
 		echo "	Resources"
-		pyrcc5 -root /Babyfut/ui        ui/assets.qrc     -o ui/assets_rc.py
+		pyrcc5 -root /babyfut_master/ui        ui/assets.qrc     -o ui/assets_rc.py
+		cd ..
 		echo "Done."
 		;;
 	"clean"|"clear")
 		echo "Clearing the project..."
-		rm -f ui/*_ui.py
-		rm -f ui/*_rc.py
-		rm -f translations/*.qm
+		rm -f babyfut_master/ui/*_ui.py
+		rm -f babyfut_master/ui/*_rc.py
+		rm -f babyfut_master/translations/*.qm
+		find . -type f -name '*.pyc' -delete
+		find . -type d -name '__pycache__' -exec rm -rf {} +
 
-		rm -rf __pycache__
-		rm -rf ui/__pycache__
-		rm -rf core/__pycache__
-		rm -rf modules/__pycache__
 		echo "Done."
 		;;
 	"tru"|"trupdate")
 		echo "Updating translation files..."
+		cd ./babyfut_master
 		pylupdate5 -verbose *.py modules/*.py ui/*.py -ts translations/babyfut_fr.ts
+		cd ..
 		echo "Done. You can modify generated .ts files with Qt Linguist"
 		;;
 	"trr"|"trrelease")
 		echo "Building translation files..."
-		lrelease translations/*
+		lrelease babyfut_master/translations/*
 		echo "Done."
 		;;
 	"all"|"build_all")
@@ -59,9 +72,11 @@ case "$1" in
 		bash ./devtools.sh "clean"
 		bash ./devtools.sh "all"
 		;;
-	"run"|"exec")
-		cd ..
-		python3 -m Babyfut.babyfut
+	"run"|"exec"|"master")
+		python3 -m babyfut_master.babyfut_master
+		;;
+	"slave")
+		python3 -m babyfut_slave.babyfut_slave
 		;;
 	"install")
 		echo "Installing.."

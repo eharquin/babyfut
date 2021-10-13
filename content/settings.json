@@ -1,0 +1,148 @@
+{
+    "app": {
+        "mode": {
+            "values": [
+                "dev",
+                "prod"
+            ],
+            "type": "combo",
+            "value": "dev"
+        },
+        "side": {
+            "values": [
+                "left",
+                "right"
+            ],
+            "type": "combo",
+            "value": "left"
+        },
+        "loglevel": {
+            "values": [
+                "debug",
+                "info",
+                "warning",
+                "error",
+                "critical"
+            ],
+            "type": "combo",
+            "value": "debug"
+        }
+    },
+    "replay": {
+        "duration": {
+            "range": [
+                1,
+                10
+            ],
+            "type": "range",
+            "value": 5
+        },
+        "debug": {
+            "type": "boolean",
+            "value": true
+        },
+        "activated": {
+            "type": "boolean",
+            "value": false
+        }
+    },
+    "ui": {
+        "fullscreen": {
+            "type": "boolean",
+            "value": false
+        },
+        "language": {
+            "values": [
+                "en",
+                "fr"
+            ],
+            "type": "combo",
+            "value": "fr"
+        }
+    },
+    "league": {
+        "playerPerTeam": {
+            "range": [
+                1,
+                2
+            ],
+            "type": "range",
+            "value": 1
+        }
+    },
+    "network": {
+        "port": {
+            "type": "string",
+            "value": "15556"
+        },
+        "host": {
+            "type": "string",
+            "value": "master"
+        }
+    },
+    "picam": {
+        "hflip": {
+            "type": "boolean",
+            "value": false
+        },
+        "resolution": {
+            "values": [
+                [
+                    1920,
+                    1080
+                ],
+                [
+                    1280,
+                    720
+                ],
+                [
+                    640,
+                    480
+                ]
+            ],
+            "type": "combo",
+            "value": [
+                640,
+                480
+            ]
+        },
+        "format": {
+            "values": [
+                "h264"
+            ],
+            "type": "combo",
+            "value": "h264"
+        },
+        "vflip": {
+            "type": "boolean",
+            "value": false
+        },
+        "fps": {
+            "values": [
+                30,
+                60,
+                90
+            ],
+            "type": "combo",
+            "value": 90
+        }
+    },
+    "gameover": {
+        "type": {
+            "values": [
+                "score",
+                "time"
+            ],
+            "type": "combo",
+            "value": "time"
+        },
+        "value": {
+            "range": [
+                1,
+                60
+            ],
+            "type": "range",
+            "value": 14
+        }
+    }
+}
