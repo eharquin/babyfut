@@ -85,8 +85,8 @@ class ClientThread(Thread):
         while self.running:
             datatoread, wlist, xlist = select.select([self.conn_client], [], [], 0.05)
             for data in datatoread:
-                message = data.recv(1024)
                 try:
+                    message = data.recv(1024)
                     message = pickle.loads(message)
                     if (message.type=='goal'):
                         self.goalReception(message)
