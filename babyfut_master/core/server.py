@@ -110,7 +110,7 @@ class ClientThread(Thread):
                     video.write(buffer)
                     self.lastKeepAliveTime = time.time()
         else:
-            conn_client.send("0".encode())
+            self.conn_client.send("0".encode())
         self.parent.goalSignal.emit(message.getSide())
 
 
