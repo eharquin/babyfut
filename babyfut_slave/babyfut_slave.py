@@ -17,7 +17,8 @@ def getContent(path):
 	contentFolder = join(dirname(dirname(abspath(__file__))), 'content')
 	return join(contentFolder, path)
 
-ON_RASP = (os.uname()[1] == 'master') or (os.uname()[1] == 'slave') 
+#ON_RASP = (os.uname()[1] == 'master') or (os.uname()[1] == 'slave') 
+ON_RASP = False
 
 
 if __name__=='__main__':

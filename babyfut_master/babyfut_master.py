@@ -29,7 +29,8 @@ def getMainWin():
 			return widget
 	return None
 
-ON_RASP = (os.uname()[1] == 'master')
+#ON_RASP = (os.uname()[1] == 'master')
+ON_RASP = False
 IMG_PATH = getContent('img')
 
 
