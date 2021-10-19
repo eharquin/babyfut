@@ -37,7 +37,7 @@ case "$1" in
 
 
 		echo "	Resources"
-		pyrcc5 -root /babyfut_master/ui        ui/assets.qrc     -o ui/assets_rc.py
+		pyrcc5 ui/assets.qrc     -o ui/assets_rc.py
 		cd ..
 		echo "Done."
 		;;
@@ -73,10 +73,11 @@ case "$1" in
 		bash ./devtools.sh "all"
 		;;
 	"run"|"exec"|"master")
-		python3 -m babyfut_master.babyfut_master
+		
+		python -m babyfut_master.babyfut_master
 		;;
 	"slave")
-		python3 -m babyfut_slave.babyfut_slave
+		python -m babyfut_slave.babyfut_slave
 		;;
 	"install")
 		echo "Installing.."
@@ -86,7 +87,7 @@ case "$1" in
 		sudo apt-get update && sudo apt-get upgrade
 
 		echo ""
-		echo "** Installing python3 and python tools"
+		echo "** Installing python and python tools"
 		# Sometimes the PYTHONPATH wont be set accordingly for some raspbian distributions
 		# In which case, manually import the right path (/usr/lib/python3/dist-packages) in
 		# the virtual environment's activation script
@@ -95,7 +96,7 @@ case "$1" in
 
 		echo ""
 		echo "** Setting up the python virtual environment"
-		python3 -m venv ../PyQt5
+		python -m venv ../PyQt5
 		source ../PyQt5/bin/activate
 
 		echo ""
