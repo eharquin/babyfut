@@ -20,6 +20,7 @@ case "$1" in
 		pyuic5 --import-from=. ui/leaderboard.ui -o ui/leaderboard_ui.py
 		pyuic5 --import-from=. ui/privacy.ui     -o ui/privacy_ui.py
 		pyuic5 --import-from=. ui/edit.ui     	 -o ui/edit_ui.py
+		pyuic5 --import-from=. ui/waiting.ui	 -o ui/waiting_ui.py
 
 		echo "	Custom Widgets"
 		pyuic5 --import-from=. ui/playerlist.ui     -o ui/playerlist_ui.py
