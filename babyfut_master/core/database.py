@@ -114,6 +114,13 @@ class Database():
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
 		self._connection.commit()
 
+	# Deletes all players that haven't played in a year
+	def deleteOldPlayers(self, aYearAgo):
+		self._exec('UPDATE Teams SET player1 = NULL where EXISTS (SELECT player1 FROM Players WHERE Teams.player1 = Players.login AND Players.creationDate <= ?)', (aYearAgo,))
+		self._exec('UPDATE Teams SET player2 = NULL where EXISTS (SELECT player2 FROM Players WHERE Teams.player2 = Players.login AND Players.creationDate <= ?)', (aYearAgo,))
+		self._exec('DELETE FROM Players WHERE creationDate <= ?', (aYearAgo,))
+		self._connection.commit()
+
 
 #----------------------TEAMS-------------------------------------
 
