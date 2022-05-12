@@ -35,7 +35,7 @@ if __name__=='__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
    
-    print("Test")
+    #print("Test")
     #Starting client communication with master thread
     client = Client(Settings['network.host'], int(Settings['network.port']))
 
@@ -58,10 +58,11 @@ if __name__=='__main__':
 
     app.exec_()
 
-
     input.stop()
     input.join()
+    logging.debug("Input closed properly")
     client.stop()
+    logging.debug("Client closed properly")
 
     if Replay.isCamAvailable():
         threadReplay.stop()

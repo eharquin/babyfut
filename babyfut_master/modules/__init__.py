@@ -9,3 +9,4 @@ from .leaderboard import LeaderboardModule
 from .privacy     import PrivacyModule
 from .edit        import EditModule
 from .tournament  import TournamentDisplayModule
+from .waiting     import WaitingModule

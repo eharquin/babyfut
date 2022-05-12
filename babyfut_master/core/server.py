@@ -15,15 +15,19 @@ from common.settings import Settings
 from common.message import *
 from PyQt5.QtWidgets import QMessageBox
 if ON_RASP:
-	import RPi.GPIO as GPIO
-	from pirc522 import RFID # PyPi library
-	import pyautogui # PyPi library
+    import RPi.GPIO as GPIO
+    from pirc522 import RFID # PyPi library
+    import pyautogui # PyPi library
 
 '''
 Server class for communication with the slaves. Initiates a server that waits for 2 client connections.
 Closes connections when closing the app.
 '''
 class Server(QObject):
+    
+    # Signal for slaves' connection
+    slaves_connected = pyqtSignal()
+    finished = pyqtSignal()
 
     # Signals for goal and rfid detection
     goalSignal = pyqtSignal(Side)
@@ -36,6 +40,14 @@ class Server(QObject):
         self.connexion.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connexion.bind((Settings['network.host'], int(Settings['network.port'])))
 
+        self.conn_client1 = None
+        self.conn_client2 = None
+        self.slave1 = None
+        self.slave2 = None
+        self.info_client1 = None
+        self.info_client2 = None
+
+    def connect_slaves(self):
         # Wait for connection with 1st slave
         self.connexion.listen(5)
         self.conn_client1, self.info_client1 = self.connexion.accept()
@@ -52,6 +64,7 @@ class Server(QObject):
         self.slave2 = ClientThread(self, self.conn_client2, self.info_client2)
         self.slave2.start()
 
+        self.slaves_connected.emit()
 
     def stop(self):
         # Stop slave's thread
@@ -64,6 +77,8 @@ class Server(QObject):
         self.conn_client2.close()
         self.connexion.close()
         logging.debug("Server closed properly")
+
+        self.finished.emit()
         
     
 '''
