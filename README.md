@@ -20,7 +20,7 @@ virtualenv -p python3 venv
 # we activate the virtualenv (this should be done
 # before each time you will work on the projet)
 source venv/bin/activate
-pip install -r babyfut/requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Compile the UI and launch the app
