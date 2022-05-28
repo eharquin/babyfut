@@ -42,7 +42,7 @@ and 2 slaves :
 
 You can also use the start.sh script :	
 ```
-./stard.sh
+./start.sh
 ```
 
 ## Edit the UI
