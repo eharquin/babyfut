@@ -112,6 +112,8 @@ class Player(QObject):
 			else:
 				logging.info('Consent refused when retrieving a player, returning Guest')
 				return Player.playerGuest()
+		else:
+			Database.instance().updateLastGameDate(infosPlayer['login'])
 
 		return Player.loadFromDB(infosPlayer['login'])
 
@@ -153,6 +155,7 @@ class Player(QObject):
 		today = date.today()
 		oneYear = timedelta(weeks=52)
 		limitDate = (today-oneYear).strftime("%Y-%d-%m")
+		logging.debug('?', limitDate)
 		Database.instance().deleteOldPlayers(aYearAgo=limitDate)
 
 	'''Concatenates both names for displaying. To be called like an attribute.'''
