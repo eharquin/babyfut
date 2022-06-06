@@ -8,24 +8,25 @@ from babyfut_master import modules
 
 
 class MenuSwitch(object):
-    def __init__(self, parent: Module):
-        self.parent = parent
+    def __init__(self, menuModule: Module):
+        self.menuModule = menuModule
 
     def authQuickModule(self):
-        # TODO: Add RFID and Goal Signals connection
-        self.parent.switchModule(modules.AuthQuickModule)
+        self.menuModule.mainwin.connect_rfid()
+        self.menuModule.switchModule(modules.AuthQuickModule)
 
     def tournamentModule(self):
-        self.parent.switchModule(modules.TournamentModule)
+        self.menuModule.switchModule(modules.TournamentModule)
 
     def leaderboardModule(self):
-        self.parent.switchModule(modules.LeaderboardModule)
+        self.menuModule.switchModule(modules.LeaderboardModule)
 
     def optionsModule(self):
-        self.parent.switchModule(modules.OptionsModule)
+        self.menuModule.switchModule(modules.OptionsModule)
 
     def privacyModule(self):
-        self.parent.switchModule(modules.PrivacyModule)
+        self.menuModule.switchModule(modules.PrivacyModule)
 
     def editModule(self):
-        self.parent.switchModule(modules.EditModule)
+        self.menuModule.mainwin.connect_rfid()
+        self.menuModule.switchModule(modules.EditModule)

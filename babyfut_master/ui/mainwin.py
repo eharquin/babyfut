@@ -153,9 +153,15 @@ class MainWin(QtWidgets.QMainWindow):
         self.server.slaves_connected.connect(self.SwitchToMenuModule) # after connection : waiting -> menu Module
         self.thread.start()
 
+    def connect_rfid(self):
+        self.server.rfidSignal.connect(lambda side, rfid	: self.dispatchMessage({'rfid': rfid, 'source': side}))
+
+    def disconnect_rfid(self):
+        self.server.rfidSignal.stop()
+
     def message_signals(self):
         self.server.goalSignal.connect(lambda side	: self.dispatchMessage({'goal': True, 'source': side}))
-        self.server.rfidSignal.connect(lambda side, rfid	: self.dispatchMessage({'rfid': rfid, 'source': side}))
+        # self.server.rfidSignal.connect(lambda side, rfid	: self.dispatchMessage({'rfid': rfid, 'source': side}))
         self.server.clientLostSignal.connect(lambda action, msg	: self.networkWarning(action, msg))
     
     def stop(self):

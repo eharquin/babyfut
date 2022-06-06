@@ -131,6 +131,7 @@ class AuthQuickModule(Module):
 			self.other(rfid=dictKeysRight[e.key()],  source =Side.Right)
 
 	def handleCancel(self):
+		# TODO: Create a class in module_switch for this module and use it method
 		self.switchModule(modules.MenuModule)
 
 	def handleDone(self):
