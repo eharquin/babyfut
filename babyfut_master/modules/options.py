@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QRadioButton, QSlider
 
 from .. import modules
 from common.settings import Settings
+from common.module_switch import OptionsSwitch
 from ..core.module import Module
 from ..ui.options_ui import Ui_Form as OptionsWidget
 
@@ -96,7 +97,7 @@ class OptionsModule(Module):
 		Settings['league.playerPerTeam'] = 1 if self.ui.rbNumPlayerLeague_1.isChecked() else 2
 		Settings.saveSettingsToJSON()
 		self.mainwin._loadSettings()
-		self.switchModule(modules.MenuModule)
+		OptionsSwitch(self).back()
 
 	def handleBack(self):
-		self.switchModule(modules.MenuModule)
+		OptionsSwitch(self).back()

@@ -8,28 +8,28 @@ from babyfut_master import modules
 
 
 class MenuSwitch(object):
-    def __init__(self, menuModule: Module):
-        self.menuModule = menuModule
+    def __init__(self, menu_module: Module):
+        self.menu_module = menu_module
 
     def authQuickModule(self):
-        self.menuModule.mainwin.connect_rfid()
-        self.menuModule.switchModule(modules.AuthQuickModule)
+        self.menu_module.mainwin.connect_rfid()
+        self.menu_module.switchModule(modules.AuthQuickModule)
 
     def tournamentModule(self):
-        self.menuModule.switchModule(modules.TournamentModule)
+        self.menu_module.switchModule(modules.TournamentModule)
 
     def leaderboardModule(self):
-        self.menuModule.switchModule(modules.LeaderboardModule)
+        self.menu_module.switchModule(modules.LeaderboardModule)
 
     def optionsModule(self):
-        self.menuModule.switchModule(modules.OptionsModule)
+        self.menu_module.switchModule(modules.OptionsModule)
 
     def privacyModule(self):
-        self.menuModule.switchModule(modules.PrivacyModule)
+        self.menu_module.switchModule(modules.PrivacyModule)
 
     def editModule(self):
-        self.menuModule.mainwin.connect_rfid()
-        self.menuModule.switchModule(modules.EditModule)
+        self.menu_module.mainwin.connect_rfid()
+        self.menu_module.switchModule(modules.EditModule)
 
 
 class AutoQuickSwitch(object):
@@ -41,6 +41,7 @@ class AutoQuickSwitch(object):
         self.auto_quick_module.switchModule(modules.MenuModule)
 
     def done(self):
+        self.auto_quick_module.mainwin.disconnect_rfid()
         self.auto_quick_module.switchModule(modules.GameModule)
 
 
@@ -51,3 +52,69 @@ class EditSwitch(object):
     def back(self):
         self.edit_module.mainwin.disconnect_rfid()
         self.edit_module.switchModule(modules.MenuModule)
+
+
+class PrivacySwitch(object):
+    def __init__(self, privacy_module: Module):
+        self.privacy_module = privacy_module
+
+    def back(self):
+        self.privacy_module.switchModule(modules.MenuModule)
+
+
+class EndGameSwitch(object):
+    def __init__(self, endgame_module: Module):
+        self.endgame_module = endgame_module
+
+    def back(self):
+        self.endgame_module.switchModule(modules.MenuModule)
+
+    def tournamentDisplay(self):
+        self.endgame_module.switchModule(modules.TournamentDisplayModule)
+
+
+class GameSwitch(object):
+    def __init__(self, game_module: Module):
+        self.game_module = game_module
+
+    def cancel(self):
+        self.game_module.switchModule(modules.MenuModule)
+
+    def endgame(self):
+        self.game_module.switchModule(modules.EndGameModule)
+
+
+class LeaderboardSwitch(object):
+    def __init__(self, leaderboard_module: Module):
+        self.leaderboard_module = leaderboard_module
+
+    def exit(self):
+        self.leaderboard_module.switchModule(modules.MenuModule)
+
+
+class OptionsSwitch(object):
+    def __init__(self, options_module: Module):
+        self.options_module = options_module
+
+    def back(self):
+        self.options_module.switchModule(modules.MenuModule)
+
+
+class TournamentSwitch(object):
+    def __init__(self, tournament_module: Module):
+        self.tournament_module = tournament_module
+
+    def participant_module(self):
+        self.tournament_module.switchModule(modules.TournamentParticipantModule)
+
+    def display_module(self):
+        self.tournament_module.switchModule(modules.TournamentDisplayModule)
+
+    def tournament_module(self):
+        self.tournament_module.switchModule(modules.TournamentModule)
+
+    def game_module(self):
+        self.tournament_module.switchModule(modules.GameModule)
+
+    def menu_module(self):
+        self.tournament_module.switchModule(modules.MenuModule)

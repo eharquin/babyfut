@@ -20,6 +20,7 @@ from ..core.database import Database
 from ..ui.leaderboard_ui import Ui_Form as LeaderboardWidget
 from ..ui.playerlist_ui import Ui_Form as PlayerListWidget
 from ..ui.delete_dialog_ui import Ui_Dialog as PlayerDeleteDialog
+from common.module_switch import LeaderboardSwitch
 
 class LeaderboardItemWidget(QWidget):
 	def __init__(self, parent, player):
@@ -132,4 +133,4 @@ class LeaderboardModule(Module):
 
 
 	def handleExit(self):
-		self.switchModule(modules.MenuModule)
+		LeaderboardSwitch(self).exit()
