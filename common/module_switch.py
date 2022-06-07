@@ -42,3 +42,12 @@ class AutoQuickSwitch(object):
 
     def done(self):
         self.auto_quick_module.switchModule(modules.GameModule)
+
+
+class EditSwitch(object):
+    def __init__(self, edit_module: Module):
+        self.edit_module = edit_module
+
+    def back(self):
+        self.edit_module.mainwin.disconnect_rfid()
+        self.edit_module.switchModule(modules.MenuModule)

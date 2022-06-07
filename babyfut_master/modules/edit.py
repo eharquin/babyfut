@@ -12,13 +12,12 @@ from PyQt5.QtWidgets import QRadioButton, QMessageBox, QWidget, QListWidgetItem
 
 from ..core.player import Player
 from ..core.module import Module
-from .. import modules
 from ..ui.edit_ui import Ui_Form as EditWidget
 from ..ui.teamlist_ui import Ui_Form as TeamListWidget
 from ..ui.gamelist_ui import Ui_Form as GameListWidget
 from ..core.database import Database, DatabaseError
 from ..core.team import Team
-
+from common.module_switch import EditSwitch
 
 class TeamListItem(QWidget):
     def __init__(self, parent, currentPlayer, team):
@@ -82,7 +81,7 @@ class EditModule(Module):
         self.ui.privateYes.clicked.connect(lambda: self.makePrivate(True))
         self.ui.privateNo.clicked.connect(lambda: self.makePrivate(False))
         self.ui.editPhoto.clicked.connect(self.editPlayerPhoto)
-        
+
 
     def load(self):
         logging.debug('Loading EditModule')
@@ -91,7 +90,7 @@ class EditModule(Module):
         self.setFocus()
 
 
-    def unload(self):   
+    def unload(self):
         logging.debug('Unloading OptionsModule')
 
 
@@ -113,7 +112,7 @@ class EditModule(Module):
             self.player.displayImg(self.ui.playerPhoto)
             self.ui.fname.setText(self.player.fname)
             self.ui.lname.setText(self.player.lname)
-            
+
             # Set radioButton to the current position
             if self.player.private:
                 self.ui.privateYes.setChecked(True)
@@ -124,8 +123,8 @@ class EditModule(Module):
             self.loadGames()
         else:
             logging.debug("Unknown player")
-    
-    
+
+
     def loadTeams(self):
         self.ui.teamList.clear()
         teams = Database.instance().selectPlayerTeams(self.player.login)
@@ -186,4 +185,4 @@ class EditModule(Module):
 
 
     def handleBack(self):
-        self.switchModule(modules.MenuModule)
+        EditSwitch(self).back()
