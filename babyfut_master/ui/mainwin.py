@@ -157,7 +157,7 @@ class MainWin(QtWidgets.QMainWindow):
         self.server.rfidSignal.connect(lambda side, rfid	: self.dispatchMessage({'rfid': rfid, 'source': side}))
 
     def disconnect_rfid(self):
-        self.server.rfidSignal.stop()
+        self.server.rfidSignal.disconnect()
 
     def message_signals(self):
         self.server.goalSignal.connect(lambda side	: self.dispatchMessage({'goal': True, 'source': side}))
