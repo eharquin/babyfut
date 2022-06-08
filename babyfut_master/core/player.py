@@ -9,6 +9,7 @@ import os
 import logging
 from math import sqrt
 from http import HTTPStatus
+from datetime import date, timedelta
 
 from PyQt5.QtCore import Qt, QCoreApplication, QObject, pyqtSlot, QEvent
 from PyQt5.QtGui import QPixmap
@@ -86,6 +87,10 @@ class Player(QObject):
 		else:
 			self.stats = stats
 
+		# call to method - Delete players that haven't played in a year
+		self.deleteOldPlayers()
+		
+
 	'''Returns a Player object from a RFID code. 
 	Makes a Ginger request, search in DB and creates the Player Object
 	Asks for consent and inserts it in DB if new '''
@@ -107,6 +112,8 @@ class Player(QObject):
 			else:
 				logging.info('Consent refused when retrieving a player, returning Guest')
 				return Player.playerGuest()
+		else:
+			Database.instance().updateLastGameDate(infosPlayer['login'])
 
 		return Player.loadFromDB(infosPlayer['login'])
 
@@ -143,6 +150,13 @@ class Player(QObject):
 
 	def deletePlayer(self):
 		Database.instance().deletePlayer(self.login)
+
+	def deleteOldPlayers(self):
+		today = date.today()
+		oneYear = timedelta(weeks=52)
+		limitDate = (today-oneYear).strftime("%Y-%d-%m")
+		logging.debug('?', limitDate)
+		Database.instance().deleteOldPlayers(aYearAgo=limitDate)
 
 	'''Concatenates both names for displaying. To be called like an attribute.'''
 	@property

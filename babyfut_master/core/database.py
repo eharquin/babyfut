@@ -7,6 +7,7 @@
 import sqlite3
 import logging
 from os.path import exists
+from datetime import date
 from ..babyfut_master import getContent
 from .database_creator import createDatabase
 
@@ -65,7 +66,9 @@ class Database():
 
 	#Insert a new player
 	def insertPlayer(self, login, fname, lname, elo, private=0):
-		self._exec('INSERT INTO Players (login, fname, lname, elo, private) VALUES (?, ?, ?, ?, ?)', (login, fname, lname, elo, private))
+		today = date.today()
+		today = today.strftime("%Y-%d-%m")
+		self._exec('INSERT INTO Players (login, fname, lname, elo, private, lastGameDate) VALUES (?, ?, ?, ?, ?, ?)', (login, fname, lname, elo, private, today))
 		self._connection.commit()
 		return self._exec('SELECT login FROM Players WHERE login=?',(login,)).fetchone()[0]
 
@@ -87,7 +90,7 @@ class Database():
 	def deletePlayer(self, login):
 		self._exec('UPDATE Teams SET player1=NULL WHERE player1==?',(login,))
 		self._exec('UPDATE Teams SET player2=NULL WHERE player2==?',(login,))
-		self._exec('DELETE FROM Players WHERE login==?', (login,))
+		self._exec('UPDATE Players SET login = NULL, fname = "Anonyme", lname = "Anonyme" WHERE login==?',(login,))
 		self._connection.commit()
 
 	#Sets a player Private attribute with the boolean Option
@@ -114,6 +117,18 @@ class Database():
 		self._exec("UPDATE Players SET elo=? WHERE login==?", (elo, login))
 		self._connection.commit()
 
+	# Deletes all players that haven't played in a year
+	def deleteOldPlayers(self, aYearAgo):
+		self._exec('UPDATE Teams SET player1 = NULL where EXISTS (SELECT player1 FROM Players WHERE Teams.player1 = Players.login AND Players.lastGameDate <= ?)', (aYearAgo,))
+		self._exec('UPDATE Teams SET player2 = NULL where EXISTS (SELECT player2 FROM Players WHERE Teams.player2 = Players.login AND Players.lastGameDate <= ?)', (aYearAgo,))
+		self._exec('UPDATE Players SET login = NULL, fname = "Anonyme", lname = "Anonyme" WHERE lastGameDate <= ?', (aYearAgo,))
+		self._connection.commit()
+
+	def updateLastGameDate(self, login):
+		today = date.today()
+		today = today.strftime("%Y-%d-%m")
+		self._exec('UPDATE Players SET Players.lastGameDate=? WHERE Players.login=?', (today, login,))
+		self._connection.commit()
 
 #----------------------TEAMS-------------------------------------
 

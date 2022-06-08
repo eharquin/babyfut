@@ -7,7 +7,6 @@
 import sqlite3
 import logging
 
-
 '''Datebase Creation script. Out of class function'''
 
 def createDatabase(db_path):
@@ -26,11 +25,13 @@ def createDatabase(db_path):
     )''')
 
     c.execute('''CREATE TABLE "Players" (
-        `login` TEXT PRIMARY KEY,
+        `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+        `login` TEXT UNIQUE,
         `fname`	TEXT NOT NULL,
         `lname`	TEXT NOT NULL,
         `elo` INTEGER,
-        `private`	INTEGER NOT NULL CHECK(private == 0 or private == 1)
+        `private`	INTEGER NOT NULL CHECK(private == 0 or private == 1),
+        `lastGameDate` DATE NOT NULL
     )''')
 
     c.execute('''CREATE TABLE "Teams" (
