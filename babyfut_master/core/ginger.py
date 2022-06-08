@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Antoine Lima, Leo Reynaert, Domitille Jehenne
-@modif : Yoann Malot, Thibaud Le Graverend
+@modif : Yoann Malot, Thibaud Le Graverend, Adam Soimansoib
 """
 import json
 import logging
@@ -43,8 +43,13 @@ class Ginger(object):
 		params= {'key':self.api_key}
 		query = self.url+'badge/{}/'.format(rfid)
 
-		response = requests.get(query, params)
-		if response.status_code!=200:
+		# Handle Requests Exception such as ConnectionError. 
+		try:
+			response = requests.get(query, params)
+		except requests.exceptions.RequestException as e:
+			raise GingerError("Requests Exception : {}".format(e))
+
+		if response.status_code!=HTTPStatus.OK:
 			raise GingerError("HTTP request returned code : {}".format(response.status_code))
 		else:
 			return json.loads(response.content)
