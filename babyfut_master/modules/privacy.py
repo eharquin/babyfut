@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt, QCoreApplication
 from .. import modules
 from ..core.module import Module
 from ..ui.privacy_ui import Ui_Form as PrivacyWidget
+from common.module_switch import PrivacySwitch
 
 class PrivacyModule(Module):
     def __init__(self, parent):
@@ -44,4 +45,4 @@ Si vous estimez, après nous avoir contactés, que vos droits sur vos données n
         super().keyPressEvent(e)
 
     def handleBack(self):
-        self.switchModule(modules.MenuModule)
+        PrivacySwitch(self).back()

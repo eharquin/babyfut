@@ -15,6 +15,8 @@ from ..core.player import Player
 from common.side import Side
 from ..core.module import Module
 from ..ui.endgame_ui import Ui_Form as EndGameWidget
+from common.module_switch import EndGameSwitch
+
 
 class EndGameModule(Module):
 	def __init__(self, parent=None):
@@ -159,7 +161,7 @@ class EndGameModule(Module):
 				Database.instance().setEloRating(player.login, player.eloRating)
 
 	def handleQuit(self):
-		if self.match==None:
-			self.switchModule(modules.MenuModule)
+		if self.match is None:
+			EndGameSwitch(self).back()
 		else:
-			self.switchModule(modules.TournamentDisplayModule)
+			EndGameSwitch(self).tournamentDisplay()

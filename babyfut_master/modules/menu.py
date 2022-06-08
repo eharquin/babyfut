@@ -15,18 +15,20 @@ from ..core.module import Module
 from common.settings import Settings
 from ..ui.menu_ui import Ui_Form as MenuWidget
 from common.side import Side
+from common.module_switch import MenuSwitch
 
 class MenuModule(Module):
     def __init__(self, parent):
         super().__init__(parent, MenuWidget())
-
+        menuSwitch = MenuSwitch(self)
         # Button connections
-        self.ui.btnStartQuick.clicked.connect (lambda: self.switchModule(modules.AuthQuickModule))
-        self.ui.btnStartLeague.clicked.connect(lambda: self.switchModule(modules.TournamentModule))
-        self.ui.btnLeaderboard.clicked.connect(lambda: self.switchModule(modules.LeaderboardModule))
-        self.ui.btnOptions.clicked.connect    (lambda: self.switchModule(modules.OptionsModule))
-        self.ui.btnPrivacy.clicked.connect    (lambda: self.switchModule(modules.PrivacyModule))
-        self.ui.btnEdit.clicked.connect		  (lambda: self.switchModule(modules.EditModule))
+        self.ui.btnStartQuick.clicked.connect(lambda: menuSwitch.authQuickModule())
+        self.ui.btnStartLeague.clicked.connect(lambda: menuSwitch.tournamentModule())
+        self.ui.btnLeaderboard.clicked.connect(lambda: menuSwitch.leaderboardModule())
+        self.ui.btnOptions.clicked.connect(lambda: menuSwitch.optionsModule())
+        self.ui.btnPrivacy.clicked.connect(lambda: menuSwitch.privacyModule())
+        self.ui.btnEdit.clicked.connect(lambda: menuSwitch.editModule())
+
     def load(self):
         logging.debug('Loading MenuModule')
         self.ui.btnStartQuick.setFocus()

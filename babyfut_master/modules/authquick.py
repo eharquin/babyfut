@@ -14,6 +14,7 @@ from ..core.player import Player
 from ..core.module import Module
 from ..core.team import Team, TeamName, KeyboardWidget, ConstructTeam
 from common.side import Side
+from common.module_switch import AutoQuickSwitch
 from ..ui.authquick_ui import Ui_Form as AuthQuickWidget
 
 from ..core.database import Database
@@ -131,11 +132,11 @@ class AuthQuickModule(Module):
 			self.other(rfid=dictKeysRight[e.key()],  source =Side.Right)
 
 	def handleCancel(self):
-		self.switchModule(modules.MenuModule)
+		AutoQuickSwitch(self).cancel()
 
 	def handleDone(self):
 		for side in [Side.Left, Side.Right]:
 			if isinstance(self.teams[side], ConstructTeam):
 				self.teams[side] = self.teams[side].validateTeam()
 		self.send(modules.GameModule, teams=self.teams)
-		self.switchModule(modules.GameModule)
+		AutoQuickSwitch(self).done()

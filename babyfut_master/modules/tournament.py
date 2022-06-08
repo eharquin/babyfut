@@ -27,7 +27,7 @@ from ..ui.tournamentdisplay_ui import Ui_Form as TournamentDisplayWidget
 from ..ui.keyboard import KeyboardWidget
 from ..ui.tournamentmatchlist_ui import Ui_Form as TournamentMatchWidget
 
-
+from common.module_switch import TournamentSwitch
 
 class TournamentListItem(QWidget):
 	def __init__(self, parent, tournament):
@@ -67,7 +67,7 @@ class TournamentModule(Module):
 
 
 	def handleBack(self):
-		self.switchModule(modules.MenuModule)
+		TournamentSwitch(self).menu_module()
 
 	def createTournament(self):
 		dialog = CreateDialog(self)
@@ -89,14 +89,14 @@ class TournamentModule(Module):
 		if tn.status==TournamentStatus.Future:
 			# Display player list
 			self.send(modules.TournamentParticipantModule, tournament = tn)
-			self.switchModule(modules.TournamentParticipantModule)
+			TournamentSwitch(self).participant_module()
 		if tn.status==TournamentStatus.Running:
 			self.send(modules.TournamentDisplayModule, tournament = tn)
-			self.switchModule(modules.TournamentDisplayModule)
+			TournamentSwitch(self).display_module()
 			
 		if tn.status==TournamentStatus.Past:
 			self.send(modules.TournamentDisplayModule, tournament = tn)
-			self.switchModule(modules.TournamentDisplayModule)
+			TournamentSwitch(self).participant_module()
 
 '''
 This class allows to show the tournament details. It can be launched only for tournaments with
@@ -132,7 +132,7 @@ class TournamentParticipantModule(Module):
 			self.handleBack()
 
 	def handleBack(self):
-		self.switchModule(modules.TournamentModule)
+		TournamentSwitch(self).tournament_module()
 
 	def other(self, **kwargs):
 		logging.debug('Other TournamentParticipantModule')
@@ -189,7 +189,7 @@ class TournamentParticipantModule(Module):
 	def startTournament(self):
 		self.tournament.validate()
 		self.send(modules.TournamentDisplayModule, tournament = self.tournament)
-		self.switchModule(modules.TournamentDisplayModule)
+		TournamentSwitch(self).display_module()
 
 
 class TournamentDisplayModule(Module):
@@ -218,7 +218,7 @@ class TournamentDisplayModule(Module):
 			self.handleBack()
 
 	def handleBack(self):
-		self.switchModule(modules.TournamentModule)
+		TournamentSwitch(self).tournament_module()
 
 	def drawMatchTree(self):
 		self.tree = TreeMatch(self.tournament, self.ui.paintArea)
@@ -264,7 +264,7 @@ class TournamentDisplayModule(Module):
 		match = self.ui.matchList.itemWidget(self.ui.matchList.currentItem()).property("match")
 		if match.playable() and not match.played:
 			self.send(modules.GameModule, match=match)
-			self.switchModule(modules.GameModule)
+			TournamentSwitch(self).game_module()
 
 
 '''

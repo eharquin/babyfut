@@ -20,6 +20,7 @@ from ..core.player import Player
 from common.side import Side
 from ..core.module import Module
 from common.settings import Settings
+from common.module_switch import GameSwitch
 from ..ui.game_ui import Ui_Form as GameWidget
 from ..babyfut_master import getContent
 
@@ -176,7 +177,7 @@ class GameModule(Module):
 			self.updateScores()
 
 	def handleCancel(self):
-		self.switchModule(modules.MenuModule)
+		GameSwitch(self).cancel()
 
 	def checkEndGame(self):
 		bestPlayer = max(self.scores, key=self.scores.get)
@@ -185,11 +186,11 @@ class GameModule(Module):
 		or (self.gameoverType=='time' and self.getGameTime()>=self.gameoverValue):
 		
 			start_timestamp = int(QDateTime(QDate.currentDate(), self.gameStartTime).toMSecsSinceEpoch()/1000)
-			if self.match == None:
+			if self.match is None:
 				self.send(modules.EndGameModule, teams=self.teams, scores=self.scores)
 				self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self.gameoverType)
-				self.switchModule(modules.EndGameModule)
+				GameSwitch(self).endgame()
 			else:
 				self.send(modules.EndGameModule, teams=self.teams, scores=self.scores, match=self.match)
 				self.send(modules.EndGameModule, start_time=start_timestamp, duration=self.getGameTime(), gameType=self.gameoverType)
-				self.switchModule(modules.EndGameModule)
+				GameSwitch(self).endgame()
