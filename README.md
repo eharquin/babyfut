@@ -34,10 +34,15 @@ The project can now be run, for that you need to run 1 master :
 ```
 ./devtools.sh master
 ```
-and 2 slaves :
 
+and 2 slaves :
 ```
 ./devtools.sh slave
+```
+
+You can also use the start.sh script :	
+```
+./start.sh
 ```
 
 ## Edit the UI
