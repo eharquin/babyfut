@@ -148,6 +148,8 @@ class Tournament(QObject):
         if self.status == TournamentStatus.Future:
             if self.type == TournamentType.Elimination:
                self.singleElimination()
+            elif self.type == TournamentType.doubleElimination:
+                self.doubleElimination()
 
             self.status = TournamentStatus.Running
             Database.instance().setStatusTn(self.id, TournamentStatus.Running)
