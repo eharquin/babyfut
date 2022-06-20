@@ -61,7 +61,7 @@ def createDatabase(db_path):
         `id` INTEGER PRIMARY KEY REFERENCES Matchs(id),
         `tournament` INTEGER NOT NULL REFERENCES Tournaments(id),
         `round` INTEGER NOT NULL,
-        `KOType` CHAR(1) CHECK (KOType == 'W' OR KOType=='L'),
+        `KOType` VARCHAR(2) CHECK (KOType == 'W' OR KOType=='L' OR KOType=='WW' OR KOType=='WL' OR KOType=='LL'),
         `parent1` INTEGER REFERENCES TreeMatchs(id),
         `parent2` INTEGER REFERENCES TreeMatchs(id)
     )
