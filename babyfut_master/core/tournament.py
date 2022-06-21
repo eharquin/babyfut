@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @author: Yoann MALOT, Thibaud LE GRAVEREND
+@contributors: Tom BESSON, Enzo HARQUIN
 """
 
 from PyQt5.QtCore import QObject
@@ -148,7 +149,7 @@ class Tournament(QObject):
         if self.status == TournamentStatus.Future:
             if self.type == TournamentType.Elimination:
                self.singleElimination()
-            elif self.type == TournamentType.doubleElimination:
+            elif self.type == TournamentType.Double:
                 self.doubleElimination()
 
             self.status = TournamentStatus.Running
@@ -175,7 +176,7 @@ class Tournament(QObject):
             t2 = choice(team_list)
             team_list.remove(t2)
             # Insert the Match into the database
-            match = Tournament.Match.create(self, int(rounds_count + 1), t1, t2, ['W', 'W'])
+            match = Tournament.Match.create(self, int(rounds_count + 1), t1, t2, 'WW')
             # Add the match to the list of the parents for next round
             next_round_parent_matches.append(match)
             # Also add it to the Tournament's matches list
@@ -196,7 +197,7 @@ class Tournament(QObject):
                 t2 = choice(team_list)
                 team_list.remove(t2)
                 # Insert the Match into the database
-                match = Tournament.Match.create(self, int(round_number), t1, t2, ['W', 'W'])
+                match = Tournament.Match.create(self, int(round_number), t1, t2, 'WW')
                 # Add the match to the list of the parents for next round
                 next_round_parent_matches.append(match)
                 # Also add it to the Tournament's matches list
@@ -227,7 +228,7 @@ class Tournament(QObject):
             t2 = choice(team_list)
             team_list.remove(t2)
             # Insert the Match into the database
-            match = Tournament.Match.create(self, int(rounds_count + 1), t1, t2, ['W', 'W'])
+            match = Tournament.Match.create(self, int(rounds_count + 1), t1, t2, 'WW')
             # Add the match to the list of the parents for next round
             next_round_parent_matches.append(match)
             # Also add it to the Tournament's matches list
@@ -251,7 +252,7 @@ class Tournament(QObject):
                 team_list.remove(t2)
                 # The match corresponds to the winners of the previous round
                 # Insert the Match into the database
-                match = Tournament.Match.create(self, int(round_number), t1, t2, ['W', 'W'])
+                match = Tournament.Match.create(self, int(round_number), t1, t2, 'WW')
                 # Add the match to the list of the parents for next round
                 next_round_parent_matches.append(match)
                 # Also add it to the Tournament's matches list
@@ -270,7 +271,7 @@ class Tournament(QObject):
                     teams_from_winner_list.remove(t2)
 
                     # Insert the Match into the database
-                    match = Tournament.Match.create(self, int(round_number), t1, t2, ['L', 'L'])
+                    match = Tournament.Match.create(self, int(round_number), t1, t2, 'LL')
                     # Add the match to the list of the parents for next round
                     next_loser_round_parent_matches.append(match)
                     # Also add it to the Tournament's matches list
@@ -290,14 +291,15 @@ class Tournament(QObject):
                     teams_from_loser_list.remove(t2)
 
                     # Insert the Match into the database
-                    match = Tournament.Match.create(self, int(round_number), t1, t2, ['L', 'W'])
+                    match = Tournament.Match.create(self, int(round_number), t1, t2, 'LW')
                     # Add the match to the list of the parents for next round
                     parent_matches_for_second_loser_round.append(match)
                     # Also add it to the Tournament's matches list
                     self.matchs.append(match)
 
-                    # If it isn't the last round, a second LB round is required between two winners from the LB
-                    if round_number == 1:
+                # If it isn't the last round, a second LB round is required between two winners from the LB
+                if round_number != 1:
+                    for k in range(0, int(pow(2, round_number - 3))):
                         # Copy the list of the matches from the loser bracket round that was just played
                         teams_from_loser_list = parent_matches_for_second_loser_round.copy()
                         parent_matches_for_second_loser_round.clear()
@@ -309,7 +311,7 @@ class Tournament(QObject):
                         teams_from_loser_list.remove(t2)
 
                         # Insert the Match into the database
-                        match = Tournament.Match.create(self, int(round_number), t1, t2, ['W', 'W'])
+                        match = Tournament.Match.create(self, int(round_number), t1, t2, 'WW')
                         # Add the match to the list of the parents for next round
                         next_loser_round_parent_matches.append(match)
                         # Also add it to the Tournament's matches list
@@ -325,7 +327,7 @@ class Tournament(QObject):
         t2 = choice(next_loser_round_parent_matches)
 
         # Insert the Match into the database
-        match = Tournament.Match.create(self, 0, t1, t2, ['W', 'W'])
+        match = Tournament.Match.create(self, 0, t1, t2, 'WW')
         # Add the match to the list of the parents for next round
         next_loser_round_parent_matches.append(match)
         # Also add it to the Tournament's matches list
@@ -338,7 +340,7 @@ class Tournament(QObject):
         # Special rounds names
         _roundnames = {0: 'Great Final', 1: 'Final', 2: 'Semi-finals', 3: 'Quarter-finals'}
 
-        def __init__(self, id, tour, round, t1, t2, p1, p2, k1='W', k2='W'):
+        def __init__(self, id, tour, round, t1, t2, p1, p2, KOtype='WW'):
             self.id = id  # ID in DB
             self.tournament = tour  # Tournament Object
             self.round = round  # Round number
@@ -346,7 +348,7 @@ class Tournament(QObject):
             self.parents = [p1, p2]  # list of 2 Tournament.Match object, None if has no parent
             self.scores = list()  # list of 2 scores, empty if not played. Same order as teams list.
             self.played = False
-            self.KOtype = [k1, k2]  # List of 2 strings which are 'W' if the corresponding team is the winner of the parent match, 'L' if it is the loser
+            self.KOtype = KOtype  # List of 2 strings which are 'W' if the corresponding team is the winner of the parent match, 'L' if it is the loser
 
         '''Returns the Round name : "Round of ..." or special round name'''
 
