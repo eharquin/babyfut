@@ -116,7 +116,7 @@ class GameModule(Module):
 
 	def resizeEvent(self, event):
 		# 40% of the window width to have (5% margin)-(40% circle)-(10% middle)-(40% circle)-(5% margin)
-		btnDiameter = self.mainwin.width()*0.4
+		btnDiameter = int(self.mainwin.width()*0.4) 
 		region = QRegion(QRect(0, 0, btnDiameter, btnDiameter), QRegion.Ellipse)
 		self.ui.btnScore1.setMinimumSize(btnDiameter, btnDiameter)
 		self.ui.btnScore2.setMinimumSize(btnDiameter, btnDiameter)
