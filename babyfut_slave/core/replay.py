@@ -1,107 +1,104 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
-@author: Antoine Lima, Leo Reynaert, Domitille Jehenne
-@modifs: Yoann Malot, Thibaud Le Graverend
+@author: Enzo Harquin, Tom Besson
 """
+
 import subprocess
-from threading import Thread, Event
+from threading import Thread
 
 from ..babyfut_slave import getContent, ON_RASP
 from common.settings import Settings
-from PyQt5.QtCore import QObject, pyqtSignal
-
+from PyQt5.QtCore import QObject
 
 if ON_RASP:
-	import picamera
-
-class Replay(Thread,QObject):
-	
-	readyToSend = pyqtSignal()
-	
-	def __init__(self):
-		Thread.__init__(self)
-		QObject.__init__(self)
-
-		self.replayPath = getContent('replay.mp4')
-		self.shutdown = False
+    import picamera
 
 
-		if ON_RASP:
-			self.camera_detected = Replay.detectCam()
+class Replay(QObject):
 
-		self.start_flag = Event()
-		self.stop_flag = Event()
-		self.stopped_flag = Event()
+    def __init__(self):
+        print("Initialization")
+        QObject.__init__(self)
 
-		if self.isCamAvailable():
-			self.cam = picamera.PiCamera()
-			self.cam.resolution = Settings['picam.resolution']
-			self.cam.framerate = Settings['picam.fps']
-			self.cam.hflip = Settings['picam.hflip']
-			self.cam.vflip = Settings['picam.vflip']
-			self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
-			
-		print('enregistre1')
-	def start_recording(self):
-		if self.isCamAvailable():
-			print("start")
-			self.start_flag.set()
+        self.replayPath = getContent('replay.mp4')
 
-	def stop_recording(self):
-		if self.isCamAvailable():
-			print("stop")
-			self.stop_flag.set()
-			self.stopped_flag.wait()
+        print(" init cam thread")
+        self.camThread = camThread(self)
 
-            # Clear all control flags
-			self.stop_flag.clear()
-			self.start_flag.clear()
-			self.stopped_flag.clear()
+        self.cam = picamera.PiCamera()
+        self.cam.resolution = Settings['picam.resolution']
+        self.cam.framerate = Settings['picam.fps']
+        self.cam.hflip = Settings['picam.hflip']
+        self.cam.vflip = Settings['picam.vflip']
 
-		return self.replayPath
+        print(" init circular buffer")
+        # initialize the circular buffer
+        # default bit rate 17Mbps
+        self.stream = picamera.PiCameraCircularIO(self.cam, seconds=Settings['replay.duration'])
+        self.bufferLength = 0
+        self.lastBufferLength = 0
 
-	def stop(self):
-		self.start_flag.set()
-		self.shutdown = True
+    def start(self):
+        print("cam thread started")
+        self.camThread.start()
 
-	def run(self):
-		while not self.shutdown:
-			self.start_flag.wait()
-			print("run")
-			if not self.shutdown:
-				self.cam.start_recording(self.stream, Settings['picam.format'])
-				print('enregistre')
-				try:
-					while not self.stop_flag.is_set():
-						self.cam.wait_recording(1)
+    def stop(self):
+        self.camThread.stop();
+        self.camThread.join()
 
-				finally	:
-					print("finaly stop recording")
-					self.cam.stop_recording()
-				print("copy replay")
-				self.stream.copy_to(self.replayPath)
-				self.stream.clear()
-				self.readyToSend.emit()
-                # Set this flag to tell the calling thread that replay is saved
-				self.stopped_flag.set()
+    def create_replay(self):
+        self.lastBufferLength = self.bufferLength
+        self.bufferLength = self.stream.size
+        print(self.bufferLength)
+        self.stream.copy_to(self.replayPath)
+        self.stream.clear()
 
-		self.cam.close()
-		self.stream.close()
+    @classmethod
+    def Dummy():
+        return getContent('Replay Right.mp4')
 
-	@classmethod
-	def Dummy(cls):
-		return getContent('Replay Right.mp4')
+    @staticmethod
+    def detectCam():
+        if ON_RASP:
+            camdet = subprocess.check_output(["vcgencmd", "get_camera"])
+            return bool(int(chr(camdet[-2])))
+        else:
+            return False
 
-	@staticmethod
-	def detectCam():
-		if ON_RASP:
-			camdet = subprocess.check_output(["vcgencmd","get_camera"])
-			return bool(int(chr(camdet[-2])))
-		else:
-			return False
+    @staticmethod
+    def isCamAvailable(self=None):
+        detected = self.camera_detected if self != None else Replay.detectCam()
+        return ON_RASP and detected
 
-	@staticmethod
-	def isCamAvailable(self=None):
-		detected = self.camera_detected if self!=None else Replay.detectCam()
-		return ON_RASP and detected
+
+class camThread(Thread):
+
+    def __init__(self, parent):
+        Thread.__init__(self)
+        self.parent = parent
+        self.isRunning = True
+
+        self.camera_detected = Replay.detectCam()
+
+    def start(self):
+        # start the record
+        self.parent.cam.start_recording(self.parent.stream, Settings['picam.format'])
+
+        # call run()
+        Thread.start(self)
+
+    def stop(self):
+        self.isRunning = False
+
+    def run(self):
+        while (self.isRunning):
+            self.handleCam()
+
+    def handleCam(self):
+        if (not self.parent.stop):
+            self.parent.cam.wait_recording(1)
+
+
+
