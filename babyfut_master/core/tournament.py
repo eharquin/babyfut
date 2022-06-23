@@ -259,7 +259,7 @@ class Tournament(QObject):
                 self.matchs.append(match)
 
             # Loser Bracket
-            for j in range(0, int(pow(2, round_number - 2))):
+            for j in range(0, int(pow(2, round_number - 1))):
                 # If it's the first round, it requires two losers from the winner bracket
                 if round_number == rounds_count:
                     # Copy the list of the matches from the winner bracket round that was just played
@@ -299,7 +299,7 @@ class Tournament(QObject):
 
             # If it isn't the last round, a second LB round is required between two winners from the LB
             if round_number != 1:
-                for k in range(0, int(pow(2, round_number - 3))):
+                for k in range(0, int(pow(2, round_number - 2))):
                     # Copy the list of the matches from the loser bracket round that was just played
                     teams_from_loser_list = parent_matches_for_second_loser_round.copy()
                     parent_matches_for_second_loser_round.clear()
