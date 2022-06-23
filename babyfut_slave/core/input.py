@@ -65,7 +65,7 @@ class Input(QObject):
         if ON_RASP:
             print("input started")
             self.rfidThread.start()
-        # self.goalThread.start()
+            self.goalThread.start()
 
         else:
             self.inputSimulation.start()
@@ -74,7 +74,7 @@ class Input(QObject):
         if ON_RASP:
             self.rfidThread.stop();
             self.rfidThread.join()
-        # self.goalThread.stop(); self.goalThread.join()
+            self.goalThread.stop(); self.goalThread.join()
 
         else:
             self.inputSimulation.stop();
