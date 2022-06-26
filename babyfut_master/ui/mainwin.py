@@ -159,6 +159,12 @@ class MainWin(QtWidgets.QMainWindow):
     def disconnect_rfid(self):
         self.server.rfidSignal.disconnect()
 
+    def connect_goals(self):
+        self.server.goalSignal.connect(lambda side: self.dispatchMessage({'goal': True, 'source': side}))
+
+    def disconnect_goals(self):
+        self.server.goalSignal.disconnect()
+
     def message_signals(self):
         self.server.goalSignal.connect(lambda side	: self.dispatchMessage({'goal': True, 'source': side}))
         self.server.clientLostSignal.connect(lambda action, msg	: self.networkWarning(action, msg))

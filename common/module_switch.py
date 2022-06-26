@@ -42,6 +42,7 @@ class AutoQuickSwitch(object):
 
     def done(self):
         self.auto_quick_module.mainwin.disconnect_rfid()
+        self.auto_quick_module.mainwin.connect_goals()
         self.auto_quick_module.switchModule(modules.GameModule)
 
 
@@ -78,9 +79,11 @@ class GameSwitch(object):
         self.game_module = game_module
 
     def cancel(self):
+        self.game_module.mainwin.disconnect_goals()
         self.game_module.switchModule(modules.MenuModule)
 
     def endgame(self):
+        self.game_module.mainwin.disconnect_goals()
         self.game_module.switchModule(modules.EndGameModule)
 
 
@@ -114,6 +117,7 @@ class TournamentSwitch(object):
         self.tournament_module.switchModule(modules.TournamentModule)
 
     def game_module(self):
+        self.tournament_module.mainwin.connect_goals()
         self.tournament_module.switchModule(modules.GameModule)
 
     def menu_module(self):
