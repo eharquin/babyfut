@@ -166,7 +166,6 @@ class MainWin(QtWidgets.QMainWindow):
         self.server.goalSignal.disconnect()
 
     def message_signals(self):
-        self.server.goalSignal.connect(lambda side	: self.dispatchMessage({'goal': True, 'source': side}))
         self.server.clientLostSignal.connect(lambda action, msg	: self.networkWarning(action, msg))
     
     def stop(self):
